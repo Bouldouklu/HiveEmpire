@@ -18,6 +18,9 @@ public class RouteController : MonoBehaviour
     [Tooltip("Speed of airplanes on this route (must match AirplaneController speed)")]
     [SerializeField] private float airplaneSpeed = 10f;
 
+    [Tooltip("Cruising altitude of airplanes (must match AirplaneController cruisingAltitude)")]
+    [SerializeField] private float cruisingAltitude = 12f;
+
     [Header("References")]
     [Tooltip("The home airport transform (usually this GameObject's transform)")]
     [SerializeField] private Transform homeAirport;
@@ -117,21 +120,28 @@ public class RouteController : MonoBehaviour
     /// <summary>
     /// Calculates the spawn interval based on route distance, airplane speed, and max count.
     /// This ensures airplanes are evenly spaced along the route.
+    /// Uses actual Bezier curve arc length for accurate spacing calculations.
     /// </summary>
     private void CalculateSpawnInterval()
     {
-        // Calculate straight-line distance between airport and city landing position
+        // Get airport and city landing positions
+        Vector3 airportPosition = homeAirport.position + new Vector3(0f, 0.5f, 0f);
         Vector3 cityLanding = cityDestination.position;
         if (CityController.Instance != null)
         {
             cityLanding = CityController.Instance.LandingPosition;
         }
 
-        routeDistance = Vector3.Distance(homeAirport.position, cityLanding);
+        // Calculate actual Bezier arc length (not straight-line distance)
+        // This matches the actual flight path that airplanes will follow
+        float oneWayArcLength = AirplaneController.CalculateBezierArcLength(airportPosition, cityLanding, cruisingAltitude);
+
+        // Store for debugging (one-way arc length)
+        routeDistance = oneWayArcLength;
 
         // Calculate round-trip duration (airport → city → airport)
         // Airplanes complete a full loop, so we need to account for both directions
-        float oneWayDuration = routeDistance / airplaneSpeed;
+        float oneWayDuration = oneWayArcLength / airplaneSpeed;
         float roundTripDuration = oneWayDuration * 2f;
 
         // Divide round-trip duration by number of airplanes to get even spacing around the full loop
@@ -139,7 +149,7 @@ public class RouteController : MonoBehaviour
         calculatedSpawnInterval = roundTripDuration / maxAirplanesOnRoute;
 
         Debug.Log($"RouteController on {gameObject.name}: " +
-                  $"Distance={routeDistance:F1}u, RoundTripDuration={roundTripDuration:F1}s, " +
+                  $"ArcLength={oneWayArcLength:F1}u, RoundTripDuration={roundTripDuration:F1}s, " +
                   $"SpawnInterval={calculatedSpawnInterval:F1}s for {maxAirplanesOnRoute} airplanes");
     }
 

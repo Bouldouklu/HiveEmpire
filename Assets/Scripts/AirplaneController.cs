@@ -230,6 +230,67 @@ public class AirplaneController : MonoBehaviour
     }
 
     /// <summary>
+    /// Calculates the arc length of a cubic Bezier curve using numerical integration.
+    /// This matches the flight path setup used by SetupFlightPath().
+    /// </summary>
+    /// <param name="start">Starting position</param>
+    /// <param name="end">Ending position</param>
+    /// <param name="cruisingAltitude">Height of the arc above base height</param>
+    /// <param name="segments">Number of segments for numerical integration (higher = more accurate)</param>
+    /// <returns>Approximate arc length of the Bezier curve</returns>
+    public static float CalculateBezierArcLength(Vector3 start, Vector3 end, float cruisingAltitude, int segments = 100)
+    {
+        // Calculate control points using the same logic as SetupFlightPath()
+        Vector3 horizontalDirection = end - start;
+        horizontalDirection.y = 0f; // Flatten to horizontal plane
+
+        float baseHeight = Mathf.Max(start.y, end.y);
+        float targetHeight = baseHeight + cruisingAltitude;
+
+        // Control point 1: ascent phase (30% of horizontal distance)
+        Vector3 cp1Horizontal = start + horizontalDirection * 0.3f;
+        Vector3 controlPoint1 = new Vector3(cp1Horizontal.x, targetHeight, cp1Horizontal.z);
+
+        // Control point 2: descent phase (70% of horizontal distance)
+        Vector3 cp2Horizontal = start + horizontalDirection * 0.7f;
+        Vector3 controlPoint2 = new Vector3(cp2Horizontal.x, targetHeight, cp2Horizontal.z);
+
+        // Numerical integration: sample the curve and sum distances between sample points
+        float arcLength = 0f;
+        Vector3 previousPoint = start;
+
+        for (int i = 1; i <= segments; i++)
+        {
+            float t = (float)i / segments;
+            Vector3 currentPoint = CalculateCubicBezierPointStatic(t, start, controlPoint1, controlPoint2, end);
+            arcLength += Vector3.Distance(previousPoint, currentPoint);
+            previousPoint = currentPoint;
+        }
+
+        return arcLength;
+    }
+
+    /// <summary>
+    /// Static version of CalculateCubicBezierPoint for use in static methods
+    /// </summary>
+    private static Vector3 CalculateCubicBezierPointStatic(float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
+    {
+        // Cubic Bezier formula: B(t) = (1-t)³ * P0 + 3(1-t)²t * P1 + 3(1-t)t² * P2 + t³ * P3
+        float u = 1f - t;
+        float tt = t * t;
+        float uu = u * u;
+        float uuu = uu * u;
+        float ttt = tt * t;
+
+        Vector3 point = uuu * p0; // (1-t)³ * P0
+        point += 3f * uu * t * p1; // 3(1-t)²t * P1
+        point += 3f * u * tt * p2; // 3(1-t)t² * P2
+        point += ttt * p3; // t³ * P3
+
+        return point;
+    }
+
+    /// <summary>
     /// Called when airplane completes its current journey
     /// </summary>
     private void OnJourneyComplete()
