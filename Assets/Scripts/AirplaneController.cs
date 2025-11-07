@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
 /// Controls airplane movement with smooth arc trajectories between airports and city.
+/// Airplanes continuously loop between airport and city until manually destroyed.
 /// </summary>
 public class AirplaneController : MonoBehaviour
 {
@@ -19,13 +21,22 @@ public class AirplaneController : MonoBehaviour
     [Tooltip("Current movement state (for debugging)")]
     [SerializeField] private FlightState currentState = FlightState.Idle;
 
+    [Header("Cargo Settings")]
+    [Tooltip("Maximum number of resources this airplane can carry per trip")]
+    [SerializeField] private int cargoCapacity = 1;
+
     [Header("Debug Visualization")]
     [Tooltip("Show flight path gizmos in Scene view")]
     [SerializeField] private bool showFlightPathGizmos = true;
 
+    [Header("Debug Info")]
+    [Tooltip("Current cargo being carried (for debugging)")]
+    [SerializeField] private List<ResourceType> currentCargo = new List<ResourceType>();
+
     // References
     private Transform homeAirport;
     private Transform cityDestination;
+    private AirportController homeAirportController;
 
     // Movement tracking
     private Vector3 startPosition;
@@ -46,15 +57,32 @@ public class AirplaneController : MonoBehaviour
 
     /// <summary>
     /// Initializes the airplane with home airport and destination.
-    /// Called by AirportController when spawned.
+    /// Called by RouteController when spawned.
     /// </summary>
     public void Initialize(Transform airport, Transform city)
     {
         homeAirport = airport;
         cityDestination = city;
 
-        // Start journey to city
-        StartJourneyToCity();
+        // Get reference to airport controller
+        homeAirportController = airport.GetComponent<AirportController>();
+        if (homeAirportController == null)
+        {
+            Debug.LogError($"Airplane {name}: Home airport {airport.name} does not have AirportController component!");
+        }
+
+        // Register with GameManager
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.RegisterAirplane();
+        }
+        else
+        {
+            Debug.LogWarning($"Airplane {name}: GameManager not found in scene!");
+        }
+
+        // Start at airport, ready to pick up cargo
+        currentState = FlightState.AtAirport;
     }
 
     private void Update()
@@ -66,7 +94,8 @@ public class AirplaneController : MonoBehaviour
                 break;
 
             case FlightState.AtCity:
-                // Brief pause at city, then return home
+                // Deliver cargo and return home
+                DeliverCargo();
                 StartJourneyToAirport();
                 break;
 
@@ -75,8 +104,9 @@ public class AirplaneController : MonoBehaviour
                 break;
 
             case FlightState.AtAirport:
-                // Airplane has returned home - destroy it
-                Destroy(gameObject);
+                // Pick up cargo and depart to city
+                PickupCargo();
+                StartJourneyToCity();
                 break;
         }
     }
@@ -211,6 +241,65 @@ public class AirplaneController : MonoBehaviour
         else if (currentState == FlightState.ToAirport)
         {
             currentState = FlightState.AtAirport;
+        }
+    }
+
+    /// <summary>
+    /// Picks up cargo from the home airport. Instantly fills cargo hold to capacity.
+    /// </summary>
+    private void PickupCargo()
+    {
+        if (homeAirportController == null)
+        {
+            Debug.LogWarning($"Airplane {name}: Cannot pick up cargo - no airport controller reference!");
+            return;
+        }
+
+        // Clear any existing cargo
+        currentCargo.Clear();
+
+        // Fill cargo hold to capacity
+        for (int i = 0; i < cargoCapacity; i++)
+        {
+            ResourceType resource = homeAirportController.GetResource();
+            currentCargo.Add(resource);
+        }
+
+        Debug.Log($"Airplane {name}: Picked up {currentCargo.Count} {homeAirportController.GetBiomeType()} resources");
+    }
+
+    /// <summary>
+    /// Delivers cargo to the city. Passes resources to CityController for processing.
+    /// </summary>
+    private void DeliverCargo()
+    {
+        if (currentCargo.Count == 0)
+        {
+            Debug.LogWarning($"Airplane {name}: Arrived at city with no cargo!");
+            return;
+        }
+
+        // Deliver resources to city
+        if (CityController.Instance != null)
+        {
+            CityController.Instance.ReceiveResources(currentCargo);
+            Debug.Log($"Airplane {name}: Delivered {currentCargo.Count} resources to city");
+        }
+        else
+        {
+            Debug.LogWarning($"Airplane {name}: CityController not found! Resources lost.");
+        }
+
+        // Clear cargo after delivery
+        currentCargo.Clear();
+    }
+
+    private void OnDestroy()
+    {
+        // Unregister from GameManager when destroyed
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.UnregisterAirplane();
         }
     }
 

@@ -50,7 +50,9 @@ MonoBehaviour:
   cruisingAltitude: 12
   rotationSpeed: 5
   currentState: 0
+  cargoCapacity: 1
   showFlightPathGizmos: 1
+  currentCargo: 
 --- !u!96 &3190524854098752732
 TrailRenderer:
   serializedVersion: 3
@@ -275,7 +277,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
