@@ -31,7 +31,7 @@ public class CityController : MonoBehaviour
 
     /// <summary>
     /// Receives resources delivered by an airplane.
-    /// Updates resource inventory and fires OnResourcesChanged event.
+    /// Updates resource inventory, earns money, and fires OnResourcesChanged event.
     /// </summary>
     public void ReceiveResources(List<ResourceType> resources)
     {
@@ -50,10 +50,37 @@ public class CityController : MonoBehaviour
             resourceInventory[resource]++;
         }
 
+        // Calculate and earn money from delivered resources
+        // For MVP: Each individual resource = $1
+        float totalValue = CalculateResourceValue(resources);
+        if (EconomyManager.Instance != null)
+        {
+            EconomyManager.Instance.EarnMoney(totalValue);
+        }
+        else
+        {
+            Debug.LogWarning("CityController: EconomyManager not found. Money not earned.");
+        }
+
         Debug.Log($"City received {resources.Count} resources. New totals: " + GetResourceSummary());
 
         // Fire event to notify UI
         OnResourcesChanged?.Invoke();
+    }
+
+    /// <summary>
+    /// Calculates the monetary value of delivered resources.
+    /// Currently: Each resource = $1 (MVP implementation).
+    /// Future: Will calculate synergy combo values.
+    /// </summary>
+    private float CalculateResourceValue(List<ResourceType> resources)
+    {
+        // MVP: Simple $1 per resource
+        // TODO: Implement combo synergy calculations:
+        // - Two-resource combos: $8-12
+        // - Three-resource combos: $40-50
+        // - Four-resource combos: $200+
+        return resources.Count * 1f;
     }
 
     /// <summary>

@@ -12,6 +12,9 @@ public class HUDController : MonoBehaviour
     [Tooltip("TextMeshProUGUI component to display resource and airplane counts")]
     [SerializeField] private TextMeshProUGUI hudText;
 
+    [Tooltip("TextMeshProUGUI component to display player money (optional - falls back to hudText if not assigned)")]
+    [SerializeField] private TextMeshProUGUI moneyText;
+
     private void Start()
     {
         // Subscribe to city resource changes
@@ -24,8 +27,19 @@ public class HUDController : MonoBehaviour
             Debug.LogError("HUDController: CityController not found in scene!");
         }
 
+        // Subscribe to economy changes
+        if (EconomyManager.Instance != null)
+        {
+            EconomyManager.Instance.OnMoneyChanged.AddListener(UpdateMoneyDisplay);
+        }
+        else
+        {
+            Debug.LogWarning("HUDController: EconomyManager not found in scene!");
+        }
+
         // Initial display update
         UpdateDisplay();
+        UpdateMoneyDisplay(0f);
     }
 
     private void Update()
@@ -67,12 +81,36 @@ public class HUDController : MonoBehaviour
         hudText.text = $"Oil: {oilCount}  Fish: {fishCount}\nAirplanes: {airplaneCount}";
     }
 
+    /// <summary>
+    /// Updates the money display with the current player balance.
+    /// </summary>
+    /// <param name="newAmount">New money amount from EconomyManager</param>
+    private void UpdateMoneyDisplay(float newAmount)
+    {
+        // Use dedicated money text if assigned, otherwise include in main HUD text
+        if (moneyText != null)
+        {
+            moneyText.text = $"${newAmount:F0}";
+        }
+        else if (hudText != null)
+        {
+            // Fallback: prepend to existing HUD text
+            // This will be called in addition to UpdateDisplay(), so we need to be careful
+            Debug.LogWarning("HUDController: moneyText not assigned. Assign a TextMeshProUGUI component for money display.");
+        }
+    }
+
     private void OnDestroy()
     {
         // Unsubscribe from events to prevent memory leaks
         if (CityController.Instance != null)
         {
             CityController.Instance.OnResourcesChanged.RemoveListener(UpdateDisplay);
+        }
+
+        if (EconomyManager.Instance != null)
+        {
+            EconomyManager.Instance.OnMoneyChanged.RemoveListener(UpdateMoneyDisplay);
         }
     }
 }
