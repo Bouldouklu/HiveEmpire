@@ -129,15 +129,17 @@ public class RouteController : MonoBehaviour
 
         routeDistance = Vector3.Distance(homeAirport.position, cityLanding);
 
-        // Calculate one-way trip duration
-        float tripDuration = routeDistance / airplaneSpeed;
+        // Calculate round-trip duration (airport → city → airport)
+        // Airplanes complete a full loop, so we need to account for both directions
+        float oneWayDuration = routeDistance / airplaneSpeed;
+        float roundTripDuration = oneWayDuration * 2f;
 
-        // Divide trip duration by number of airplanes to get even spacing
+        // Divide round-trip duration by number of airplanes to get even spacing around the full loop
         // This creates natural spacing: further airports = more distance between planes
-        calculatedSpawnInterval = tripDuration / maxAirplanesOnRoute;
+        calculatedSpawnInterval = roundTripDuration / maxAirplanesOnRoute;
 
         Debug.Log($"RouteController on {gameObject.name}: " +
-                  $"Distance={routeDistance:F1}u, TripDuration={tripDuration:F1}s, " +
+                  $"Distance={routeDistance:F1}u, RoundTripDuration={roundTripDuration:F1}s, " +
                   $"SpawnInterval={calculatedSpawnInterval:F1}s for {maxAirplanesOnRoute} airplanes");
     }
 

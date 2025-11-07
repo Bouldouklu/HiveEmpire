@@ -14,6 +14,23 @@ public class EconomyManager : MonoBehaviour
     [Tooltip("Current player money balance")]
     private float currentMoney = 0f;
 
+    [SerializeField]
+    [Tooltip("Total number of airports placed (for scaling placement costs)")]
+    private int totalAirportsPlaced = 0;
+
+    [Header("Airport Placement Costs")]
+    [Tooltip("Base cost for Forest/Plains biomes")]
+    [SerializeField] private float commonBiomeCost = 10f;
+
+    [Tooltip("Base cost for Mountain/Coastal biomes")]
+    [SerializeField] private float mediumBiomeCost = 20f;
+
+    [Tooltip("Base cost for Desert/Tundra biomes")]
+    [SerializeField] private float rareBiomeCost = 30f;
+
+    [Tooltip("Cost scaling multiplier per airport placed (e.g., 0.5 = 50% increase per airport)")]
+    [SerializeField] private float costScalingMultiplier = 0.5f;
+
     [Header("Events")]
     [Tooltip("Fired when money amount changes. Passes new total money amount.")]
     public UnityEvent<float> OnMoneyChanged;
@@ -97,5 +114,58 @@ public class EconomyManager : MonoBehaviour
         OnMoneyChanged?.Invoke(currentMoney);
 
         Debug.Log($"Money set to: ${currentMoney:F2}");
+    }
+
+    /// <summary>
+    /// Gets the current money balance.
+    /// </summary>
+    /// <returns>Current money amount</returns>
+    public float GetCurrentMoney()
+    {
+        return currentMoney;
+    }
+
+    /// <summary>
+    /// Calculates the cost to place an airport based on biome type and scaling.
+    /// Cost = baseCost × (1 + scalingMultiplier × airportsPlaced)
+    /// </summary>
+    /// <param name="biome">Biome type where airport will be placed</param>
+    /// <returns>Total cost for placing airport at this biome</returns>
+    public float GetAirportPlacementCost(BiomeType biome)
+    {
+        // Get base cost by biome rarity
+        float baseCost = biome switch
+        {
+            BiomeType.Forest => commonBiomeCost,
+            BiomeType.Plains => commonBiomeCost,
+            BiomeType.Mountain => mediumBiomeCost,
+            BiomeType.Coastal => mediumBiomeCost,
+            BiomeType.Desert => rareBiomeCost,
+            BiomeType.Tundra => rareBiomeCost,
+            _ => commonBiomeCost // Fallback
+        };
+
+        // Apply scaling based on total airports placed
+        float scaledCost = baseCost * (1f + (costScalingMultiplier * totalAirportsPlaced));
+
+        return Mathf.Round(scaledCost); // Round to whole number for cleaner UI
+    }
+
+    /// <summary>
+    /// Increments the airport placement counter (called when an airport is successfully placed).
+    /// Should be called by PlacementController after spending money.
+    /// </summary>
+    public void RegisterAirportPlaced()
+    {
+        totalAirportsPlaced++;
+        Debug.Log($"EconomyManager: Total airports placed: {totalAirportsPlaced}");
+    }
+
+    /// <summary>
+    /// Gets the total number of airports placed.
+    /// </summary>
+    public int GetTotalAirportsPlaced()
+    {
+        return totalAirportsPlaced;
     }
 }

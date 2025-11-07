@@ -12,10 +12,18 @@ public class GameManager : MonoBehaviour
     [Tooltip("Total number of airplanes currently active in the scene")]
     [SerializeField] private int totalAirplaneCount = 0;
 
+    [Tooltip("Elapsed game time in seconds")]
+    [SerializeField] private float elapsedTime = 0f;
+
     /// <summary>
     /// Gets the current total number of airplanes in the scene.
     /// </summary>
     public int TotalAirplaneCount => totalAirplaneCount;
+
+    /// <summary>
+    /// Gets the elapsed game time in seconds.
+    /// </summary>
+    public float ElapsedTime => elapsedTime;
 
     private void Awake()
     {
@@ -28,6 +36,26 @@ public class GameManager : MonoBehaviour
         }
 
         Instance = this;
+    }
+
+    private void Start()
+    {
+        // Initialize starting demand for Wood (1 per minute)
+        if (DemandManager.Instance != null)
+        {
+            DemandManager.Instance.AddDemand(ResourceType.Wood, 1f);
+            Debug.Log("GameManager: Initialized starting demand - Wood: 1/min");
+        }
+        else
+        {
+            Debug.LogWarning("GameManager: DemandManager not found. Cannot initialize starting demand.");
+        }
+    }
+
+    private void Update()
+    {
+        // Track elapsed game time
+        elapsedTime += Time.deltaTime;
     }
 
     /// <summary>

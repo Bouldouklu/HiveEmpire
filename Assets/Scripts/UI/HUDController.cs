@@ -15,6 +15,12 @@ public class HUDController : MonoBehaviour
     [Tooltip("TextMeshProUGUI component to display player money (optional - falls back to hudText if not assigned)")]
     [SerializeField] private TextMeshProUGUI moneyText;
 
+    [Tooltip("TextMeshProUGUI component to display city demands (e.g., 'Wood: 3/5')")]
+    [SerializeField] private TextMeshProUGUI demandText;
+
+    [Tooltip("TextMeshProUGUI component to display elapsed time")]
+    [SerializeField] private TextMeshProUGUI timerText;
+
     private void Start()
     {
         // Subscribe to city resource changes
@@ -37,20 +43,33 @@ public class HUDController : MonoBehaviour
             Debug.LogWarning("HUDController: EconomyManager not found in scene!");
         }
 
+        // Subscribe to demand changes
+        if (DemandManager.Instance != null)
+        {
+            DemandManager.Instance.OnDemandChanged.AddListener(UpdateDemandDisplay);
+        }
+        else
+        {
+            Debug.LogWarning("HUDController: DemandManager not found in scene!");
+        }
+
         // Initial display update
         UpdateDisplay();
         UpdateMoneyDisplay(0f);
+        UpdateDemandDisplay(ResourceType.Wood, 0f, 0f); // Initial call to set up demand display
     }
 
     private void Update()
     {
-        // Update display each frame to show real-time airplane count
+        // Update display each frame to show real-time airplane count and timer
         // (could be optimized with events if needed)
         UpdateDisplay();
+        UpdateTimerDisplay();
     }
 
     /// <summary>
     /// Updates the HUD text with current resource counts and airplane count.
+    /// Dynamically displays all resource types defined in ResourceType enum.
     /// </summary>
     private void UpdateDisplay()
     {
@@ -60,14 +79,15 @@ public class HUDController : MonoBehaviour
             return;
         }
 
-        // Get resource counts from city
-        int oilCount = 0;
-        int fishCount = 0;
-
+        // Build resource display dynamically for all resource types
+        string resourceText = "";
         if (CityController.Instance != null)
         {
-            oilCount = CityController.Instance.GetResourceCount(ResourceType.Oil);
-            fishCount = CityController.Instance.GetResourceCount(ResourceType.Fish);
+            foreach (ResourceType resourceType in System.Enum.GetValues(typeof(ResourceType)))
+            {
+                int count = CityController.Instance.GetResourceCount(resourceType);
+                resourceText += $"{resourceType}: {count}  ";
+            }
         }
 
         // Get airplane count from game manager
@@ -78,7 +98,7 @@ public class HUDController : MonoBehaviour
         }
 
         // Format display text
-        hudText.text = $"Oil: {oilCount}  Fish: {fishCount}\nAirplanes: {airplaneCount}";
+        hudText.text = $"{resourceText.TrimEnd()}\nAirplanes: {airplaneCount}";
     }
 
     /// <summary>
@@ -100,6 +120,84 @@ public class HUDController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates the timer display showing elapsed game time in MM:SS format.
+    /// </summary>
+    private void UpdateTimerDisplay()
+    {
+        if (timerText == null)
+        {
+            return;
+        }
+
+        if (GameManager.Instance == null)
+        {
+            timerText.text = "00:00";
+            return;
+        }
+
+        // Get elapsed time from GameManager
+        float elapsedTime = GameManager.Instance.ElapsedTime;
+
+        // Convert to minutes and seconds
+        int minutes = Mathf.FloorToInt(elapsedTime / 60f);
+        int seconds = Mathf.FloorToInt(elapsedTime % 60f);
+
+        // Format as MM:SS
+        timerText.text = $"{minutes:00}:{seconds:00}";
+    }
+
+    /// <summary>
+    /// Updates the demand display showing current delivery rates vs targets.
+    /// Format: "Wood: 3/5" (green if met, red if not met)
+    /// Only shows resources with active demands.
+    /// </summary>
+    /// <param name="resourceType">The resource type that changed (not directly used, but required by event)</param>
+    /// <param name="demand">Target demand per minute (not directly used, but required by event)</param>
+    /// <param name="currentRate">Current delivery rate (not directly used, but required by event)</param>
+    private void UpdateDemandDisplay(ResourceType resourceType, float demand, float currentRate)
+    {
+        if (demandText == null)
+        {
+            return;
+        }
+
+        if (DemandManager.Instance == null)
+        {
+            demandText.text = "";
+            return;
+        }
+
+        // Get all active demands
+        var activeDemands = DemandManager.Instance.GetAllActiveDemands();
+
+        if (activeDemands.Count == 0)
+        {
+            demandText.text = "No active demands";
+            return;
+        }
+
+        // Build demand display string
+        string displayText = "CITY DEMANDS:\n";
+
+        foreach (var kvp in activeDemands)
+        {
+            ResourceType resource = kvp.Key;
+            float targetDemand = kvp.Value;
+            float deliveryRate = DemandManager.Instance.GetCurrentDeliveryRate(resource);
+            bool isMet = DemandManager.Instance.IsDemandMet(resource);
+
+            // Color code: green if met, red if not met
+            string color = isMet ? "#00FF00" : "#FF0000"; // Green or Red
+            string resourceName = resource.ToString();
+
+            // Format: "Wood: 3.0/5.0" with color (shows 1 decimal to track gradual demand increases)
+            displayText += $"<color={color}>{resourceName}: {deliveryRate:F1}/{targetDemand:F1}</color>\n";
+        }
+
+        demandText.text = displayText.TrimEnd('\n');
+    }
+
     private void OnDestroy()
     {
         // Unsubscribe from events to prevent memory leaks
@@ -111,6 +209,11 @@ public class HUDController : MonoBehaviour
         if (EconomyManager.Instance != null)
         {
             EconomyManager.Instance.OnMoneyChanged.RemoveListener(UpdateMoneyDisplay);
+        }
+
+        if (DemandManager.Instance != null)
+        {
+            DemandManager.Instance.OnDemandChanged.RemoveListener(UpdateDemandDisplay);
         }
     }
 }

@@ -21,9 +21,13 @@ public class AirportController : MonoBehaviour
         // Map biome type to resource type
         return biomeType switch
         {
+            BiomeType.Forest => ResourceType.Wood,
+            BiomeType.Plains => ResourceType.Food,
+            BiomeType.Mountain => ResourceType.Stone,
             BiomeType.Desert => ResourceType.Oil,
             BiomeType.Coastal => ResourceType.Fish,
-            _ => ResourceType.Oil // Default fallback
+            BiomeType.Tundra => ResourceType.Minerals,
+            _ => ResourceType.Wood // Default fallback
         };
     }
 
@@ -33,5 +37,14 @@ public class AirportController : MonoBehaviour
     public BiomeType GetBiomeType()
     {
         return biomeType;
+    }
+
+    /// <summary>
+    /// Sets the biome type of this airport (for runtime configuration)
+    /// </summary>
+    /// <param name="newBiomeType">The biome type to set</param>
+    public void SetBiomeType(BiomeType newBiomeType)
+    {
+        biomeType = newBiomeType;
     }
 }

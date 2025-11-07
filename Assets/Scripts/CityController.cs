@@ -40,7 +40,7 @@ public class CityController : MonoBehaviour
             return;
         }
 
-        // Add each resource to inventory
+        // Add each resource to inventory and record deliveries
         foreach (ResourceType resource in resources)
         {
             if (!resourceInventory.ContainsKey(resource))
@@ -48,10 +48,16 @@ public class CityController : MonoBehaviour
                 resourceInventory[resource] = 0;
             }
             resourceInventory[resource]++;
+
+            // Record delivery with DemandManager for tracking
+            if (DemandManager.Instance != null)
+            {
+                DemandManager.Instance.RecordDelivery(resource);
+            }
         }
 
         // Calculate and earn money from delivered resources
-        // For MVP: Each individual resource = $1
+        // Payment amount depends on whether demand is met (1.0x if met, 0.5x if not)
         float totalValue = CalculateResourceValue(resources);
         if (EconomyManager.Instance != null)
         {
@@ -69,18 +75,36 @@ public class CityController : MonoBehaviour
     }
 
     /// <summary>
-    /// Calculates the monetary value of delivered resources.
-    /// Currently: Each resource = $1 (MVP implementation).
+    /// Calculates the monetary value of delivered resources based on demand fulfillment.
+    /// Base value: $1 per resource
+    /// Multiplier: 1.0x if demand met, 0.5x if demand not met
     /// Future: Will calculate synergy combo values.
     /// </summary>
     private float CalculateResourceValue(List<ResourceType> resources)
     {
-        // MVP: Simple $1 per resource
-        // TODO: Implement combo synergy calculations:
+        float totalValue = 0f;
+
+        // Calculate value for each resource based on demand status
+        foreach (ResourceType resource in resources)
+        {
+            float baseValue = 1f; // $1 per resource base
+            float multiplier = 1f; // Default multiplier
+
+            // Get demand-based payment multiplier if DemandManager exists
+            if (DemandManager.Instance != null)
+            {
+                multiplier = DemandManager.Instance.GetPaymentMultiplier(resource);
+            }
+
+            totalValue += baseValue * multiplier;
+        }
+
+        // TODO: Future feature - Implement combo synergy calculations:
         // - Two-resource combos: $8-12
         // - Three-resource combos: $40-50
         // - Four-resource combos: $200+
-        return resources.Count * 1f;
+
+        return totalValue;
     }
 
     /// <summary>
