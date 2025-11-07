@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f68807506cc4a5e428cf92874197b1ff, type: 3}
+  m_Name: BiomeMaterialMapper
+  m_EditorClassIdentifier: Assembly-CSharp::BiomeMaterialMapper
+  biomeMaterials:
+  - biomeType: 0
+    material: {fileID: 2100000, guid: 8d21841992dae304e85d1333ccb805c3, type: 2}
+  - biomeType: 1
+    material: {fileID: 2100000, guid: 3a3421b5d5e47254bbc477eec862f88f, type: 2}
+  - biomeType: 2
+    material: {fileID: 2100000, guid: 09a4cbdf75f9f5d4a8d738f14ab0323d, type: 2}
+  - biomeType: 3
+    material: {fileID: 2100000, guid: 5665f6c7b77267640bdc7782c8d27115, type: 2}
+  - biomeType: 4
+    material: {fileID: 2100000, guid: d35424b47dd94e0478767fd2d2cc26a3, type: 2}
+  - biomeType: 5
+    material: {fileID: 2100000, guid: c6ec11fa43d8fff4fba983741cdb39cd, type: 2}

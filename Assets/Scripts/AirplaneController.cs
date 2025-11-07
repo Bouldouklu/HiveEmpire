@@ -37,6 +37,9 @@ public class AirplaneController : MonoBehaviour
     private Transform homeAirport;
     private Transform cityDestination;
     private AirportController homeAirportController;
+    private GameObject cargoObject;
+    private MeshRenderer cargoRenderer;
+    private TrailRenderer trailRenderer;
 
     // Movement tracking
     private Vector3 startPosition;
@@ -69,6 +72,33 @@ public class AirplaneController : MonoBehaviour
         if (homeAirportController == null)
         {
             Debug.LogError($"Airplane {name}: Home airport {airport.name} does not have AirportController component!");
+        }
+
+        // Cache cargo GameObject references
+        Transform cargoTransform = transform.Find("Cargo");
+        if (cargoTransform != null)
+        {
+            cargoObject = cargoTransform.gameObject;
+            cargoRenderer = cargoObject.GetComponent<MeshRenderer>();
+
+            if (cargoRenderer == null)
+            {
+                Debug.LogWarning($"Airplane {name}: Cargo GameObject found but has no MeshRenderer!");
+            }
+
+            // Start with cargo hidden (airplane starts empty at airport)
+            cargoObject.SetActive(false);
+        }
+        else
+        {
+            Debug.LogWarning($"Airplane {name}: No 'Cargo' child GameObject found! Cargo visibility will not work.");
+        }
+
+        // Cache trail renderer reference
+        trailRenderer = GetComponent<TrailRenderer>();
+        if (trailRenderer == null)
+        {
+            Debug.LogWarning($"Airplane {name}: No TrailRenderer component found! Trail colors will not work.");
         }
 
         // Register with GameManager
@@ -327,6 +357,30 @@ public class AirplaneController : MonoBehaviour
         }
 
         Debug.Log($"Airplane {name}: Picked up {currentCargo.Count} {homeAirportController.GetBiomeType()} resources");
+
+        // Show cargo and apply biome material
+        BiomeType biomeType = homeAirportController.GetBiomeType();
+
+        if (cargoObject != null && cargoRenderer != null)
+        {
+            cargoObject.SetActive(true);
+
+            // Get biome material from mapper
+            Material biomeMaterial = BiomeMaterialMapper.Instance?.GetBiomeMaterial(biomeType);
+
+            if (biomeMaterial != null)
+            {
+                cargoRenderer.material = biomeMaterial;
+            }
+            else
+            {
+                Debug.LogWarning($"Airplane {name}: Could not get material for biome {biomeType}");
+            }
+        }
+
+        // Update trail color to match biome
+        Color biomeColor = BiomeMaterialMapper.Instance?.GetBiomeColor(biomeType) ?? Color.white;
+        UpdateTrailColor(biomeColor);
     }
 
     /// <summary>
@@ -353,6 +407,54 @@ public class AirplaneController : MonoBehaviour
 
         // Clear cargo after delivery
         currentCargo.Clear();
+
+        // Hide cargo after delivery
+        if (cargoObject != null)
+        {
+            cargoObject.SetActive(false);
+        }
+
+        // Clear trail to provide visual feedback of delivery
+        if (trailRenderer != null)
+        {
+            trailRenderer.Clear();
+        }
+    }
+
+    /// <summary>
+    /// Updates the trail renderer color gradient to match the biome color.
+    /// Maintains the fade from opaque to transparent over the trail lifetime.
+    /// </summary>
+    private void UpdateTrailColor(Color biomeColor)
+    {
+        if (trailRenderer == null)
+        {
+            return;
+        }
+
+        // Clear existing trail points first - gradient only affects NEW points
+        trailRenderer.Clear();
+
+        // Set both startColor/endColor AND gradient for maximum compatibility
+        trailRenderer.startColor = biomeColor;
+        trailRenderer.endColor = new Color(biomeColor.r, biomeColor.g, biomeColor.b, 0f); // Same color but transparent
+
+        // Also set the gradient (some shaders use this instead)
+        Gradient gradient = new Gradient();
+        gradient.SetKeys(
+            new GradientColorKey[]
+            {
+                new GradientColorKey(biomeColor, 0f),  // Start of trail
+                new GradientColorKey(biomeColor, 1f)   // End of trail
+            },
+            new GradientAlphaKey[]
+            {
+                new GradientAlphaKey(1f, 0f),  // Opaque at start
+                new GradientAlphaKey(0f, 1f)   // Transparent at end
+            }
+        );
+
+        trailRenderer.colorGradient = gradient;
     }
 
     private void OnDestroy()
