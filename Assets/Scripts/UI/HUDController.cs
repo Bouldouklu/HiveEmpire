@@ -81,7 +81,7 @@ public class HUDController : MonoBehaviour
         // Initial display update
         UpdateDisplay();
         UpdateMoneyDisplay(0f);
-        UpdateDemandDisplay(ResourceType.Wood, 0f, 0f); // Initial call to set up demand display
+        UpdateDemandDisplay(ResourceType.ForestPollen, 0f, 0f); // Initial call to set up demand display
     }
 
     private void Update()
@@ -104,17 +104,6 @@ public class HUDController : MonoBehaviour
             return;
         }
 
-        // Build resource display dynamically for all resource types
-        string resourceText = "";
-        if (HiveController.Instance != null)
-        {
-            foreach (ResourceType resourceType in System.Enum.GetValues(typeof(ResourceType)))
-            {
-                int count = HiveController.Instance.GetResourceCount(resourceType);
-                resourceText += $"{resourceType}: {count}  ";
-            }
-        }
-
         // Get bee count from game manager
         int beeCount = 0;
         if (GameManager.Instance != null)
@@ -122,8 +111,19 @@ public class HUDController : MonoBehaviour
             beeCount = GameManager.Instance.TotalBeeCount;
         }
 
-        // Format display text
-        hudText.text = $"{resourceText.TrimEnd()}\nBees: {beeCount}";
+        // Build resource display dynamically for all resource types
+        string resourceText = "";
+        if (HiveController.Instance != null)
+        {
+            foreach (ResourceType resourceType in System.Enum.GetValues(typeof(ResourceType)))
+            {
+                int count = HiveController.Instance.GetResourceCount(resourceType);
+                resourceText += $"{resourceType}: {count}\n";
+            }
+        }
+
+        // Format display text with bee count at top
+        hudText.text = $"Bees: {beeCount}\n{resourceText.TrimEnd()}";
     }
 
     /// <summary>

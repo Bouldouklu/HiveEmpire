@@ -27,7 +27,6 @@ public class FlowerPatchClickHandler : MonoBehaviour
     // Internal state
     private Material originalMaterial;
     private Material runtimeHoverMaterial;
-    private bool isHovering = false;
 
     private void Awake()
     {
@@ -92,7 +91,6 @@ public class FlowerPatchClickHandler : MonoBehaviour
     private void OnMouseEnter()
     {
         // Visual feedback on hover
-        isHovering = true;
         if (flowerPatchRenderer != null)
         {
             // Use assigned hover material if available, otherwise use runtime-generated one
@@ -111,7 +109,6 @@ public class FlowerPatchClickHandler : MonoBehaviour
     private void OnMouseExit()
     {
         // Restore original material
-        isHovering = false;
         if (flowerPatchRenderer != null && originalMaterial != null)
         {
             flowerPatchRenderer.material = originalMaterial;
