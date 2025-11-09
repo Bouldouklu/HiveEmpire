@@ -177,6 +177,23 @@ public class AirportPlaceholder : MonoBehaviour
             Debug.LogWarning($"Spawned airport prefab does not have AirportController component!");
         }
 
+        // Ensure AirportClickHandler exists and has a collider for mouse events
+        AirportClickHandler clickHandler = airport.GetComponent<AirportClickHandler>();
+        if (clickHandler == null)
+        {
+            clickHandler = airport.AddComponent<AirportClickHandler>();
+            Debug.Log($"Added AirportClickHandler to spawned airport {airport.name}");
+        }
+
+        // Ensure collider exists for mouse events (required for OnMouseEnter/Exit/Down)
+        Collider airportCollider = airport.GetComponent<Collider>();
+        if (airportCollider == null)
+        {
+            // Add BoxCollider if no collider exists
+            airportCollider = airport.AddComponent<BoxCollider>();
+            Debug.Log($"Added BoxCollider to spawned airport {airport.name} for click detection");
+        }
+
         // Configure RouteController
         RouteController routeController = airport.GetComponent<RouteController>();
         if (routeController == null)
@@ -198,6 +215,29 @@ public class AirportPlaceholder : MonoBehaviour
 
         // Register placement with economy manager (for cost scaling)
         economyManager.RegisterAirportPlaced();
+
+        // Add drones to global pool (+3 drones per airport)
+        if (DroneFleetManager.Instance != null && airportController != null)
+        {
+            DroneFleetManager.Instance.AddDronesToPool(3);
+            Debug.Log($"Added 3 drones to global pool for new {biomeType} airport");
+
+            // Automatically allocate the 3 drones to this airport's route
+            for (int i = 0; i < 3; i++)
+            {
+                bool allocated = DroneFleetManager.Instance.AllocateDrone(airportController);
+                if (!allocated)
+                {
+                    Debug.LogWarning($"Failed to auto-allocate drone {i + 1}/3 to new airport {airport.name}");
+                    break;
+                }
+            }
+            Debug.Log($"Auto-allocated 3 drones to new {biomeType} airport route");
+        }
+        else
+        {
+            Debug.LogWarning($"DroneFleetManager or AirportController not found! Drones were not added to pool.");
+        }
 
         Debug.Log($"Built {biomeType} airport at {gameObject.name} for ${cost:F0}");
 

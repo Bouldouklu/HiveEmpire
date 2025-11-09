@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
@@ -21,8 +22,32 @@ public class HUDController : MonoBehaviour
     [Tooltip("TextMeshProUGUI component to display elapsed time")]
     [SerializeField] private TextMeshProUGUI timerText;
 
+    [Header("Button References")]
+    [Tooltip("Button to open the Fleet Management panel")]
+    [SerializeField] private Button fleetButton;
+
+    [Header("Panel References")]
+    [Tooltip("Reference to the Fleet Management Panel")]
+    [SerializeField] private FleetManagementPanel fleetManagementPanel;
+
     private void Start()
     {
+        // Subscribe to fleet button click
+        if (fleetButton != null)
+        {
+            fleetButton.onClick.AddListener(OnFleetButtonClicked);
+        }
+        else
+        {
+            Debug.LogWarning("HUDController: Fleet button not assigned!");
+        }
+
+        // Validate Fleet Management Panel reference
+        if (fleetManagementPanel == null)
+        {
+            Debug.LogWarning("HUDController: Fleet Management Panel not assigned in Inspector!");
+        }
+
         // Subscribe to city resource changes
         if (CityController.Instance != null)
         {
@@ -198,9 +223,30 @@ public class HUDController : MonoBehaviour
         demandText.text = displayText.TrimEnd('\n');
     }
 
+    /// <summary>
+    /// Called when the Fleet button is clicked.
+    /// Toggles the Fleet Management panel visibility.
+    /// </summary>
+    private void OnFleetButtonClicked()
+    {
+        if (fleetManagementPanel != null)
+        {
+            fleetManagementPanel.TogglePanel();
+        }
+        else
+        {
+            Debug.LogWarning("HUDController: Cannot open Fleet Management panel - panel not found!");
+        }
+    }
+
     private void OnDestroy()
     {
         // Unsubscribe from events to prevent memory leaks
+        if (fleetButton != null)
+        {
+            fleetButton.onClick.RemoveListener(OnFleetButtonClicked);
+        }
+
         if (CityController.Instance != null)
         {
             CityController.Instance.OnResourcesChanged.RemoveListener(UpdateDisplay);
