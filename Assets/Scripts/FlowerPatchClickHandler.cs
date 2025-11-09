@@ -1,25 +1,25 @@
 using UnityEngine;
 
 /// <summary>
-/// Handles mouse click detection on airport GameObjects to open the upgrade panel.
+/// Handles mouse click detection on flower patch GameObjects to open the upgrade panel.
 /// Requires a Collider component on the GameObject to detect clicks.
 /// </summary>
 [RequireComponent(typeof(Collider))]
-public class AirportClickHandler : MonoBehaviour
+public class FlowerPatchClickHandler : MonoBehaviour
 {
     [Header("References")]
-    [Tooltip("Reference to the AirportController (automatically set if on same GameObject)")]
-    [SerializeField] private AirportController airportController;
+    [Tooltip("Reference to the FlowerPatchController (automatically set if on same GameObject)")]
+    [SerializeField] private FlowerPatchController flowerPatchController;
 
     [Tooltip("Reference to the upgrade panel UI")]
-    [SerializeField] private AirportUpgradePanel upgradePanel;
+    [SerializeField] private FlowerPatchUpgradePanel upgradePanel;
 
     [Header("Visual Feedback")]
-    [Tooltip("Material to use when hovering over airport (optional - will create default if not assigned)")]
+    [Tooltip("Material to use when hovering over flower patch (optional - will create default if not assigned)")]
     [SerializeField] private Material hoverMaterial;
 
     [Tooltip("Renderer component for visual feedback")]
-    [SerializeField] private Renderer airportRenderer;
+    [SerializeField] private Renderer flowerPatchRenderer;
 
     [Tooltip("Color to brighten material on hover (if hoverMaterial not assigned)")]
     [SerializeField] private Color hoverTint = new Color(1.2f, 1.2f, 1.2f, 1f);
@@ -31,26 +31,26 @@ public class AirportClickHandler : MonoBehaviour
 
     private void Awake()
     {
-        // Get AirportController reference if not set
-        if (airportController == null)
+        // Get FlowerPatchController reference if not set
+        if (flowerPatchController == null)
         {
-            airportController = GetComponent<AirportController>();
-            if (airportController == null)
+            flowerPatchController = GetComponent<FlowerPatchController>();
+            if (flowerPatchController == null)
             {
-                Debug.LogError($"AirportClickHandler on {gameObject.name}: No AirportController found!", this);
+                Debug.LogError($"FlowerPatchClickHandler on {gameObject.name}: No FlowerPatchController found!", this);
             }
         }
 
         // Get Renderer for visual feedback
-        if (airportRenderer == null)
+        if (flowerPatchRenderer == null)
         {
-            airportRenderer = GetComponent<Renderer>();
+            flowerPatchRenderer = GetComponent<Renderer>();
         }
 
         // Store original material and create hover material if needed
-        if (airportRenderer != null)
+        if (flowerPatchRenderer != null)
         {
-            originalMaterial = airportRenderer.material;
+            originalMaterial = flowerPatchRenderer.material;
 
             // Create runtime hover material if no hover material assigned
             if (hoverMaterial == null)
@@ -81,10 +81,10 @@ public class AirportClickHandler : MonoBehaviour
         // Find upgrade panel in scene if not set
         if (upgradePanel == null)
         {
-            upgradePanel = FindFirstObjectByType<AirportUpgradePanel>();
+            upgradePanel = FindFirstObjectByType<FlowerPatchUpgradePanel>();
             if (upgradePanel == null)
             {
-                Debug.LogWarning($"AirportClickHandler on {gameObject.name}: No AirportUpgradePanel found in scene. Create one in the UI Canvas.", this);
+                Debug.LogWarning($"FlowerPatchClickHandler on {gameObject.name}: No FlowerPatchUpgradePanel found in scene. Create one in the UI Canvas.", this);
             }
         }
     }
@@ -93,14 +93,14 @@ public class AirportClickHandler : MonoBehaviour
     {
         // Visual feedback on hover
         isHovering = true;
-        if (airportRenderer != null)
+        if (flowerPatchRenderer != null)
         {
             // Use assigned hover material if available, otherwise use runtime-generated one
             Material materialToUse = hoverMaterial != null ? hoverMaterial : runtimeHoverMaterial;
 
             if (materialToUse != null)
             {
-                airportRenderer.material = materialToUse;
+                flowerPatchRenderer.material = materialToUse;
             }
         }
 
@@ -112,19 +112,19 @@ public class AirportClickHandler : MonoBehaviour
     {
         // Restore original material
         isHovering = false;
-        if (airportRenderer != null && originalMaterial != null)
+        if (flowerPatchRenderer != null && originalMaterial != null)
         {
-            airportRenderer.material = originalMaterial;
+            flowerPatchRenderer.material = originalMaterial;
         }
     }
 
     private void OnMouseDown()
     {
         // Open upgrade panel when clicked
-        if (airportController != null && upgradePanel != null)
+        if (flowerPatchController != null && upgradePanel != null)
         {
-            Debug.Log($"Airport {gameObject.name} clicked - opening upgrade panel");
-            upgradePanel.ShowPanel(airportController);
+            Debug.Log($"Flower patch {gameObject.name} clicked - opening upgrade panel");
+            upgradePanel.ShowPanel(flowerPatchController);
         }
         else
         {
@@ -135,9 +135,9 @@ public class AirportClickHandler : MonoBehaviour
     private void OnDestroy()
     {
         // Clean up material instances to prevent memory leaks
-        if (airportRenderer != null && airportRenderer.material != originalMaterial)
+        if (flowerPatchRenderer != null && flowerPatchRenderer.material != originalMaterial)
         {
-            Destroy(airportRenderer.material);
+            Destroy(flowerPatchRenderer.material);
         }
 
         // Clean up runtime hover material

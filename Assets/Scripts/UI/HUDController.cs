@@ -3,20 +3,20 @@ using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// Controls the main HUD display showing resource counts and airplane statistics.
-/// Updates in real-time as resources are delivered and airplanes are spawned.
+/// Controls the main HUD display showing resource counts and bee statistics.
+/// Updates in real-time as resources are delivered and bees are spawned.
 /// Uses TextMeshPro for crisp, high-quality text rendering.
 /// </summary>
 public class HUDController : MonoBehaviour
 {
     [Header("UI References")]
-    [Tooltip("TextMeshProUGUI component to display resource and airplane counts")]
+    [Tooltip("TextMeshProUGUI component to display resource and bee counts")]
     [SerializeField] private TextMeshProUGUI hudText;
 
     [Tooltip("TextMeshProUGUI component to display player money (optional - falls back to hudText if not assigned)")]
     [SerializeField] private TextMeshProUGUI moneyText;
 
-    [Tooltip("TextMeshProUGUI component to display city demands (e.g., 'Wood: 3/5')")]
+    [Tooltip("TextMeshProUGUI component to display hive demands (e.g., 'Wood: 3/5')")]
     [SerializeField] private TextMeshProUGUI demandText;
 
     [Tooltip("TextMeshProUGUI component to display elapsed time")]
@@ -48,14 +48,14 @@ public class HUDController : MonoBehaviour
             Debug.LogWarning("HUDController: Fleet Management Panel not assigned in Inspector!");
         }
 
-        // Subscribe to city resource changes
-        if (CityController.Instance != null)
+        // Subscribe to hive resource changes
+        if (HiveController.Instance != null)
         {
-            CityController.Instance.OnResourcesChanged.AddListener(UpdateDisplay);
+            HiveController.Instance.OnResourcesChanged.AddListener(UpdateDisplay);
         }
         else
         {
-            Debug.LogError("HUDController: CityController not found in scene!");
+            Debug.LogError("HUDController: HiveController not found in scene!");
         }
 
         // Subscribe to economy changes
@@ -86,14 +86,14 @@ public class HUDController : MonoBehaviour
 
     private void Update()
     {
-        // Update display each frame to show real-time airplane count and timer
+        // Update display each frame to show real-time bee count and timer
         // (could be optimized with events if needed)
         UpdateDisplay();
         UpdateTimerDisplay();
     }
 
     /// <summary>
-    /// Updates the HUD text with current resource counts and airplane count.
+    /// Updates the HUD text with current resource counts and bee count.
     /// Dynamically displays all resource types defined in ResourceType enum.
     /// </summary>
     private void UpdateDisplay()
@@ -106,24 +106,24 @@ public class HUDController : MonoBehaviour
 
         // Build resource display dynamically for all resource types
         string resourceText = "";
-        if (CityController.Instance != null)
+        if (HiveController.Instance != null)
         {
             foreach (ResourceType resourceType in System.Enum.GetValues(typeof(ResourceType)))
             {
-                int count = CityController.Instance.GetResourceCount(resourceType);
+                int count = HiveController.Instance.GetResourceCount(resourceType);
                 resourceText += $"{resourceType}: {count}  ";
             }
         }
 
-        // Get airplane count from game manager
-        int airplaneCount = 0;
+        // Get bee count from game manager
+        int beeCount = 0;
         if (GameManager.Instance != null)
         {
-            airplaneCount = GameManager.Instance.TotalAirplaneCount;
+            beeCount = GameManager.Instance.TotalBeeCount;
         }
 
         // Format display text
-        hudText.text = $"{resourceText.TrimEnd()}\nAirplanes: {airplaneCount}";
+        hudText.text = $"{resourceText.TrimEnd()}\nBees: {beeCount}";
     }
 
     /// <summary>
@@ -247,9 +247,9 @@ public class HUDController : MonoBehaviour
             fleetButton.onClick.RemoveListener(OnFleetButtonClicked);
         }
 
-        if (CityController.Instance != null)
+        if (HiveController.Instance != null)
         {
-            CityController.Instance.OnResourcesChanged.RemoveListener(UpdateDisplay);
+            HiveController.Instance.OnResourcesChanged.RemoveListener(UpdateDisplay);
         }
 
         if (EconomyManager.Instance != null)

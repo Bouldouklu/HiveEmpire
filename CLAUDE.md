@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Cargo Empire** - An incremental strategy resource management game where players build automated cargo networks connecting resource-producing airports to a central city. The core gameplay focuses on discovering resource synergies, managing bottlenecks, and optimizing production chains for exponential growth.
+**Hive Empire** - An incremental strategy resource management game where players build automated pollen networks connecting resource-producing flower patches to a central hive. The core gameplay focuses on discovering resource synergies, managing bottlenecks, and optimizing production chains for exponential growth.
 
 - **Genre:** Incremental Strategy + Resource Management
 - **Style:** Minimalist 3D, top-down orthographic view (Mini Metro aesthetic)
@@ -15,8 +15,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Structure
 
 ### Core Scripts
-- **`Assets/Scripts/AirplaneController.cs`** - Controls Airplane movement and cargo delivery
-- **`Assets/Scripts/AirportController.cs`** - Manages airport resource generation and upgrades
+- **`Assets/Scripts/BeeController.cs`** - Controls Bee movement and pollen delivery
+- **`Assets/Scripts/FlowerPatchController.cs`** - Manages flower patch resource generation and upgrades
 
 ### Resources
 - **`Assets/Resources/AirFlow_GameConcept.md`** - Complete game design document with mechanics, progression, and implementation roadmap
@@ -24,7 +24,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Assets
 - **`Assets/Material/`** - Material assets for biomes, buildings, and UI elements (color-coded by resource/biome type)
-- **`Assets/Prefabs/`** - Prefabs for game objects (currently contains Airplane prefab)
+- **`Assets/Prefabs/`** - Prefabs for game objects (currently contains Bee prefab)
 - **`Assets/Scenes/GameScene.unity`** - Main game scene
 - **`Assets/FX/PolygonParticleFX/`** - Third-party particle effects asset pack
 
@@ -38,15 +38,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Core Gameplay Loop
 ```
-Airport → Generates Resource (Wood/Stone/Oil/Food)
+Flower Patch → Generates Resource (Wood/Stone/Oil/Food)
        ↓
-Airplane → Automatically delivers to City
+Bee → Automatically delivers to Hive
      ↓
-City → Combines resources into higher-value products
+Hive → Combines resources into higher-value products
     ↓
 Earn → Exponential money based on synergies
     ↓
-Spend → New airports, upgrades, unlock biomes
+Spend → New flower patchs, upgrades, unlock biomes
      ↓
 Optimize → Identify and solve bottlenecks
         ↓
@@ -55,14 +55,14 @@ LOOP with increasing complexity
 
 ### Key Systems to Implement
 
-1. **Resource Synergy System** - Exponential value when combining resources at the city
+1. **Resource Synergy System** - Exponential value when combining resources at the hive
    - Individual resources: $1 each
    - Two-resource combos: $8-12
    - Three-resource combos: $40-50
    - Four-resource combos: $200+
 
 2. **Limited Connection Slots** - Strategic constraint forcing meaningful choices
-   - City can only connect to limited airports (2-5 slots, upgradable)
+   - Hive can only connect to limited flower patchs (2-5 slots, upgradable)
    - Players must choose which resource combinations to prioritize
 
 3. **Biome & Resource Types**
@@ -73,16 +73,16 @@ LOOP with increasing complexity
    - Coastal → Fish (medium: 1 per 3s)
    - Tundra → Minerals (slow: 1 per 5s)
 
-4. **Airport Specialization Paths**
+4. **Flower Patch Specialization Paths**
    - Producer: Increased generation speed
-   - Speed Hub: Faster Airplane delivery
+   - Speed Hub: Faster Bee delivery
    - Processor: Pre-combine resources at source
    - Storage: Buffer resources, passive income
 
-5. **Automated Airplane Transport**
+5. **Automated Bee Transport**
    - Fully automated pathfinding (no manual routing)
-   - Visual feedback with colored cargo cubes and trails
-   - Object pooling for performance (target: 200+ Airplanes at 50+ FPS)
+   - Visual feedback with colored pollen cubes and trails
+   - Object pooling for performance (target: 200+ Bees at 50+ FPS)
 
 ## Development Workflow
 
@@ -99,7 +99,7 @@ Open the project in Unity 6 Editor and use Play Mode for testing:
 File → Build Settings → WebGL → Build
 ```
 - Ensure URP settings are optimized for WebGL
-- Target 60 FPS with 100+ Airplanes, 50+ FPS with 200 Airplanes
+- Target 60 FPS with 100+ Bees, 50+ FPS with 200 Bees
 - Use object pooling if performance issues arise
 
 ### Version Control Notes
@@ -120,12 +120,12 @@ File → Build Settings → WebGL → Build
 - **Aesthetic:** Minimalist, infographic-inspired (reference: Mini Metro, Dorfromantik)
 - **Color Palette:** Desaturated, harmonious, sophisticated (see `AirFlow_ColorPalette.md`)
 - **Camera:** Orthographic, 45° top-down angle
-- **World:** 40x40 unit grid with City at center (0,0,0)
+- **World:** 40x40 unit grid with Hive at center (0,0,0)
 - **Materials:** Flat shading with subtle emission glow, no metallic surfaces
 
 ### Key Design Decisions
 - **NOT about flight path routing** - Focus is on optimization and strategy, not logistics
-- **Fully automated Airplanes** - No manual route drawing, Airplanes automatically pathfind to city
+- **Fully automated Bees** - No manual route drawing, Bees automatically pathfind to hive
 - **Connection slot limits create strategy** - Without limits, there's no meaningful choice
 - **Exponential combo values** - Core to incremental game satisfaction (10x, 50x, 200x jumps)
 
@@ -133,23 +133,23 @@ File → Build Settings → WebGL → Build
 
 ### Week 1: Core Loop (Validate Fun)
 - Top-down camera and basic scene setup
-- City building (central hub, receives cargo)
-- Two airport types: Forest (wood), Plains (food)
+- Hive building (central hub, receives pollen)
+- Two flower patch types: Forest (wood), Plains (food)
 - Basic resource generation system
-- Airplane spawning, pathfinding, and delivery
+- Bee spawning, pathfinding, and delivery
 - **THE HOOK:** Resource synergy combos (Wood + Stone → Buildings = $10)
 
 ### Week 2: Strategic Depth
 - Connection slot limit system (2 slots, upgradable)
 - Additional biomes (Desert with oil)
 - Triple-resource combos
-- Airport upgrade system (specialization paths)
+- Flower Patch upgrade system (specialization paths)
 - Money counter with $/sec rate
 - Visual bottleneck indicators
 
 ### Week 3: Polish & Publish
 - All 4 specialization paths
-- City upgrade system
+- Hive upgrade system
 - 6 total biome types
 - Four-resource combo system
 - UI polish (tooltips, upgrade trees, stats)
@@ -177,8 +177,8 @@ File → Build Settings → WebGL → Build
 - Consider ScriptableObjects for data-driven design
 
 ### Performance Considerations
-- Implement object pooling for Airplanes (frequently instantiated)
-- Target 60 FPS with 100+ Airplanes
+- Implement object pooling for Bees (frequently instantiated)
+- Target 60 FPS with 100+ Bees
 - Use profiler-driven optimization decisions
 - Be conscious of GC allocations in WebGL builds
 
@@ -193,21 +193,21 @@ File → Build Settings → WebGL → Build
 ### Adding a New Biome
 1. Create material in `Assets/Material/` using color palette from `AirFlow_ColorPalette.md`
 2. Add resource type to enum/constants
-3. Implement generation rate in airport controller
-4. Add synergy combinations to city processing logic
+3. Implement generation rate in flower patch controller
+4. Add synergy combinations to hive processing logic
 5. Create unlock condition and cost
 
-### Adding Airport Upgrade Path
+### Adding Flower Patch Upgrade Path
 1. Define specialization type (Producer/Speed/Processor/Storage)
 2. Implement tier system (Tier 1, 2, 3 with increasing costs)
-3. Create visual distinction for specialized airports
+3. Create visual distinction for specialized flower patchs
 4. Add upgrade UI panel with tooltips
 5. Test trade-offs vs other specialization paths
 
-### Optimizing Airplane Performance
-1. Check current Airplane count and FPS in profiler
+### Optimizing Bee Performance
+1. Check current Bee count and FPS in profiler
 2. Implement/tune object pooling system
-3. Consider LOD for distant Airplanes
+3. Consider LOD for distant Bees
 4. Simplify trail renderers if needed
 5. Batch material instances
 
@@ -230,7 +230,7 @@ File → Build Settings → WebGL → Build
 - **Game Design:** `Assets/Resources/AirFlow_GameConcept.md` (complete mechanics and progression)
 - **Visual Guide:** `Assets/Resources/AirFlow_ColorPalette.md` (exact hex colors and material settings)
 - **Main Scene:** `Assets/Scenes/GameScene.unity`
-- **Core Controllers:** `Assets/Scripts/AirplaneController.cs`, `Assets/Scripts/AirportController.cs`
+- **Core Controllers:** `Assets/Scripts/BeeController.cs`, `Assets/Scripts/FlowerPatchController.cs`
 
 ## Development Philosophy
 

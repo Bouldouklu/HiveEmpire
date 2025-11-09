@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// ScriptableObject that maps BiomeType to Material references.
-/// Used to assign appropriate materials to airplane cargo based on airport biome.
+/// Used to assign appropriate materials to airplane cargo based on flowerPatch biome.
 /// </summary>
 [CreateAssetMenu(fileName = "BiomeMaterialMapper", menuName = "Game/Biome Material Mapper")]
 public class BiomeMaterialMapper : ScriptableObject

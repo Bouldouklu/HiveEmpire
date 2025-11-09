@@ -15,10 +15,10 @@ public class EconomyManager : MonoBehaviour
     private float currentMoney = 0f;
 
     [SerializeField]
-    [Tooltip("Total number of airports placed (for scaling placement costs)")]
-    private int totalAirportsPlaced = 0;
+    [Tooltip("Total number of flowerPatchs placed (for scaling placement costs)")]
+    private int totalFlowerPatchesPlaced = 0;
 
-    [Header("Airport Placement Costs")]
+    [Header("FlowerPatch Placement Costs")]
     [Tooltip("Base cost for Forest/Plains biomes")]
     [SerializeField] private float commonBiomeCost = 10f;
 
@@ -28,7 +28,7 @@ public class EconomyManager : MonoBehaviour
     [Tooltip("Base cost for Desert/Tundra biomes")]
     [SerializeField] private float rareBiomeCost = 30f;
 
-    [Tooltip("Cost scaling multiplier per airport placed (e.g., 0.5 = 50% increase per airport)")]
+    [Tooltip("Cost scaling multiplier per flowerPatch placed (e.g., 0.5 = 50% increase per flowerPatch)")]
     [SerializeField] private float costScalingMultiplier = 0.5f;
 
     [Header("Events")]
@@ -126,12 +126,12 @@ public class EconomyManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Calculates the cost to place an airport based on biome type and scaling.
-    /// Cost = baseCost × (1 + scalingMultiplier × airportsPlaced)
+    /// Calculates the cost to place an flowerPatch based on biome type and scaling.
+    /// Cost = baseCost × (1 + scalingMultiplier × flowerPatchsPlaced)
     /// </summary>
-    /// <param name="biome">Biome type where airport will be placed</param>
-    /// <returns>Total cost for placing airport at this biome</returns>
-    public float GetAirportPlacementCost(BiomeType biome)
+    /// <param name="biome">Biome type where flowerPatch will be placed</param>
+    /// <returns>Total cost for placing flowerPatch at this biome</returns>
+    public float GetFlowerPatchPlacementCost(BiomeType biome)
     {
         // Get base cost by biome rarity
         float baseCost = biome switch
@@ -145,27 +145,27 @@ public class EconomyManager : MonoBehaviour
             _ => commonBiomeCost // Fallback
         };
 
-        // Apply scaling based on total airports placed
-        float scaledCost = baseCost * (1f + (costScalingMultiplier * totalAirportsPlaced));
+        // Apply scaling based on total flowerPatchs placed
+        float scaledCost = baseCost * (1f + (costScalingMultiplier * totalFlowerPatchesPlaced));
 
         return Mathf.Round(scaledCost); // Round to whole number for cleaner UI
     }
 
     /// <summary>
-    /// Increments the airport placement counter (called when an airport is successfully placed).
+    /// Increments the flowerPatch placement counter (called when an flowerPatch is successfully placed).
     /// Should be called by PlacementController after spending money.
     /// </summary>
-    public void RegisterAirportPlaced()
+    public void RegisterFlowerPatchPlaced()
     {
-        totalAirportsPlaced++;
-        Debug.Log($"EconomyManager: Total airports placed: {totalAirportsPlaced}");
+        totalFlowerPatchesPlaced++;
+        Debug.Log($"EconomyManager: Total flowerPatchs placed: {totalFlowerPatchesPlaced}");
     }
 
     /// <summary>
-    /// Gets the total number of airports placed.
+    /// Gets the total number of flowerPatchs placed.
     /// </summary>
-    public int GetTotalAirportsPlaced()
+    public int GetTotalFlowerPatchsPlaced()
     {
-        return totalAirportsPlaced;
+        return totalFlowerPatchesPlaced;
     }
 }

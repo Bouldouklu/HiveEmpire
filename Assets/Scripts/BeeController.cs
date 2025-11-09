@@ -2,43 +2,43 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Controls airplane movement with smooth arc trajectories between airports and city.
-/// Airplanes continuously loop between airport and city until manually destroyed.
+/// Controls bee movement with smooth arc trajectories between flower patches and hive.
+/// Bees continuously loop between flower patch and hive until manually destroyed.
 /// </summary>
-public class AirplaneController : MonoBehaviour
+public class BeeController : MonoBehaviour
 {
     [Header("Movement Settings")]
-    [Tooltip("Speed of the airplane (units per second)")]
+    [Tooltip("Speed of the bee (units per second)")]
     [SerializeField] private float speed = 10f;
 
     [Tooltip("Maximum height of the flight arc")]
-    [SerializeField] private float cruisingAltitude = 12f;
+    [SerializeField] private float flightAltitude = 12f;
 
-    [Tooltip("How smoothly the airplane rotates to face movement direction")]
+    [Tooltip("How smoothly the bee rotates to face movement direction")]
     [SerializeField] private float rotationSpeed = 5f;
 
     [Header("State")]
     [Tooltip("Current movement state (for debugging)")]
     [SerializeField] private FlightState currentState = FlightState.Idle;
 
-    [Header("Cargo Settings")]
-    [Tooltip("Maximum number of resources this airplane can carry per trip")]
-    [SerializeField] private int cargoCapacity = 1;
+    [Header("Pollen Settings")]
+    [Tooltip("Maximum amount of pollen this bee can carry per trip")]
+    [SerializeField] private int pollenCapacity = 1;
 
     [Header("Debug Visualization")]
     [Tooltip("Show flight path gizmos in Scene view")]
     [SerializeField] private bool showFlightPathGizmos = true;
 
     [Header("Debug Info")]
-    [Tooltip("Current cargo being carried (for debugging)")]
-    [SerializeField] private List<ResourceType> currentCargo = new List<ResourceType>();
+    [Tooltip("Current pollen being carried (for debugging)")]
+    [SerializeField] private List<ResourceType> currentPollen = new List<ResourceType>();
 
     // References
-    private Transform homeAirport;
-    private Transform cityDestination;
-    private AirportController homeAirportController;
-    private GameObject cargoObject;
-    private MeshRenderer cargoRenderer;
+    private Transform homeFlowerPatch;
+    private Transform hiveDestination;
+    private FlowerPatchController homeFlowerPatchController;
+    private GameObject pollenObject;
+    private MeshRenderer pollenRenderer;
     private TrailRenderer trailRenderer;
 
     // Movement tracking
@@ -52,129 +52,129 @@ public class AirplaneController : MonoBehaviour
     private enum FlightState
     {
         Idle,
-        ToCity,
-        AtCity,
-        ToAirport,
-        AtAirport
+        ToHive,
+        AtHive,
+        ToFlowerPatch,
+        AtFlowerPatch
     }
 
     /// <summary>
-    /// Initializes the airplane with home airport and destination.
+    /// Initializes the bee with home flower patch and hive destination.
     /// Called by RouteController when spawned.
     /// </summary>
-    public void Initialize(Transform airport, Transform city)
+    public void Initialize(Transform flowerPatch, Transform hive)
     {
-        homeAirport = airport;
-        cityDestination = city;
+        homeFlowerPatch = flowerPatch;
+        hiveDestination = hive;
 
-        // Get reference to airport controller
-        homeAirportController = airport.GetComponent<AirportController>();
-        if (homeAirportController == null)
+        // Get reference to flower patch controller
+        homeFlowerPatchController = flowerPatch.GetComponent<FlowerPatchController>();
+        if (homeFlowerPatchController == null)
         {
-            Debug.LogError($"Airplane {name}: Home airport {airport.name} does not have AirportController component!");
+            Debug.LogError($"Bee {name}: Home flower patch {flowerPatch.name} does not have FlowerPatchController component!");
         }
 
-        // Cache cargo GameObject references
-        Transform cargoTransform = transform.Find("Cargo");
-        if (cargoTransform != null)
+        // Cache pollen GameObject references
+        Transform pollenTransform = transform.Find("Pollen");
+        if (pollenTransform != null)
         {
-            cargoObject = cargoTransform.gameObject;
-            cargoRenderer = cargoObject.GetComponent<MeshRenderer>();
+            pollenObject = pollenTransform.gameObject;
+            pollenRenderer = pollenObject.GetComponent<MeshRenderer>();
 
-            if (cargoRenderer == null)
+            if (pollenRenderer == null)
             {
-                Debug.LogWarning($"Airplane {name}: Cargo GameObject found but has no MeshRenderer!");
+                Debug.LogWarning($"Bee {name}: Pollen GameObject found but has no MeshRenderer!");
             }
 
-            // Start with cargo hidden (airplane starts empty at airport)
-            cargoObject.SetActive(false);
+            // Start with pollen hidden (bee starts empty at flower patch)
+            pollenObject.SetActive(false);
         }
         else
         {
-            Debug.LogWarning($"Airplane {name}: No 'Cargo' child GameObject found! Cargo visibility will not work.");
+            Debug.LogWarning($"Bee {name}: No 'Pollen' child GameObject found! Pollen visibility will not work.");
         }
 
         // Cache trail renderer reference
         trailRenderer = GetComponent<TrailRenderer>();
         if (trailRenderer == null)
         {
-            Debug.LogWarning($"Airplane {name}: No TrailRenderer component found! Trail colors will not work.");
+            Debug.LogWarning($"Bee {name}: No TrailRenderer component found! Trail colors will not work.");
         }
 
         // Register with GameManager
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.RegisterAirplane();
+            GameManager.Instance.RegisterBee();
         }
         else
         {
-            Debug.LogWarning($"Airplane {name}: GameManager not found in scene!");
+            Debug.LogWarning($"Bee {name}: GameManager not found in scene!");
         }
 
-        // Start at airport, ready to pick up cargo
-        currentState = FlightState.AtAirport;
+        // Start at flower patch, ready to pick up pollen
+        currentState = FlightState.AtFlowerPatch;
     }
 
     private void Update()
     {
         switch (currentState)
         {
-            case FlightState.ToCity:
+            case FlightState.ToHive:
                 UpdateFlightMovement();
                 break;
 
-            case FlightState.AtCity:
-                // Deliver cargo and return home
-                DeliverCargo();
-                StartJourneyToAirport();
+            case FlightState.AtHive:
+                // Deliver pollen and return home
+                DeliverPollen();
+                StartJourneyToFlowerPatch();
                 break;
 
-            case FlightState.ToAirport:
+            case FlightState.ToFlowerPatch:
                 UpdateFlightMovement();
                 break;
 
-            case FlightState.AtAirport:
-                // Pick up cargo and depart to city
-                PickupCargo();
-                StartJourneyToCity();
+            case FlightState.AtFlowerPatch:
+                // Pick up pollen and depart to hive
+                PickupPollen();
+                StartJourneyToHive();
                 break;
         }
     }
 
     /// <summary>
-    /// Starts the journey from home airport to city
+    /// Starts the journey from home flower patch to hive
     /// </summary>
-    private void StartJourneyToCity()
+    private void StartJourneyToHive()
     {
-        if (cityDestination == null)
+        if (hiveDestination == null)
         {
-            Debug.LogError("City destination not set!");
+            Debug.LogError("Hive destination not set!");
             return;
         }
 
         startPosition = transform.position;
-        endPosition = CityController.Instance.LandingPosition;
+        endPosition = HiveController.Instance.LandingPosition;
 
         SetupFlightPath();
-        currentState = FlightState.ToCity;
+        currentState = FlightState.ToHive;
     }
 
     /// <summary>
-    /// Starts the return journey from city to home airport
+    /// Starts the return journey from hive to home flower patch
     /// </summary>
-    private void StartJourneyToAirport()
+    private void StartJourneyToFlowerPatch()
     {
-        if (homeAirport == null)
+        if (homeFlowerPatch == null)
         {
-            Debug.LogError("Home airport not set!");
+            Debug.LogError("Home flower patch not set!");
             return;
         }
 
         startPosition = transform.position;
-        endPosition = homeAirport.position + new Vector3(0f, 0.5f, 0f);
+        endPosition = homeFlowerPatch.position + new Vector3(0f, 0.5f, 0f);
 
         SetupFlightPath();
-        currentState = FlightState.ToAirport;
+        currentState = FlightState.ToFlowerPatch;
     }
 
     /// <summary>
@@ -194,7 +194,7 @@ public class AirplaneController : MonoBehaviour
         horizontalDirection.y = 0f; // Flatten to horizontal plane
 
         float baseHeight = Mathf.Max(startPosition.y, endPosition.y);
-        float targetHeight = baseHeight + cruisingAltitude;
+        float targetHeight = baseHeight + flightAltitude;
 
         // Control point 1: ascent phase (30% of horizontal distance)
         Vector3 cp1Horizontal = startPosition + horizontalDirection * 0.3f;
@@ -206,7 +206,7 @@ public class AirplaneController : MonoBehaviour
     }
 
     /// <summary>
-    /// Updates the airplane's position along the arc using bezier curve
+    /// Updates the bee's position along the arc using bezier curve
     /// </summary>
     private void UpdateFlightMovement()
     {
@@ -265,17 +265,17 @@ public class AirplaneController : MonoBehaviour
     /// </summary>
     /// <param name="start">Starting position</param>
     /// <param name="end">Ending position</param>
-    /// <param name="cruisingAltitude">Height of the arc above base height</param>
+    /// <param name="flightAltitude">Height of the arc above base height</param>
     /// <param name="segments">Number of segments for numerical integration (higher = more accurate)</param>
     /// <returns>Approximate arc length of the Bezier curve</returns>
-    public static float CalculateBezierArcLength(Vector3 start, Vector3 end, float cruisingAltitude, int segments = 100)
+    public static float CalculateBezierArcLength(Vector3 start, Vector3 end, float flightAltitude, int segments = 100)
     {
         // Calculate control points using the same logic as SetupFlightPath()
         Vector3 horizontalDirection = end - start;
         horizontalDirection.y = 0f; // Flatten to horizontal plane
 
         float baseHeight = Mathf.Max(start.y, end.y);
-        float targetHeight = baseHeight + cruisingAltitude;
+        float targetHeight = baseHeight + flightAltitude;
 
         // Control point 1: ascent phase (30% of horizontal distance)
         Vector3 cp1Horizontal = start + horizontalDirection * 0.3f;
@@ -321,60 +321,60 @@ public class AirplaneController : MonoBehaviour
     }
 
     /// <summary>
-    /// Called when airplane completes its current journey
+    /// Called when bee completes its current journey
     /// </summary>
     private void OnJourneyComplete()
     {
-        if (currentState == FlightState.ToCity)
+        if (currentState == FlightState.ToHive)
         {
-            currentState = FlightState.AtCity;
+            currentState = FlightState.AtHive;
         }
-        else if (currentState == FlightState.ToAirport)
+        else if (currentState == FlightState.ToFlowerPatch)
         {
-            currentState = FlightState.AtAirport;
+            currentState = FlightState.AtFlowerPatch;
         }
     }
 
     /// <summary>
-    /// Picks up cargo from the home airport. Instantly fills cargo hold to capacity.
+    /// Picks up pollen from the home flower patch. Instantly fills pollen sacs to capacity.
     /// </summary>
-    private void PickupCargo()
+    private void PickupPollen()
     {
-        if (homeAirportController == null)
+        if (homeFlowerPatchController == null)
         {
-            Debug.LogWarning($"Airplane {name}: Cannot pick up cargo - no airport controller reference!");
+            Debug.LogWarning($"Bee {name}: Cannot pick up pollen - no flower patch controller reference!");
             return;
         }
 
-        // Clear any existing cargo
-        currentCargo.Clear();
+        // Clear any existing pollen
+        currentPollen.Clear();
 
-        // Fill cargo hold to capacity
-        for (int i = 0; i < cargoCapacity; i++)
+        // Fill pollen sacs to capacity
+        for (int i = 0; i < pollenCapacity; i++)
         {
-            ResourceType resource = homeAirportController.GetResource();
-            currentCargo.Add(resource);
+            ResourceType resource = homeFlowerPatchController.GetResource();
+            currentPollen.Add(resource);
         }
 
-        Debug.Log($"Airplane {name}: Picked up {currentCargo.Count} {homeAirportController.GetBiomeType()} resources");
+        Debug.Log($"Bee {name}: Picked up {currentPollen.Count} {homeFlowerPatchController.GetBiomeType()} pollen");
 
-        // Show cargo and apply biome material
-        BiomeType biomeType = homeAirportController.GetBiomeType();
+        // Show pollen and apply biome material
+        BiomeType biomeType = homeFlowerPatchController.GetBiomeType();
 
-        if (cargoObject != null && cargoRenderer != null)
+        if (pollenObject != null && pollenRenderer != null)
         {
-            cargoObject.SetActive(true);
+            pollenObject.SetActive(true);
 
             // Get biome material from mapper
             Material biomeMaterial = BiomeMaterialMapper.Instance?.GetBiomeMaterial(biomeType);
 
             if (biomeMaterial != null)
             {
-                cargoRenderer.material = biomeMaterial;
+                pollenRenderer.material = biomeMaterial;
             }
             else
             {
-                Debug.LogWarning($"Airplane {name}: Could not get material for biome {biomeType}");
+                Debug.LogWarning($"Bee {name}: Could not get material for biome {biomeType}");
             }
         }
 
@@ -384,34 +384,34 @@ public class AirplaneController : MonoBehaviour
     }
 
     /// <summary>
-    /// Delivers cargo to the city. Passes resources to CityController for processing.
+    /// Delivers pollen to the hive. Passes resources to HiveController for processing.
     /// </summary>
-    private void DeliverCargo()
+    private void DeliverPollen()
     {
-        if (currentCargo.Count == 0)
+        if (currentPollen.Count == 0)
         {
-            Debug.LogWarning($"Airplane {name}: Arrived at city with no cargo!");
+            Debug.LogWarning($"Bee {name}: Arrived at hive with no pollen!");
             return;
         }
 
-        // Deliver resources to city
-        if (CityController.Instance != null)
+        // Deliver resources to hive
+        if (HiveController.Instance != null)
         {
-            CityController.Instance.ReceiveResources(currentCargo);
-            Debug.Log($"Airplane {name}: Delivered {currentCargo.Count} resources to city");
+            HiveController.Instance.ReceiveResources(currentPollen);
+            Debug.Log($"Bee {name}: Delivered {currentPollen.Count} pollen to hive");
         }
         else
         {
-            Debug.LogWarning($"Airplane {name}: CityController not found! Resources lost.");
+            Debug.LogWarning($"Bee {name}: HiveController not found! Pollen lost.");
         }
 
-        // Clear cargo after delivery
-        currentCargo.Clear();
+        // Clear pollen after delivery
+        currentPollen.Clear();
 
-        // Hide cargo after delivery
-        if (cargoObject != null)
+        // Hide pollen after delivery
+        if (pollenObject != null)
         {
-            cargoObject.SetActive(false);
+            pollenObject.SetActive(false);
         }
 
         // Clear trail to provide visual feedback of delivery
@@ -462,14 +462,14 @@ public class AirplaneController : MonoBehaviour
         // Unregister from GameManager when destroyed
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.UnregisterAirplane();
+            GameManager.Instance.UnregisterBee();
         }
     }
 
     private void OnDrawGizmos()
     {
         // Visualize flight path in Scene view
-        if (showFlightPathGizmos && (currentState == FlightState.ToCity || currentState == FlightState.ToAirport))
+        if (showFlightPathGizmos && (currentState == FlightState.ToHive || currentState == FlightState.ToFlowerPatch))
         {
             Gizmos.color = new Color(74f/255f, 85f/255f, 104f/255f); // #4a5568
 

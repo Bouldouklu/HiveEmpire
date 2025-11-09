@@ -3,27 +3,27 @@ using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// UI controller for the airport upgrade panel.
-/// Displays airport information and allows players to upgrade airports.
+/// UI controller for the flowerPatch upgrade panel.
+/// Displays flowerPatch information and allows players to upgrade flowerPatchs.
 /// This should be placed on a Canvas GameObject in the scene.
 /// </summary>
-public class AirportUpgradePanel : MonoBehaviour
+public class FlowerPatchUpgradePanel : MonoBehaviour
 {
     [Header("UI References")]
     [Tooltip("Root panel GameObject to show/hide")]
     [SerializeField] private GameObject panelRoot;
 
-    [Tooltip("Text displaying airport name/biome")]
-    [SerializeField] private TextMeshProUGUI airportNameText;
+    [Tooltip("Text displaying flowerPatch name/biome")]
+    [SerializeField] private TextMeshProUGUI flowerPatchNameText;
 
     [Tooltip("Text displaying current tier")]
     [SerializeField] private TextMeshProUGUI currentTierText;
 
-    [Tooltip("Text displaying current airplane count")]
-    [SerializeField] private TextMeshProUGUI currentAirplanesText;
+    [Tooltip("Text displaying current bee count")]
+    [SerializeField] private TextMeshProUGUI currentBeesText;
 
-    [Tooltip("Text displaying next tier airplane count")]
-    [SerializeField] private TextMeshProUGUI nextTierAirplanesText;
+    [Tooltip("Text displaying next tier bee count")]
+    [SerializeField] private TextMeshProUGUI nextTierBeesText;
 
     [Tooltip("Text displaying upgrade cost")]
     [SerializeField] private TextMeshProUGUI upgradeCostText;
@@ -50,9 +50,9 @@ public class AirportUpgradePanel : MonoBehaviour
     [Tooltip("Text on capacity upgrade button")]
     [SerializeField] private TextMeshProUGUI capacityUpgradeButtonText;
 
-    [Header("Drone Allocation Display")]
-    [Tooltip("Text showing current allocated drones vs capacity")]
-    [SerializeField] private TextMeshProUGUI droneAllocationText;
+    [Header("Bee Allocation Display")]
+    [Tooltip("Text showing current allocated bees vs capacity")]
+    [SerializeField] private TextMeshProUGUI beeAllocationText;
 
     [Header("Colors")]
     [Tooltip("Color for affordable upgrades")]
@@ -64,8 +64,8 @@ public class AirportUpgradePanel : MonoBehaviour
     [Tooltip("Color for max tier")]
     [SerializeField] private Color maxTierColor = Color.gray;
 
-    // Current airport being upgraded
-    private AirportController currentAirport;
+    // Current flowerPatch being upgraded
+    private FlowerPatchController currentFlowerPatch;
 
     private void Awake()
     {
@@ -120,17 +120,17 @@ public class AirportUpgradePanel : MonoBehaviour
     }
 
     /// <summary>
-    /// Shows the upgrade panel for a specific airport
+    /// Shows the upgrade panel for a specific flowerPatch
     /// </summary>
-    public void ShowPanel(AirportController airport)
+    public void ShowPanel(FlowerPatchController flowerPatch)
     {
-        if (airport == null)
+        if (flowerPatch == null)
         {
-            Debug.LogError("AirportUpgradePanel: Cannot show panel for null airport");
+            Debug.LogError("FlowerPatchUpgradePanel: Cannot show panel for null flowerPatch");
             return;
         }
 
-        currentAirport = airport;
+        currentFlowerPatch = flowerPatch;
 
         // Show panel
         if (panelRoot != null)
@@ -138,7 +138,7 @@ public class AirportUpgradePanel : MonoBehaviour
             panelRoot.SetActive(true);
         }
 
-        // Update UI with airport information
+        // Update UI with flowerPatch information
         UpdateUI();
     }
 
@@ -152,64 +152,64 @@ public class AirportUpgradePanel : MonoBehaviour
             panelRoot.SetActive(false);
         }
 
-        currentAirport = null;
+        currentFlowerPatch = null;
     }
 
     /// <summary>
-    /// Updates all UI elements with current airport information
+    /// Updates all UI elements with current flowerPatch information
     /// </summary>
     private void UpdateUI()
     {
-        if (currentAirport == null)
+        if (currentFlowerPatch == null)
         {
             return;
         }
 
-        // Airport name/biome
-        if (airportNameText != null)
+        // FlowerPatch name/biome
+        if (flowerPatchNameText != null)
         {
-            string biomeName = currentAirport.GetBiomeType().ToString();
-            airportNameText.text = $"{biomeName} Airport";
+            string biomeName = currentFlowerPatch.GetBiomeType().ToString();
+            flowerPatchNameText.text = $"{biomeName} FlowerPatch";
         }
 
         // Current tier
         if (currentTierText != null)
         {
-            currentTierText.text = $"Tier: {currentAirport.GetTierDisplayName()}";
+            currentTierText.text = $"Tier: {currentFlowerPatch.GetTierDisplayName()}";
         }
 
-        // Drone allocation display
-        if (droneAllocationText != null && DroneFleetManager.Instance != null)
+        // Bee allocation display
+        if (beeAllocationText != null && BeeFleetManager.Instance != null)
         {
-            int allocatedDrones = DroneFleetManager.Instance.GetAllocatedDrones(currentAirport);
-            int capacity = currentAirport.MaxDroneCapacity;
-            droneAllocationText.text = $"Drones: {allocatedDrones} / {capacity}";
+            int allocatedBees = BeeFleetManager.Instance.GetAllocatedBees(currentFlowerPatch);
+            int capacity = currentFlowerPatch.MaxBeeCapacity;
+            beeAllocationText.text = $"Bees: {allocatedBees} / {capacity}";
         }
 
-        // Display drones added to pool through upgrades (repurposed from airplane count)
-        if (currentAirplanesText != null)
+        // Display bees added to pool through upgrades (repurposed from bee count)
+        if (currentBeesText != null)
         {
-            int dronesAddedSoFar = currentAirport.GetMaxAirplanesForCurrentTier();
-            currentAirplanesText.text = $"Drones added via upgrades: {dronesAddedSoFar}";
+            int beesAddedSoFar = currentFlowerPatch.GetMaxBeesForCurrentTier();
+            currentBeesText.text = $"Bees added via upgrades: {beesAddedSoFar}";
         }
 
         // Capacity upgrade section
         UpdateCapacityUpgradeUI();
 
         // Check if can upgrade
-        bool canUpgrade = currentAirport.CanUpgrade();
-        float upgradeCost = currentAirport.GetUpgradeCost();
-        int nextTierPlanes = currentAirport.GetNextTierAirplaneCount();
+        bool canUpgrade = currentFlowerPatch.CanUpgrade();
+        float upgradeCost = currentFlowerPatch.GetUpgradeCost();
+        int nextTierPlanes = currentFlowerPatch.GetNextTierBeeCount();
         bool canAfford = EconomyManager.Instance != null && EconomyManager.Instance.CanAfford(upgradeCost);
 
         if (canUpgrade)
         {
-            // Next tier benefit - shows drones that will be added to global pool
-            if (nextTierAirplanesText != null)
+            // Next tier benefit - shows bees that will be added to global pool
+            if (nextTierBeesText != null)
             {
-                int dronesAddedByUpgrade = nextTierPlanes - currentAirport.GetMaxAirplanesForCurrentTier();
-                nextTierAirplanesText.text = $"Upgrade adds: +{dronesAddedByUpgrade} drones to global pool";
-                nextTierAirplanesText.gameObject.SetActive(true);
+                int beesAddedByUpgrade = nextTierPlanes - currentFlowerPatch.GetMaxBeesForCurrentTier();
+                nextTierBeesText.text = $"Upgrade adds: +{beesAddedByUpgrade} bees to global pool";
+                nextTierBeesText.gameObject.SetActive(true);
             }
 
             // Upgrade cost
@@ -233,11 +233,11 @@ public class AirportUpgradePanel : MonoBehaviour
         else
         {
             // Max tier reached
-            if (nextTierAirplanesText != null)
+            if (nextTierBeesText != null)
             {
-                nextTierAirplanesText.text = "MAX TIER";
-                nextTierAirplanesText.color = maxTierColor;
-                nextTierAirplanesText.gameObject.SetActive(true);
+                nextTierBeesText.text = "MAX TIER";
+                nextTierBeesText.color = maxTierColor;
+                nextTierBeesText.gameObject.SetActive(true);
             }
 
             if (upgradeCostText != null)
@@ -262,18 +262,18 @@ public class AirportUpgradePanel : MonoBehaviour
     /// </summary>
     private void OnUpgradeButtonClicked()
     {
-        if (currentAirport == null)
+        if (currentFlowerPatch == null)
         {
-            Debug.LogError("AirportUpgradePanel: No airport selected");
+            Debug.LogError("FlowerPatchUpgradePanel: No flowerPatch selected");
             return;
         }
 
         // Attempt to upgrade
-        bool success = currentAirport.UpgradeAirport();
+        bool success = currentFlowerPatch.UpgradeFlowerPatch();
 
         if (success)
         {
-            Debug.Log($"Successfully upgraded {currentAirport.gameObject.name} to tier {currentAirport.GetCurrentTier()}");
+            Debug.Log($"Successfully upgraded {currentFlowerPatch.gameObject.name} to tier {currentFlowerPatch.GetCurrentTier()}");
 
             // Update UI to reflect new tier
             UpdateUI();
@@ -283,7 +283,7 @@ public class AirportUpgradePanel : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"Failed to upgrade {currentAirport.gameObject.name}");
+            Debug.LogWarning($"Failed to upgrade {currentFlowerPatch.gameObject.name}");
             // UI will be updated by OnMoneyChanged if it was an affordability issue
         }
     }
@@ -302,7 +302,7 @@ public class AirportUpgradePanel : MonoBehaviour
     private void OnMoneyChanged(float newAmount)
     {
         // Only update if panel is visible
-        if (panelRoot != null && panelRoot.activeSelf && currentAirport != null)
+        if (panelRoot != null && panelRoot.activeSelf && currentFlowerPatch != null)
         {
             UpdateUI();
         }
@@ -313,19 +313,19 @@ public class AirportUpgradePanel : MonoBehaviour
     /// </summary>
     private void UpdateCapacityUpgradeUI()
     {
-        if (currentAirport == null) return;
+        if (currentFlowerPatch == null) return;
 
         // Current capacity display
         if (currentCapacityText != null)
         {
-            int capacity = currentAirport.MaxDroneCapacity;
-            currentCapacityText.text = $"Capacity: {capacity} drones";
+            int capacity = currentFlowerPatch.MaxBeeCapacity;
+            currentCapacityText.text = $"Capacity: {capacity} bees";
         }
 
         // Check if can upgrade capacity
-        bool canUpgradeCapacity = currentAirport.CanUpgradeCapacity();
-        float capacityCost = currentAirport.GetCapacityUpgradeCost();
-        int nextCapacity = currentAirport.GetNextCapacity();
+        bool canUpgradeCapacity = currentFlowerPatch.CanUpgradeCapacity();
+        float capacityCost = currentFlowerPatch.GetCapacityUpgradeCost();
+        int nextCapacity = currentFlowerPatch.GetNextCapacity();
         bool canAffordCapacity = EconomyManager.Instance != null && EconomyManager.Instance.CanAfford(capacityCost);
 
         if (canUpgradeCapacity)
@@ -374,25 +374,25 @@ public class AirportUpgradePanel : MonoBehaviour
     /// </summary>
     private void OnCapacityUpgradeButtonClicked()
     {
-        if (currentAirport == null)
+        if (currentFlowerPatch == null)
         {
-            Debug.LogError("AirportUpgradePanel: No airport selected for capacity upgrade");
+            Debug.LogError("FlowerPatchUpgradePanel: No flowerPatch selected for capacity upgrade");
             return;
         }
 
         // Attempt to upgrade capacity
-        bool success = currentAirport.UpgradeCapacity();
+        bool success = currentFlowerPatch.UpgradeCapacity();
 
         if (success)
         {
-            Debug.Log($"Successfully upgraded capacity for {currentAirport.gameObject.name} to {currentAirport.MaxDroneCapacity}");
+            Debug.Log($"Successfully upgraded capacity for {currentFlowerPatch.gameObject.name} to {currentFlowerPatch.MaxBeeCapacity}");
 
             // Update UI to reflect new capacity
             UpdateUI();
         }
         else
         {
-            Debug.LogWarning($"Failed to upgrade capacity for {currentAirport.gameObject.name}");
+            Debug.LogWarning($"Failed to upgrade capacity for {currentFlowerPatch.gameObject.name}");
         }
     }
 }

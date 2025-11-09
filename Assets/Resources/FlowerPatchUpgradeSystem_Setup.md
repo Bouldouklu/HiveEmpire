@@ -1,13 +1,13 @@
-# Airport Upgrade System - Unity Editor Setup Guide
+# Flower Patch Upgrade System - Unity Editor Setup Guide
 
 ## Overview
-This guide walks through setting up the UI and components for the airport upgrade system in Unity Editor.
+This guide walks through setting up the UI and components for the flower patch upgrade system in Unity Editor.
 
 ## System Components Created
-- `AirportController.cs` - Manages upgrade state and logic
-- `RouteController.cs` - Dynamically spawns airplanes based on tier
-- `AirportClickHandler.cs` - Detects clicks on airports
-- `AirportUpgradePanel.cs` - UI controller for upgrade interface
+- `Flower PatchController.cs` - Manages upgrade state and logic
+- `RouteController.cs` - Dynamically spawns bees based on tier
+- `Flower PatchClickHandler.cs` - Detects clicks on flower patchs
+- `Flower PatchUpgradePanel.cs` - UI controller for upgrade interface
 
 ---
 
@@ -17,7 +17,7 @@ This guide walks through setting up the UI and components for the airport upgrad
 1. Open `GameScene.unity`
 2. In Hierarchy, find or create a Canvas (if none exists: `GameObject > UI > Canvas`)
 3. Right-click Canvas → `UI > Panel`
-4. Rename it to `AirportUpgradePanel`
+4. Rename it to `Flower PatchUpgradePanel`
 5. Set RectTransform:
    - Anchor: Center-Middle
    - Width: 400
@@ -25,25 +25,25 @@ This guide walks through setting up the UI and components for the airport upgrad
    - Pos X: 0, Pos Y: 0
 
 ### Step 2: Add Panel Background
-1. Select `AirportUpgradePanel`
+1. Select `Flower PatchUpgradePanel`
 2. In Inspector, adjust Image component:
    - Color: Semi-transparent dark (R:0, G:0, B:0, A:200)
 
 ### Step 3: Create Title Text
-1. Right-click `AirportUpgradePanel` → `UI > Text - TextMeshPro`
-2. Rename to `AirportNameText`
+1. Right-click `Flower PatchUpgradePanel` → `UI > Text - TextMeshPro`
+2. Rename to `Flower PatchNameText`
 3. Set RectTransform:
    - Anchor: Top-Center
    - Width: 360, Height: 50
    - Pos X: 0, Pos Y: -30
 4. TextMeshPro Settings:
-   - Text: "Forest Airport"
+   - Text: "Forest Flower Patch"
    - Font Size: 32
    - Alignment: Center
    - Color: White
 
 ### Step 4: Create Current Tier Text
-1. Right-click `AirportUpgradePanel` → `UI > Text - TextMeshPro`
+1. Right-click `Flower PatchUpgradePanel` → `UI > Text - TextMeshPro`
 2. Rename to `CurrentTierText`
 3. Set RectTransform:
    - Anchor: Top-Center
@@ -55,9 +55,9 @@ This guide walks through setting up the UI and components for the airport upgrad
    - Alignment: Center
    - Color: Light Gray
 
-### Step 5: Create Current Airplanes Text
-1. Right-click `AirportUpgradePanel` → `UI > Text - TextMeshPro`
-2. Rename to `CurrentAirplanesText`
+### Step 5: Create Current Bees Text
+1. Right-click `Flower PatchUpgradePanel` → `UI > Text - TextMeshPro`
+2. Rename to `CurrentBeesText`
 3. Set RectTransform:
    - Anchor: Top-Left
    - Width: 340, Height: 30
@@ -68,9 +68,9 @@ This guide walks through setting up the UI and components for the airport upgrad
    - Alignment: Left
    - Color: White
 
-### Step 6: Create Next Tier Airplanes Text
-1. Right-click `AirportUpgradePanel` → `UI > Text - TextMeshPro`
-2. Rename to `NextTierAirplanesText`
+### Step 6: Create Next Tier Bees Text
+1. Right-click `Flower PatchUpgradePanel` → `UI > Text - TextMeshPro`
+2. Rename to `NextTierBeesText`
 3. Set RectTransform:
    - Anchor: Top-Left
    - Width: 340, Height: 30
@@ -82,7 +82,7 @@ This guide walks through setting up the UI and components for the airport upgrad
    - Color: Green
 
 ### Step 7: Create Upgrade Cost Text
-1. Right-click `AirportUpgradePanel` → `UI > Text - TextMeshPro`
+1. Right-click `Flower PatchUpgradePanel` → `UI > Text - TextMeshPro`
 2. Rename to `UpgradeCostText`
 3. Set RectTransform:
    - Anchor: Bottom-Center
@@ -95,7 +95,7 @@ This guide walks through setting up the UI and components for the airport upgrad
    - Color: Yellow
 
 ### Step 8: Create Upgrade Button
-1. Right-click `AirportUpgradePanel` → `UI > Button - TextMeshPro`
+1. Right-click `Flower PatchUpgradePanel` → `UI > Button - TextMeshPro`
 2. Rename to `UpgradeButton`
 3. Set RectTransform:
    - Anchor: Bottom-Center
@@ -113,7 +113,7 @@ This guide walks through setting up the UI and components for the airport upgrad
    - Color: White
 
 ### Step 9: Create Close Button
-1. Right-click `AirportUpgradePanel` → `UI > Button - TextMeshPro`
+1. Right-click `Flower PatchUpgradePanel` → `UI > Button - TextMeshPro`
 2. Rename to `CloseButton`
 3. Set RectTransform:
    - Anchor: Top-Right
@@ -125,16 +125,16 @@ This guide walks through setting up the UI and components for the airport upgrad
    - Alignment: Center
    - Color: White
 
-### Step 10: Attach AirportUpgradePanel Script
-1. Select `AirportUpgradePanel` GameObject
+### Step 10: Attach Flower PatchUpgradePanel Script
+1. Select `Flower PatchUpgradePanel` GameObject
 2. In Inspector, click `Add Component`
-3. Search for `AirportUpgradePanel` script and add it
+3. Search for `Flower PatchUpgradePanel` script and add it
 4. Drag UI elements to script fields:
-   - **Panel Root:** `AirportUpgradePanel` GameObject itself
-   - **Airport Name Text:** `AirportNameText`
+   - **Panel Root:** `Flower PatchUpgradePanel` GameObject itself
+   - **Flower Patch Name Text:** `Flower PatchNameText`
    - **Current Tier Text:** `CurrentTierText`
-   - **Current Airplanes Text:** `CurrentAirplanesText`
-   - **Next Tier Airplanes Text:** `NextTierAirplanesText`
+   - **Current Bees Text:** `CurrentBeesText`
+   - **Next Tier Bees Text:** `NextTierBeesText`
    - **Upgrade Cost Text:** `UpgradeCostText`
    - **Upgrade Button:** `UpgradeButton`
    - **Close Button:** `CloseButton`
@@ -146,58 +146,58 @@ This guide walks through setting up the UI and components for the airport upgrad
 
 ---
 
-## Part 2: Setup Existing Airports
+## Part 2: Setup Existing Flower Patchs
 
-### For Each Airport in Scene:
+### For Each Flower Patch in Scene:
 
-#### Step 1: Add AirportClickHandler Component
-1. Select airport GameObject (e.g., `Forest Airport`)
-2. `Add Component` → `AirportClickHandler`
-3. Script will auto-find AirportController and AirportUpgradePanel
+#### Step 1: Add Flower PatchClickHandler Component
+1. Select flower patch GameObject (e.g., `Forest Flower Patch`)
+2. `Add Component` → `Flower PatchClickHandler`
+3. Script will auto-find Flower PatchController and Flower PatchUpgradePanel
 
 #### Step 2: Ensure Collider Exists
-1. If airport doesn't have a collider:
+1. If flower patch doesn't have a collider:
    - `Add Component` → `Box Collider`
-   - Adjust size to cover the airport model
+   - Adjust size to cover the flower patch model
    - This is needed for mouse click detection
 
 #### Step 3: (Optional) Add Hover Material
-1. Create a hover material (or duplicate airport's material)
+1. Create a hover material (or duplicate flower patch's material)
 2. Make it brighter/emissive for visual feedback
-3. Drag to `AirportClickHandler > Hover Material` field
+3. Drag to `Flower PatchClickHandler > Hover Material` field
 
-#### Step 4: Verify AirportController Settings
-1. Select airport GameObject
-2. Find `AirportController` component
+#### Step 4: Verify Flower PatchController Settings
+1. Select flower patch GameObject
+2. Find `Flower PatchController` component
 3. Verify upgrade settings (or leave defaults):
    - **Current Tier:** 0
-   - **Airplanes Per Tier:** [3, 4, 5, 7]
+   - **Bees Per Tier:** [3, 4, 5, 7]
    - **Upgrade Costs:** [50, 150, 400]
 
 #### Step 5: Verify RouteController Updates
-1. Select airport GameObject
+1. Select flower patch GameObject
 2. Find `RouteController` component
 3. Verify:
-   - **Airport Controller:** Should auto-populate with AirportController on same GameObject
-   - **Airplane Prefab:** Should already be set
-   - Remove/ignore old `Max Airplanes On Route` field (no longer used)
+   - **Flower Patch Controller:** Should auto-populate with Flower PatchController on same GameObject
+   - **Bee Prefab:** Should already be set
+   - Remove/ignore old `Max Bees On Route` field (no longer used)
 
 ---
 
-## Part 3: Setup New Airports (Future Placements)
+## Part 3: Setup New Flower Patchs (Future Placements)
 
-### Update Airport Prefab
+### Update Flower Patch Prefab
 1. Navigate to `Assets/Prefabs/`
-2. Find airport prefab (or the placeholder system)
-3. Add `AirportClickHandler` component to prefab
+2. Find flower patch prefab (or the placeholder system)
+3. Add `Flower PatchClickHandler` component to prefab
 4. Add Collider if not present
 5. Configure as described in Part 2
 
-### Update AirportPlaceholder.cs (if needed)
-The existing `AirportPlaceholder.cs` script should work without changes. When spawning airports, ensure:
-- AirportController is added
+### Update Flower PatchPlaceholder.cs (if needed)
+The existing `Flower PatchPlaceholder.cs` script should work without changes. When spawning flower patchs, ensure:
+- Flower PatchController is added
 - RouteController is added
-- AirportClickHandler is added (or add via prefab)
+- Flower PatchClickHandler is added (or add via prefab)
 
 ---
 
@@ -205,32 +205,32 @@ The existing `AirportPlaceholder.cs` script should work without changes. When sp
 
 ### Test Checklist:
 1. ✅ Enter Play Mode
-2. ✅ Click on an airport
+2. ✅ Click on an flower patch
 3. ✅ Upgrade panel appears with correct information
-4. ✅ Verify displayed airplane counts (3 → 4 → 5 → 7)
+4. ✅ Verify displayed bee counts (3 → 4 → 5 → 7)
 5. ✅ Verify upgrade costs ($50 → $150 → $400)
 6. ✅ Test with insufficient money (button should be disabled)
 7. ✅ Earn money and click Upgrade button
 8. ✅ Verify:
    - Money is deducted
    - Tier updates in panel
-   - New airplanes spawn on route
+   - New bees spawn on route
    - Panel shows next tier info (or "MAX TIER" at tier 3)
 9. ✅ Upgrade to max tier and verify "Max Tier" button appears
-10. ✅ Test with multiple airports (each upgrades independently)
+10. ✅ Test with multiple flower patchs (each upgrades independently)
 11. ✅ Click Close button (panel should hide)
 
 ### Expected Behavior:
-- **Base (Tier 0):** 3 airplanes, can upgrade for $50
-- **Tier 1:** 4 airplanes, can upgrade for $150
-- **Tier 2:** 5 airplanes, can upgrade for $400
-- **Tier 3:** 7 airplanes, MAX TIER (no more upgrades)
+- **Base (Tier 0):** 3 bees, can upgrade for $50
+- **Tier 1:** 4 bees, can upgrade for $150
+- **Tier 2:** 5 bees, can upgrade for $400
+- **Tier 3:** 7 bees, MAX TIER (no more upgrades)
 
 ### Debug Console:
 Watch for these log messages:
-- `Airport [name] upgraded to Tier X. New airplane count: Y`
-- `RouteController on [name]: Airport upgraded to tier X`
-- `Airport [name] clicked - opening upgrade panel`
+- `Flower Patch [name] upgraded to Tier X. New bee count: Y`
+- `RouteController on [name]: Flower Patch upgraded to tier X`
+- `Flower Patch [name] clicked - opening upgrade panel`
 
 ---
 
@@ -238,13 +238,13 @@ Watch for these log messages:
 
 ### Add Particle Effects on Upgrade:
 1. Create particle system prefab
-2. In `AirportController`, add public ParticleSystem field
-3. In `UpgradeAirport()` method, instantiate/play particles
+2. In `Flower PatchController`, add public ParticleSystem field
+3. In `UpgradeFlower Patch()` method, instantiate/play particles
 
 ### Tier Visual Indicators:
-1. Change airport material color based on tier
+1. Change flower patch material color based on tier
 2. Add emission glow that increases with tier
-3. Scale airport slightly with each tier
+3. Scale flower patch slightly with each tier
 
 ### UI Animations:
 1. Add UI animations to panel (fade in/out)
@@ -255,45 +255,45 @@ Watch for these log messages:
 
 ## Troubleshooting
 
-### Panel doesn't appear when clicking airport:
-- Check airport has Collider component
-- Verify `AirportClickHandler` is attached
+### Panel doesn't appear when clicking flower patch:
+- Check flower patch has Collider component
+- Verify `Flower PatchClickHandler` is attached
 - Check Console for error messages
-- Ensure `AirportUpgradePanel` GameObject exists in scene
+- Ensure `Flower PatchUpgradePanel` GameObject exists in scene
 - Verify camera has Physics Raycaster (usually auto-added)
 
 ### Button is always disabled:
 - Check `EconomyManager.Instance` exists in scene
 - Verify player has enough money
-- Check Console for errors in `AirportController.UpgradeAirport()`
+- Check Console for errors in `Flower PatchController.UpgradeFlower Patch()`
 
-### New airplanes don't spawn after upgrade:
-- Check `RouteController` is subscribed to `OnAirportUpgraded` event
-- Verify `RouteController.OnAirportUpgraded()` is being called (check Console logs)
-- Ensure airplane prefab is assigned to RouteController
+### New bees don't spawn after upgrade:
+- Check `RouteController` is subscribed to `OnFlower PatchUpgraded` event
+- Verify `RouteController.OnFlower PatchUpgraded()` is being called (check Console logs)
+- Ensure bee prefab is assigned to RouteController
 
 ### "Already at max tier" message:
-- Airport is at tier 3 (maximum)
+- Flower Patch is at tier 3 (maximum)
 - This is expected behavior - working correctly!
 
 ---
 
 ## Configuration Options
 
-### Adjust Airplane Scaling:
-Edit `AirportController` Inspector:
-- **Airplanes Per Tier:** Change [3, 4, 5, 7] to your preferred values
+### Adjust Bee Scaling:
+Edit `Flower PatchController` Inspector:
+- **Bees Per Tier:** Change [3, 4, 5, 7] to your preferred values
 - Example for aggressive scaling: [3, 6, 12, 20]
 - Example for conservative: [3, 4, 5, 6]
 
 ### Adjust Upgrade Costs:
-Edit `AirportController` Inspector:
+Edit `Flower PatchController` Inspector:
 - **Upgrade Costs:** Change [50, 150, 400] to balance economy
 - Example for expensive: [100, 500, 2000]
 - Example for cheap: [25, 75, 200]
 
 ### Adjust Colors:
-Edit `AirportUpgradePanel` Inspector:
+Edit `Flower PatchUpgradePanel` Inspector:
 - **Affordable Color:** Green (default)
 - **Unaffordable Color:** Red (default)
 - **Max Tier Color:** Gray (default)
@@ -304,28 +304,28 @@ Edit `AirportUpgradePanel` Inspector:
 
 ### Event Flow:
 ```
-Player Clicks Airport
+Player Clicks Flower Patch
     ↓
-AirportClickHandler.OnMouseDown()
+Flower PatchClickHandler.OnMouseDown()
     ↓
-AirportUpgradePanel.ShowPanel(airportController)
+Flower PatchUpgradePanel.ShowPanel(flower patchController)
     ↓
 Player Clicks Upgrade Button
     ↓
-AirportController.UpgradeAirport()
+Flower PatchController.UpgradeFlower Patch()
     ↓
-Deducts money, increments tier, fires OnAirportUpgraded event
+Deducts money, increments tier, fires OnFlower PatchUpgraded event
     ↓
-RouteController.OnAirportUpgraded()
+RouteController.OnFlower PatchUpgraded()
     ↓
-Recalculates spawn interval, spawns additional airplanes
+Recalculates spawn interval, spawns additional bees
 ```
 
 ### Key Components:
-- **AirportController:** Manages upgrade state (tier, costs, airplane counts)
-- **RouteController:** Reads tier from AirportController, spawns airplanes dynamically
-- **AirportClickHandler:** Detects clicks, opens UI
-- **AirportUpgradePanel:** Displays info, handles upgrade button
+- **Flower PatchController:** Manages upgrade state (tier, costs, bee counts)
+- **RouteController:** Reads tier from Flower PatchController, spawns bees dynamically
+- **Flower PatchClickHandler:** Detects clicks, opens UI
+- **Flower PatchUpgradePanel:** Displays info, handles upgrade button
 
 ---
 
@@ -341,7 +341,7 @@ Recalculates spawn interval, spawns additional airplanes
 - [ ] Particle effects on upgrade
 - [ ] Sound effects
 - [ ] UI animations
-- [ ] Tier-based visual changes to airports
+- [ ] Tier-based visual changes to flower patchs
 - [ ] Tooltips explaining benefits
 
 ---
@@ -352,6 +352,6 @@ If you encounter issues:
 1. Check Unity Console for error messages
 2. Verify all components are attached
 3. Ensure references are assigned in Inspector
-4. Test with simple case (one airport, lots of money)
+4. Test with simple case (one flower patch, lots of money)
 
 The system is designed to be modular and expandable. Enjoy building your cargo empire!

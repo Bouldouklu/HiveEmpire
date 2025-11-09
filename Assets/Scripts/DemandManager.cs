@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
-/// Manages city resource demands, tracking delivery rates over a rolling 60-second window.
+/// Manages hive resource demands, tracking delivery rates over a rolling 60-second window.
 /// Demands scale by 20% every 60 seconds. Payment multiplier is 1.0x when demand is met, 0.5x when not met.
 /// </summary>
 public class DemandManager : MonoBehaviour

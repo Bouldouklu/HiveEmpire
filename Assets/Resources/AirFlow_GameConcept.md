@@ -1,4 +1,4 @@
-# CARGO EMPIRE - Game Concept Document
+# HIVE EMPIRE - Game Concept Document
 
 **Version:** Prototype v1.0  
 **Target:** 3-4 week prototype for itch.io WebGL  
@@ -8,7 +8,7 @@
 
 ## High-Level Concept
 
-> **"Build an automated cargo network connecting resource-producing airports to your central city. Discover synergies, manage bottlenecks, and optimize production chains for exponential growth."**
+> **"Build an automated pollen network connecting resource-producing flower patchs to your central hive. Discover synergies, manage bottlenecks, and optimize production chains for exponential growth."**
 
 **Genre:** Incremental Strategy + Resource Management  
 **Style:** Minimalist 3D, top-down view (Mini Metro aesthetic)  
@@ -22,22 +22,22 @@
 **NOT about:** Perfect flight path routing  
 **IS about:** Identifying bottlenecks, strategic upgrades, resource synergy optimization
 
-**Player Fantasy:** "I'm building an efficient cargo empire by understanding which resources combine for maximum profit."
+**Player Fantasy:** "I'm building an efficient pollen empire by understanding which resources combine for maximum profit."
 
 ---
 
 ## Core Game Loop
 
 ```
-Airport generates Resource (Wood/Stone/Oil/Food)
+Flower Patch generates Resource (Wood/Stone/Oil/Food)
     ↓
-Airplane automatically delivers to City
+Bee automatically delivers to Hive
     ↓
-City COMBINES resources → Higher value products
+Hive COMBINES resources → Higher value products
     ↓
 Earn exponential Money
     ↓
-Spend on: New Airports, Upgrades, Unlock Biomes
+Spend on: New Flower Patchs, Upgrades, Unlock Biomes
     ↓
 Optimize bottlenecks, balance production rates
     ↓
@@ -48,7 +48,7 @@ LOOP with increasing complexity
 
 ## Win Condition
 
-**Goal:** Maximize income per second from ONE city  
+**Goal:** Maximize income per second from ONE hive  
 **No failure state** - pure incremental progression  
 **Endgame:** Prestige system (reset with permanent bonuses)
 
@@ -58,7 +58,7 @@ LOOP with increasing complexity
 
 ### 1. RESOURCE SYNERGY SYSTEM (The Heart)
 
-Resources have **exponential value** when combined at the city.
+Resources have **exponential value** when combined at the hive.
 
 #### Individual Resources (Low Value):
 ```
@@ -94,7 +94,7 @@ Wood + Stone + Oil + Food → Tech Products = $200
 
 ### 2. LIMITED CONNECTION SLOTS (Forces Choices)
 
-**The Constraint:** City can only connect to **limited number of airports**
+**The Constraint:** Hive can only connect to **limited number of flower patchs**
 
 ```
 Starting: 2 connection slots (free)
@@ -143,13 +143,13 @@ Upgrade 3: 5 slots ($10000)
 
 ### 4. AIRPORTS (Buildings)
 
-#### Basic Airport
+#### Basic Flower Patch
 - **Function:** Generates 1 resource type based on biome
 - **Visual:** Simple 2x2 platform with biome-colored accent
-- **Cost:** $50 (after first free airport per biome)
+- **Cost:** $50 (after first free flower patch per biome)
 - **Placement:** Appears in discovered biome when purchased
 
-#### Airport Upgrades (Choose Specialization Path):
+#### Flower Patch Upgrades (Choose Specialization Path):
 
 **PRODUCER Path:**
 ```
@@ -161,11 +161,11 @@ Tier 3: Generates 2 resources simultaneously ($500)
 
 **SPEED HUB Path:**
 ```
-Tier 1: Airplanes 2x faster from this airport ($75)
-Tier 2: Airplanes 3x faster + carry 2 items ($200)
+Tier 1: Bees 2x faster from this flower patch ($75)
+Tier 2: Bees 3x faster + carry 2 items ($200)
 Tier 3: Instant delivery (teleport-like) ($600)
 ```
-**When to use:** Airport is far from city (slow delivery)
+**When to use:** Flower Patch is far from hive (slow delivery)
 
 **PROCESSOR Path:**
 ```
@@ -189,20 +189,20 @@ Tier 3: Overflow converts to multiplier bonus ($400)
 
 ### 5. THE CITY (Central Hub)
 
-#### City Function:
-- **Receives:** All cargo deliveries
+#### Hive Function:
+- **Receives:** All pollen deliveries
 - **Combines:** Resources into high-value products automatically
 - **Pays Out:** Money based on combination value
 - **Has:** Limited connection slots (upgradable)
 
-#### City Upgrades:
+#### Hive Upgrades:
 ```
-Processing Speed: How fast city combines resources
+Processing Speed: How fast hive combines resources
 - Tier 1: 1 combo per 3 seconds ($100)
 - Tier 2: 1 combo per 1 second ($500)
 - Tier 3: 2 combos per 1 second ($2000)
 
-Connection Slots: How many airports can connect
+Connection Slots: How many flower patchs can connect
 - Start: 2 slots (free)
 - Tier 2: 3 slots ($500)
 - Tier 3: 4 slots ($2000)
@@ -222,18 +222,18 @@ Storage Capacity: Holds resources before combining
 **Behavior:** Fully automated (no player control needed)  
 **AI Logic:**
 ```
-1. Spawn at Airport when resource ready
-2. Fly to City along straight line route
-3. Deliver cargo to City
-4. Return to Airport
+1. Spawn at Flower Patch when resource ready
+2. Fly to Hive along straight line route
+3. Deliver pollen to Hive
+4. Return to Flower Patch
 5. Repeat
 ```
 
-**No route drawing needed!** - AIRPLANES automatically find City from any Airport
+**No route drawing needed!** - AIRPLANES automatically find Hive from any Flower Patch
 
-**Airplane Properties:**
-- Speed: 3 units/second (affected by Airport Speed Hub upgrades)
-- Capacity: 1 resource (upgradable via Airport upgrades)
+**Bee Properties:**
+- Speed: 3 units/second (affected by Flower Patch Nectar Flow upgrades)
+- Capacity: 1 resource (upgradable via Flower Patch upgrades)
 - Visual feedback: Carries visible colored cube (resource type)
 
 ---
@@ -253,15 +253,15 @@ Storage Capacity: Holds resources before combining
 #### Unlock Progression:
 ```
 $0 → Start
-  ✓ City + Forest + Plains
+  ✓ Hive + Forest + Plains
   ✓ 2 connection slots
 
 $100 → Unlock First Tier Biome
   ✓ Choose: Mountain or Coastal
   ✓ Enable two-resource combos
 
-$250 → Airport Upgrade Available
-  ✓ Can specialize airports
+$250 → Flower Patch Upgrade Available
+  ✓ Can specialize flower patchs
 
 $500 → Third Connection Slot
   ✓ Can connect 3 biomes
@@ -296,7 +296,7 @@ $50000 → Prestige Available
   → All Producers generate 50% faster (forever)
 
 "Logistics Master"  
-  → All Airplanes 2x speed (forever)
+  → All Bees 2x speed (forever)
 
 "Resource Abundance"
   → Start with 3 connection slots instead of 2
@@ -320,7 +320,7 @@ $50000 → Prestige Available
 
 ### Opening (0-5 minutes):
 ```
-Have: City + Forest (wood) + Plains (food)
+Have: Hive + Forest (wood) + Plains (food)
 Slots: 2/2 (full)
 Money: $0
 
@@ -348,7 +348,7 @@ Strategy B: Long-term greed, save for Desert
 ### Mid-Game Pivot (15-30 minutes):
 ```
 Have: Forest, Mountain, Desert unlocked
-Slots: 2/3 (City upgraded)
+Slots: 2/3 (Hive upgraded)
 Current: Forest + Mountain connected
 Potential: Wood+Stone+Oil = $50 (vs current $10)
 
@@ -367,9 +367,9 @@ Bottleneck: Oil is slowest, limits Tech combo rate
 
 Multiple Solutions:
 A) Upgrade Desert to Producer (more oil) $150
-B) Upgrade Desert to Speed Hub (faster delivery) $75
-C) Add second Desert airport (parallel generation) $50
-D) Upgrade City processing speed (combine faster) $500
+B) Upgrade Desert to Nectar Flow (faster delivery) $75
+C) Add second Desert flower patch (parallel generation) $50
+D) Upgrade Hive processing speed (combine faster) $500
 E) Upgrade Desert to Processor (pre-combine at source) $100
 
 NO "correct" answer → player creativity!
@@ -387,7 +387,7 @@ NO "correct" answer → player creativity!
 ### Color Palette
 ```
 BACKGROUND:
-- City/Ground: Dark gray (#2a2a2a)
+- Hive/Ground: Dark gray (#2a2a2a)
 - Grid: Subtle white (#ffffff at 10%)
 
 BIOMES:
@@ -399,8 +399,8 @@ BIOMES:
 - Tundra: Cyan (#44ccff)
 
 BUILDINGS:
-- Airport: Biome color + white accent
-- City: Multi-color (all biome colors mixed)
+- Flower Patch: Biome color + white accent
+- Hive: Multi-color (all biome colors mixed)
 
 UI:
 - Money: Gold (#ffaa00)
@@ -412,7 +412,7 @@ UI:
 - **Camera:** Orthographic, 45° top-down angle
 - **Zoom:** Optional (scroll to zoom in/out)
 - **Pan:** Optional (drag or edge-scroll)
-- **Focus:** City is center, airports around it
+- **Focus:** Hive is center, flower patchs around it
 
 ---
 
@@ -421,20 +421,20 @@ UI:
 ### Unity Configuration
 - **Version:** Unity 2022 LTS or Unity 6
 - **Pipeline:** URP (better WebGL performance)
-- **Target:** WebGL build, 60 FPS with 100+ Airplanes
+- **Target:** WebGL build, 60 FPS with 100+ Bees
 
 ### Scene Layout
 ```
 World: 40x40 unit grid
-City: Center (0, 0, 0)
-Airports: Spawn in ring around city
+Hive: Center (0, 0, 0)
+Flower Patchs: Spawn in ring around hive
   - Close biomes: 10-15 units from center
   - Far biomes: 20-30 units from center
 ```
 
 ### Performance Target
-- 100 Airplanes: 60 FPS (easy)
-- 200 Airplanes: 50+ FPS (target)
+- 100 Bees: 60 FPS (easy)
+- 200 Bees: 50+ FPS (target)
 - Use object pooling if needed (simple optimization)
 
 ---
@@ -447,20 +447,20 @@ Airports: Spawn in ring around city
 
 **Day 1-2: Foundation**
 - [ ] Top-down camera setup
-- [ ] City building (center, receives cargo)
-- [ ] 2 Airport types: Forest (wood), Plains (food)
-- [ ] Click to build Airport ($50)
+- [ ] Hive building (center, receives pollen)
+- [ ] 2 Flower Patch types: Forest (wood), Plains (food)
+- [ ] Click to build Flower Patch ($50)
 - [ ] Basic resource generation (1 per 2 seconds)
 
 **Day 3-4: Automation**
-- [ ] Airplane spawning at Airport
-- [ ] Airplane flies to City
-- [ ] Delivers resource to City
+- [ ] Bee spawning at Flower Patch
+- [ ] Bee flies to Hive
+- [ ] Delivers resource to Hive
 - [ ] Single resource = $1 income
 
 **Day 5-6: The Hook - Synergies**
-- [ ] Mountain Airport (stone) unlockable ($100)
-- [ ] City combines Wood + Stone → Buildings ($10)
+- [ ] Mountain Flower Patch (stone) unlockable ($100)
+- [ ] Hive combines Wood + Stone → Buildings ($10)
 - [ ] Visual feedback: combo notification, money earned
 - [ ] Combo counter: "Buildings created: X"
 
@@ -483,12 +483,12 @@ Airports: Spawn in ring around city
 
 **Tasks:**
 - [ ] Connection Slot limit (2 slots, upgradable to 3 for $500)
-- [ ] Desert Airport (oil) - slow generation
+- [ ] Desert Flower Patch (oil) - slow generation
 - [ ] Triple combo: Wood+Stone+Oil = $50
-- [ ] Airport upgrade system: Producer specialization (+50% speed)
-- [ ] Visual distinction between specialized airports
+- [ ] Flower Patch upgrade system: Producer specialization (+50% speed)
+- [ ] Visual distinction between specialized flower patchs
 - [ ] Money counter shows "$/sec" rate
-- [ ] Bottleneck identification: visual indicator on slow airports
+- [ ] Bottleneck identification: visual indicator on slow flower patchs
 
 **Week 2 Success Criteria:**
 ✅ Limited slots create meaningful choices  
@@ -504,7 +504,7 @@ Airports: Spawn in ring around city
 
 **Tasks:**
 - [ ] All 4 specialization paths (Producer/Speed/Processor/Storage)
-- [ ] City upgrades (processing speed, storage)
+- [ ] Hive upgrades (processing speed, storage)
 - [ ] 6 biome types total
 - [ ] Four-resource combo (Tech Products = $200)
 - [ ] UI polish (tooltips, upgrade trees, stats screen)
@@ -611,23 +611,23 @@ A: Player expression. Different problems, different solutions. Replayability.
 **Q: Why exponential combo values?**  
 A: Core of incremental games. 10x jumps feel great. Linear growth is boring.
 
-**Q: Why synergies instead of just "more airports = more money"?**  
+**Q: Why synergies instead of just "more flower patchs = more money"?**  
 A: Strategy requires choices. Synergies create "which combination?" puzzle.
 
 ---
 
 ## Open Questions (Decide During Prototyping)
 
-**Airport Placement:**
+**Flower Patch Placement:**
 - Player chooses location? OR
 - Auto-spawns in biome zones?
-- **Recommendation:** Auto-spawn for simplicity (Week 1), add placement in Week 2 if needed
+- **Recommendation:** Auto-spawn for simplihive (Week 1), add placement in Week 2 if needed
 
-**Airplane Count:**
-- One Airplane per airport? OR
-- Global Airplane pool? OR
-- Automatic scaling (more Airplanes spawn as needed)?
-- **Recommendation:** Auto-scale (more airports = more Airplanes automatically)
+**Bee Count:**
+- One Bee per flower patch? OR
+- Global Bee pool? OR
+- Automatic scaling (more Bees spawn as needed)?
+- **Recommendation:** Auto-scale (more flower patchs = more Bees automatically)
 
 **Save System:**
 - LocalStorage (save progress) OR

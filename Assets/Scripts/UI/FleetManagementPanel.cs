@@ -5,8 +5,8 @@ using TMPro;
 
 /// <summary>
 /// UI controller for the fleet management panel.
-/// Displays global drone fleet information and allows players to allocate/deallocate drones to airports.
-/// Shows a list of all airports with allocation controls.
+/// Displays global bee fleet information and allows players to allocate/deallocate bees to flowerPatchs.
+/// Shows a list of all flowerPatchs with allocation controls.
 /// </summary>
 public class FleetManagementPanel : MonoBehaviour
 {
@@ -18,34 +18,34 @@ public class FleetManagementPanel : MonoBehaviour
     [SerializeField] private Button closeButton;
 
     [Header("UI References - Global Stats")]
-    [Tooltip("Text displaying total drones owned")]
-    [SerializeField] private TextMeshProUGUI totalDronesText;
+    [Tooltip("Text displaying total bees owned")]
+    [SerializeField] private TextMeshProUGUI totalBeesText;
 
-    [Tooltip("Text displaying drones currently assigned")]
-    [SerializeField] private TextMeshProUGUI assignedDronesText;
+    [Tooltip("Text displaying bees currently assigned")]
+    [SerializeField] private TextMeshProUGUI assignedBeesText;
 
-    [Tooltip("Text displaying available drones")]
-    [SerializeField] private TextMeshProUGUI availableDronesText;
+    [Tooltip("Text displaying available bees")]
+    [SerializeField] private TextMeshProUGUI availableBeesText;
 
-    [Header("UI References - Airport List")]
-    [Tooltip("Container for airport allocation entries (vertical layout group)")]
-    [SerializeField] private Transform airportListContainer;
+    [Header("UI References - FlowerPatch List")]
+    [Tooltip("Container for flowerPatch allocation entries (vertical layout group)")]
+    [SerializeField] private Transform flowerPatchListContainer;
 
-    [Tooltip("Prefab for airport allocation entry")]
-    [SerializeField] private GameObject airportEntryPrefab;
+    [Tooltip("Prefab for flowerPatch allocation entry")]
+    [SerializeField] private GameObject flowerPatchEntryPrefab;
 
     [Header("Colors")]
-    [Tooltip("Color when airport has capacity for more drones")]
+    [Tooltip("Color when flowerPatch has capacity for more bees")]
     [SerializeField] private Color hasCapacityColor = Color.green;
 
-    [Tooltip("Color when airport is at full capacity")]
+    [Tooltip("Color when flowerPatch is at full capacity")]
     [SerializeField] private Color atCapacityColor = Color.red;
 
-    [Tooltip("Color when no drones are available to allocate")]
-    [SerializeField] private Color noDronesAvailableColor = Color.yellow;
+    [Tooltip("Color when no bees are available to allocate")]
+    [SerializeField] private Color noBeesAvailableColor = Color.yellow;
 
-    // Track spawned airport entries
-    private Dictionary<AirportController, GameObject> airportEntries = new Dictionary<AirportController, GameObject>();
+    // Track spawned flowerPatch entries
+    private Dictionary<FlowerPatchController, GameObject> flowerPatchEntries = new Dictionary<FlowerPatchController, GameObject>();
 
     private void Awake()
     {
@@ -59,10 +59,10 @@ public class FleetManagementPanel : MonoBehaviour
         HidePanel();
 
         // Subscribe to fleet manager events
-        if (DroneFleetManager.Instance != null)
+        if (BeeFleetManager.Instance != null)
         {
-            DroneFleetManager.Instance.OnDroneAllocationChanged.AddListener(OnDroneAllocationChanged);
-            DroneFleetManager.Instance.OnTotalDronesChanged.AddListener(OnTotalDronesChanged);
+            BeeFleetManager.Instance.OnBeeAllocationChanged.AddListener(OnBeeAllocationChanged);
+            BeeFleetManager.Instance.OnTotalBeesChanged.AddListener(OnTotalBeesChanged);
         }
 
         // Subscribe to economy events (for capacity upgrade affordability)
@@ -80,10 +80,10 @@ public class FleetManagementPanel : MonoBehaviour
             closeButton.onClick.RemoveListener(OnCloseButtonClicked);
         }
 
-        if (DroneFleetManager.Instance != null)
+        if (BeeFleetManager.Instance != null)
         {
-            DroneFleetManager.Instance.OnDroneAllocationChanged.RemoveListener(OnDroneAllocationChanged);
-            DroneFleetManager.Instance.OnTotalDronesChanged.RemoveListener(OnTotalDronesChanged);
+            BeeFleetManager.Instance.OnBeeAllocationChanged.RemoveListener(OnBeeAllocationChanged);
+            BeeFleetManager.Instance.OnTotalBeesChanged.RemoveListener(OnTotalBeesChanged);
         }
 
         if (EconomyManager.Instance != null)
@@ -141,7 +141,7 @@ public class FleetManagementPanel : MonoBehaviour
     private void RefreshUI()
     {
         UpdateGlobalStats();
-        UpdateAirportList();
+        UpdateFlowerPatchList();
     }
 
     /// <summary>
@@ -149,59 +149,59 @@ public class FleetManagementPanel : MonoBehaviour
     /// </summary>
     private void UpdateGlobalStats()
     {
-        if (DroneFleetManager.Instance == null) return;
+        if (BeeFleetManager.Instance == null) return;
 
-        int totalDrones = DroneFleetManager.Instance.TotalDronesOwned;
-        int availableDrones = DroneFleetManager.Instance.GetAvailableDrones();
-        int assignedDrones = totalDrones - availableDrones;
+        int totalBees = BeeFleetManager.Instance.TotalBeesOwned;
+        int availableBees = BeeFleetManager.Instance.GetAvailableBees();
+        int assignedBees = totalBees - availableBees;
 
-        if (totalDronesText != null)
+        if (totalBeesText != null)
         {
-            totalDronesText.text = $"Total Drones: {totalDrones}";
+            totalBeesText.text = $"Total Bees: {totalBees}";
         }
 
-        if (assignedDronesText != null)
+        if (assignedBeesText != null)
         {
-            assignedDronesText.text = $"Assigned: {assignedDrones}";
+            assignedBeesText.text = $"Assigned: {assignedBees}";
         }
 
-        if (availableDronesText != null)
+        if (availableBeesText != null)
         {
-            availableDronesText.text = $"Available: {availableDrones}";
+            availableBeesText.text = $"Available: {availableBees}";
         }
     }
 
     /// <summary>
-    /// Updates the list of all airports with allocation controls
+    /// Updates the list of all flowerPatchs with allocation controls
     /// </summary>
-    private void UpdateAirportList()
+    private void UpdateFlowerPatchList()
     {
-        if (airportListContainer == null || airportEntryPrefab == null)
+        if (flowerPatchListContainer == null || flowerPatchEntryPrefab == null)
         {
-            Debug.LogWarning("FleetManagementPanel: Missing airport list container or prefab");
+            Debug.LogWarning("FleetManagementPanel: Missing flowerPatch list container or prefab");
             return;
         }
 
-        // Find all airports in the scene
-        AirportController[] allAirports = FindObjectsByType<AirportController>(FindObjectsSortMode.None);
+        // Find all flowerPatchs in the scene
+        FlowerPatchController[] allFlowerPatchs = FindObjectsByType<FlowerPatchController>(FindObjectsSortMode.None);
 
-        // Remove entries for airports that no longer exist
-        List<AirportController> airportsToRemove = new List<AirportController>();
-        foreach (var kvp in airportEntries)
+        // Remove entries for flowerPatchs that no longer exist
+        List<FlowerPatchController> flowerPatchsToRemove = new List<FlowerPatchController>();
+        foreach (var kvp in flowerPatchEntries)
         {
-            bool airportStillExists = false;
-            foreach (var airport in allAirports)
+            bool flowerPatchStillExists = false;
+            foreach (var flowerPatch in allFlowerPatchs)
             {
-                if (airport == kvp.Key)
+                if (flowerPatch == kvp.Key)
                 {
-                    airportStillExists = true;
+                    flowerPatchStillExists = true;
                     break;
                 }
             }
 
-            if (!airportStillExists)
+            if (!flowerPatchStillExists)
             {
-                airportsToRemove.Add(kvp.Key);
+                flowerPatchsToRemove.Add(kvp.Key);
                 if (kvp.Value != null)
                 {
                     Destroy(kvp.Value);
@@ -209,82 +209,82 @@ public class FleetManagementPanel : MonoBehaviour
             }
         }
 
-        foreach (var airport in airportsToRemove)
+        foreach (var flowerPatch in flowerPatchsToRemove)
         {
-            airportEntries.Remove(airport);
+            flowerPatchEntries.Remove(flowerPatch);
         }
 
-        // Create or update entries for all existing airports
-        foreach (var airport in allAirports)
+        // Create or update entries for all existing flowerPatchs
+        foreach (var flowerPatch in allFlowerPatchs)
         {
-            if (!airportEntries.ContainsKey(airport))
+            if (!flowerPatchEntries.ContainsKey(flowerPatch))
             {
                 // Create new entry
-                GameObject entryObject = Instantiate(airportEntryPrefab, airportListContainer);
-                airportEntries[airport] = entryObject;
+                GameObject entryObject = Instantiate(flowerPatchEntryPrefab, flowerPatchListContainer);
+                flowerPatchEntries[flowerPatch] = entryObject;
 
                 // Setup entry
-                SetupAirportEntry(entryObject, airport);
+                SetupFlowerPatchEntry(entryObject, flowerPatch);
             }
 
             // Update entry data
-            UpdateAirportEntry(airportEntries[airport], airport);
+            UpdateFlowerPatchEntry(flowerPatchEntries[flowerPatch], flowerPatch);
         }
     }
 
     /// <summary>
-    /// Sets up button listeners for an airport entry
+    /// Sets up button listeners for an flowerPatch entry
     /// </summary>
-    private void SetupAirportEntry(GameObject entryObject, AirportController airport)
+    private void SetupFlowerPatchEntry(GameObject entryObject, FlowerPatchController flowerPatch)
     {
         // Find add button
         Button addButton = entryObject.transform.Find("AddButton")?.GetComponent<Button>();
         if (addButton != null)
         {
-            addButton.onClick.AddListener(() => OnAllocateDroneClicked(airport));
+            addButton.onClick.AddListener(() => OnAllocateBeeClicked(flowerPatch));
         }
 
         // Find remove button
         Button removeButton = entryObject.transform.Find("RemoveButton")?.GetComponent<Button>();
         if (removeButton != null)
         {
-            removeButton.onClick.AddListener(() => OnDeallocateDroneClicked(airport));
+            removeButton.onClick.AddListener(() => OnDeallocateBeeClicked(flowerPatch));
         }
     }
 
     /// <summary>
-    /// Updates an airport entry's display
+    /// Updates an flowerPatch entry's display
     /// </summary>
-    private void UpdateAirportEntry(GameObject entryObject, AirportController airport)
+    private void UpdateFlowerPatchEntry(GameObject entryObject, FlowerPatchController flowerPatch)
     {
-        if (entryObject == null || airport == null) return;
+        if (entryObject == null || flowerPatch == null) return;
 
-        int allocatedDrones = DroneFleetManager.Instance != null ? DroneFleetManager.Instance.GetAllocatedDrones(airport) : 0;
-        int capacity = airport.MaxDroneCapacity;
-        int availableDrones = DroneFleetManager.Instance != null ? DroneFleetManager.Instance.GetAvailableDrones() : 0;
+        int allocatedBees = BeeFleetManager.Instance != null ? BeeFleetManager.Instance.GetAllocatedBees(flowerPatch) : 0;
+        int capacity = flowerPatch.MaxBeeCapacity;
+        int availableBees = BeeFleetManager.Instance != null ? BeeFleetManager.Instance.GetAvailableBees() : 0;
 
-        // Update airport name
-        TextMeshProUGUI nameText = entryObject.transform.Find("AirportNameText")?.GetComponent<TextMeshProUGUI>();
+        // Update flowerPatch name
+        TextMeshProUGUI nameText = entryObject.transform.Find("FlowerPatchNameText")?.GetComponent<TextMeshProUGUI>();
         if (nameText != null)
         {
-            string biomeName = airport.GetBiomeType().ToString();
-            nameText.text = $"{biomeName} Airport";
+            string biomeName = flowerPatch.GetBiomeType().ToString();
+            nameText.text = $"{biomeName} FlowerPatch";
         }
 
         // Update allocation text
         TextMeshProUGUI allocationText = entryObject.transform.Find("AllocationText")?.GetComponent<TextMeshProUGUI>();
         if (allocationText != null)
         {
-            allocationText.text = $"{allocatedDrones} / {capacity}";
+            allocationText.text = $"{allocatedBees} / {capacity}";
 
             // Color coding
-            if (allocatedDrones >= capacity)
+            if (allocatedBees >= capacity)
             {
                 allocationText.color = atCapacityColor;
             }
-            else if (availableDrones <= 0)
+            else if (availableBees <= 0)
             {
-                allocationText.color = noDronesAvailableColor;
+                allocationText.color = noBeesAvailableColor;
             }
             else
             {
@@ -296,8 +296,8 @@ public class FleetManagementPanel : MonoBehaviour
         Button addButton = entryObject.transform.Find("AddButton")?.GetComponent<Button>();
         if (addButton != null)
         {
-            // Disable if at capacity OR no drones available
-            bool canAdd = allocatedDrones < capacity && availableDrones > 0;
+            // Disable if at capacity OR no bees available
+            bool canAdd = allocatedBees < capacity && availableBees > 0;
             addButton.interactable = canAdd;
         }
 
@@ -305,24 +305,24 @@ public class FleetManagementPanel : MonoBehaviour
         Button removeButton = entryObject.transform.Find("RemoveButton")?.GetComponent<Button>();
         if (removeButton != null)
         {
-            // Disable if no drones allocated
-            bool canRemove = allocatedDrones > 0;
+            // Disable if no bees allocated
+            bool canRemove = allocatedBees > 0;
             removeButton.interactable = canRemove;
         }
     }
 
     /// <summary>
-    /// Called when allocate drone button is clicked for an airport
+    /// Called when allocate bee button is clicked for an flowerPatch
     /// </summary>
-    private void OnAllocateDroneClicked(AirportController airport)
+    private void OnAllocateBeeClicked(FlowerPatchController flowerPatch)
     {
-        if (airport == null || DroneFleetManager.Instance == null) return;
+        if (flowerPatch == null || BeeFleetManager.Instance == null) return;
 
-        bool success = DroneFleetManager.Instance.AllocateDrone(airport);
+        bool success = BeeFleetManager.Instance.AllocateBee(flowerPatch);
 
         if (!success)
         {
-            Debug.LogWarning($"Failed to allocate drone to {airport.name}");
+            Debug.LogWarning($"Failed to allocate bee to {flowerPatch.name}");
         }
 
         // Immediately refresh UI to show updated allocation
@@ -330,17 +330,17 @@ public class FleetManagementPanel : MonoBehaviour
     }
 
     /// <summary>
-    /// Called when deallocate drone button is clicked for an airport
+    /// Called when deallocate bee button is clicked for an flowerPatch
     /// </summary>
-    private void OnDeallocateDroneClicked(AirportController airport)
+    private void OnDeallocateBeeClicked(FlowerPatchController flowerPatch)
     {
-        if (airport == null || DroneFleetManager.Instance == null) return;
+        if (flowerPatch == null || BeeFleetManager.Instance == null) return;
 
-        bool success = DroneFleetManager.Instance.DeallocateDrone(airport);
+        bool success = BeeFleetManager.Instance.DeallocateBee(flowerPatch);
 
         if (!success)
         {
-            Debug.LogWarning($"Failed to deallocate drone from {airport.name}");
+            Debug.LogWarning($"Failed to deallocate bee from {flowerPatch.name}");
         }
 
         // Immediately refresh UI to show updated allocation
@@ -348,9 +348,9 @@ public class FleetManagementPanel : MonoBehaviour
     }
 
     /// <summary>
-    /// Called when drone allocation changes
+    /// Called when bee allocation changes
     /// </summary>
-    private void OnDroneAllocationChanged(AirportController airport, int newAllocation)
+    private void OnBeeAllocationChanged(FlowerPatchController flowerPatch, int newAllocation)
     {
         // Only update if panel is visible
         if (panelRoot != null && panelRoot.activeSelf)
@@ -360,9 +360,9 @@ public class FleetManagementPanel : MonoBehaviour
     }
 
     /// <summary>
-    /// Called when total drones owned changes
+    /// Called when total bees owned changes
     /// </summary>
-    private void OnTotalDronesChanged(int newTotal)
+    private void OnTotalBeesChanged(int newTotal)
     {
         // Only update if panel is visible
         if (panelRoot != null && panelRoot.activeSelf)

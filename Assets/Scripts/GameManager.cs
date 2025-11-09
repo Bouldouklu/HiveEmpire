@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Manages global game state including airplane count tracking.
+/// Manages global game state including bee count tracking.
 /// Provides singleton access for game-wide systems.
 /// </summary>
 public class GameManager : MonoBehaviour
@@ -9,16 +9,16 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     [Header("Game Statistics")]
-    [Tooltip("Total number of airplanes currently active in the scene")]
-    [SerializeField] private int totalAirplaneCount = 0;
+    [Tooltip("Total number of bees currently active in the scene")]
+    [SerializeField] private int totalBeeCount = 0;
 
     [Tooltip("Elapsed game time in seconds")]
     [SerializeField] private float elapsedTime = 0f;
 
     /// <summary>
-    /// Gets the current total number of airplanes in the scene.
+    /// Gets the current total number of bees in the scene.
     /// </summary>
-    public int TotalAirplaneCount => totalAirplaneCount;
+    public int TotalBeeCount => totalBeeCount;
 
     /// <summary>
     /// Gets the elapsed game time in seconds.
@@ -59,26 +59,26 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Registers a newly spawned airplane. Call this when an airplane is created.
+    /// Registers a newly spawned bee. Call this when an bee is created.
     /// </summary>
-    public void RegisterAirplane()
+    public void RegisterBee()
     {
-        totalAirplaneCount++;
-        Debug.Log($"Airplane registered. Total count: {totalAirplaneCount}");
+        totalBeeCount++;
+        Debug.Log($"Bee registered. Total count: {totalBeeCount}");
     }
 
     /// <summary>
-    /// Unregisters an airplane that has been destroyed. Call this when an airplane is destroyed.
+    /// Unregisters an bee that has been destroyed. Call this when an bee is destroyed.
     /// </summary>
-    public void UnregisterAirplane()
+    public void UnregisterBee()
     {
-        totalAirplaneCount--;
-        if (totalAirplaneCount < 0)
+        totalBeeCount--;
+        if (totalBeeCount < 0)
         {
-            Debug.LogWarning("Airplane count went negative! Resetting to 0.");
-            totalAirplaneCount = 0;
+            Debug.LogWarning("Bee count went negative! Resetting to 0.");
+            totalBeeCount = 0;
         }
-        Debug.Log($"Airplane unregistered. Total count: {totalAirplaneCount}");
+        Debug.Log($"Bee unregistered. Total count: {totalBeeCount}");
     }
 
     private void OnDestroy()

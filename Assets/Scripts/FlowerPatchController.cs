@@ -2,61 +2,61 @@ using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
-/// Controls an airport that instantly provides resources based on its biome type.
-/// Airports act as infinite resource dispensers - airplanes are the limiting factor.
-/// Airplane spawning is now handled by RouteController component.
-/// Supports Speed Hub upgrades that increase airplane count per route.
+/// Controls a flower patch that instantly provides pollen based on its biome type.
+/// Flower patches act as infinite pollen dispensers - bees are the limiting factor.
+/// Bee spawning is now handled by RouteController component.
+/// Supports Nectar Flow upgrades that increase bee count per route.
 /// </summary>
-public class AirportController : MonoBehaviour
+public class FlowerPatchController : MonoBehaviour
 {
-    [Header("Airport Settings")]
-    [Tooltip("Biome type determines what resource this airport produces")]
+    [Header("Flower Patch Settings")]
+    [Tooltip("Biome type determines what pollen this flower patch produces")]
     [SerializeField] private BiomeType biomeType = BiomeType.Desert;
 
-    [Header("Drone Capacity System")]
-    [Tooltip("Maximum drones that can be assigned to this airport's route")]
-    [SerializeField] private int maxDroneCapacity = 5;
+    [Header("Bee Capacity System")]
+    [Tooltip("Maximum bees that can be assigned to this flower patch's pollen route")]
+    [SerializeField] private int maxBeeCapacity = 5;
 
-    [Tooltip("Capacity upgrade tier (0=5 drones, 1=10 drones)")]
+    [Tooltip("Capacity upgrade tier (0=5 bees, 1=10 bees)")]
     [SerializeField] private int capacityTier = 0;
 
     [Tooltip("Cost to upgrade capacity from 5 to 10")]
     [SerializeField] private float capacityUpgradeCost = 100f;
 
-    [Header("Upgrade System - Speed Hub")]
+    [Header("Upgrade System - Nectar Flow")]
     [Tooltip("Current upgrade tier (0=Base, 1-3=Upgraded)")]
     [SerializeField] private int currentTier = 0;
 
     [Tooltip("Upgrade cost for each tier [Tier1, Tier2, Tier3]")]
     [SerializeField] private float[] upgradeCosts = new float[] { 50f, 150f, 400f };
 
-    [Tooltip("Number of drones added to global pool per tier upgrade")]
-    [SerializeField] private int dronesPerUpgrade = 2;
+    [Tooltip("Number of bees added to global pool per tier upgrade")]
+    [SerializeField] private int beesPerUpgrade = 2;
 
     [Header("Events")]
-    [Tooltip("Fired when airport is upgraded")]
-    public UnityEvent<int> OnAirportUpgraded = new UnityEvent<int>(); // Passes new tier
+    [Tooltip("Fired when flower patch is upgraded")]
+    public UnityEvent<int> OnFlowerPatchUpgraded = new UnityEvent<int>(); // Passes new tier
 
     [Tooltip("Fired when capacity is upgraded")]
     public UnityEvent OnCapacityUpgraded = new UnityEvent();
 
     // Public properties
-    public int MaxDroneCapacity => maxDroneCapacity;
+    public int MaxBeeCapacity => maxBeeCapacity;
 
     private void OnDestroy()
     {
         // Unregister from fleet manager when destroyed
-        if (DroneFleetManager.Instance != null)
+        if (BeeFleetManager.Instance != null)
         {
-            DroneFleetManager.Instance.UnregisterAirport(this);
+            BeeFleetManager.Instance.UnregisterFlowerPatch(this);
         }
     }
 
     /// <summary>
-    /// Instantly provides a resource based on the airport's biome type.
-    /// Called by airplanes when they need to pick up cargo.
+    /// Instantly provides pollen based on the flower patch's biome type.
+    /// Called by bees when they need to pick up pollen.
     /// </summary>
-    /// <returns>The resource type this airport produces</returns>
+    /// <returns>The resource type this flower patch produces</returns>
     public ResourceType GetResource()
     {
         // Map biome type to resource type
@@ -73,7 +73,7 @@ public class AirportController : MonoBehaviour
     }
 
     /// <summary>
-    /// Gets the biome type of this airport (for external queries)
+    /// Gets the biome type of this flower patch (for external queries)
     /// </summary>
     public BiomeType GetBiomeType()
     {
@@ -81,7 +81,7 @@ public class AirportController : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets the biome type of this airport (for runtime configuration)
+    /// Sets the biome type of this flower patch (for runtime configuration)
     /// </summary>
     /// <param name="newBiomeType">The biome type to set</param>
     public void SetBiomeType(BiomeType newBiomeType)
@@ -102,19 +102,19 @@ public class AirportController : MonoBehaviour
     }
 
     /// <summary>
-    /// Gets the number of drones added to global pool at current tier.
-    /// Note: This is for UI display. Actual airplane count is determined by drone allocation.
+    /// Gets the number of bees added to global pool at current tier.
+    /// Note: This is for UI display. Actual bee count is determined by bee allocation.
     /// </summary>
-    public int GetMaxAirplanesForCurrentTier()
+    public int GetMaxBeesForCurrentTier()
     {
-        // With the new drone system, upgrades add drones to the global pool
+        // With the new bee system, upgrades add bees to the global pool
         // This method is kept for backward compatibility with UI
-        // Returns total drones that have been added through upgrades
-        return currentTier * dronesPerUpgrade;
+        // Returns total bees that have been added through upgrades
+        return currentTier * beesPerUpgrade;
     }
 
     /// <summary>
-    /// Checks if this airport can be upgraded further
+    /// Checks if this flower patch can be upgraded further
     /// </summary>
     public bool CanUpgrade()
     {
@@ -144,40 +144,40 @@ public class AirportController : MonoBehaviour
     }
 
     /// <summary>
-    /// Gets the number of drones that will be added to global pool at next tier.
-    /// Note: This is for UI display. Actual airplane count is determined by drone allocation.
+    /// Gets the number of bees that will be added to global pool at next tier.
+    /// Note: This is for UI display. Actual bee count is determined by bee allocation.
     /// </summary>
-    /// <returns>Drones to be added at next tier, or -1 if at max tier</returns>
-    public int GetNextTierAirplaneCount()
+    /// <returns>Bees to be added at next tier, or -1 if at max tier</returns>
+    public int GetNextTierBeeCount()
     {
         if (!CanUpgrade())
         {
             return -1;
         }
 
-        // Each upgrade adds dronesPerUpgrade drones to the global pool
+        // Each upgrade adds beesPerUpgrade bees to the global pool
         // Return the total that will have been added after the next upgrade
         int nextTier = currentTier + 1;
-        return nextTier * dronesPerUpgrade;
+        return nextTier * beesPerUpgrade;
     }
 
     /// <summary>
-    /// Attempts to upgrade this airport to the next tier
+    /// Attempts to upgrade this flower patch to the next tier
     /// </summary>
     /// <returns>True if upgrade succeeded, false otherwise</returns>
-    public bool UpgradeAirport()
+    public bool UpgradeFlowerPatch()
     {
         // Check if upgrade is possible
         if (!CanUpgrade())
         {
-            Debug.LogWarning($"Airport {gameObject.name} is already at max tier {currentTier}");
+            Debug.LogWarning($"Flower patch {gameObject.name} is already at max tier {currentTier}");
             return false;
         }
 
         float upgradeCost = GetUpgradeCost();
         if (upgradeCost < 0f)
         {
-            Debug.LogError($"Invalid upgrade cost for airport {gameObject.name}");
+            Debug.LogError($"Invalid upgrade cost for flower patch {gameObject.name}");
             return false;
         }
 
@@ -193,17 +193,17 @@ public class AirportController : MonoBehaviour
 
         // Increment tier
         currentTier++;
-        Debug.Log($"Airport {gameObject.name} upgraded to Tier {currentTier}");
+        Debug.Log($"Flower patch {gameObject.name} upgraded to Tier {currentTier}");
 
-        // Add drones to global pool
-        if (DroneFleetManager.Instance != null)
+        // Add bees to global pool
+        if (BeeFleetManager.Instance != null)
         {
-            DroneFleetManager.Instance.AddDronesToPool(dronesPerUpgrade);
-            Debug.Log($"Added {dronesPerUpgrade} drones to global pool");
+            BeeFleetManager.Instance.AddBeesToPool(beesPerUpgrade);
+            Debug.Log($"Added {beesPerUpgrade} bees to global pool");
         }
 
         // Fire event so RouteController can adjust spawning
-        OnAirportUpgraded?.Invoke(currentTier);
+        OnFlowerPatchUpgraded?.Invoke(currentTier);
 
         return true;
     }
@@ -216,9 +216,9 @@ public class AirportController : MonoBehaviour
         return currentTier switch
         {
             0 => "Base",
-            1 => "Speed Hub I",
-            2 => "Speed Hub II",
-            3 => "Speed Hub III",
+            1 => "Nectar Flow I",
+            2 => "Nectar Flow II",
+            3 => "Nectar Flow III",
             _ => "Unknown"
         };
     }
@@ -228,7 +228,7 @@ public class AirportController : MonoBehaviour
     // ============================================
 
     /// <summary>
-    /// Checks if this airport's capacity can be upgraded
+    /// Checks if this flower patch's capacity can be upgraded
     /// </summary>
     public bool CanUpgradeCapacity()
     {
@@ -262,7 +262,7 @@ public class AirportController : MonoBehaviour
     }
 
     /// <summary>
-    /// Attempts to upgrade this airport's drone capacity from 5 to 10
+    /// Attempts to upgrade this flower patch's bee capacity from 5 to 10
     /// </summary>
     /// <returns>True if upgrade succeeded, false otherwise</returns>
     public bool UpgradeCapacity()
@@ -270,7 +270,7 @@ public class AirportController : MonoBehaviour
         // Check if upgrade is possible
         if (!CanUpgradeCapacity())
         {
-            Debug.LogWarning($"Airport {gameObject.name} is already at max capacity {maxDroneCapacity}");
+            Debug.LogWarning($"Flower patch {gameObject.name} is already at max capacity {maxBeeCapacity}");
             return false;
         }
 
@@ -286,8 +286,8 @@ public class AirportController : MonoBehaviour
 
         // Upgrade capacity
         capacityTier = 1;
-        maxDroneCapacity = 10;
-        Debug.Log($"Airport {gameObject.name} capacity upgraded to {maxDroneCapacity} drones");
+        maxBeeCapacity = 10;
+        Debug.Log($"Flower patch {gameObject.name} capacity upgraded to {maxBeeCapacity} bees");
 
         // Fire event
         OnCapacityUpgraded?.Invoke();
@@ -296,7 +296,7 @@ public class AirportController : MonoBehaviour
     }
 
     /// <summary>
-    /// Gets the current capacity tier (0=5 drones, 1=10 drones)
+    /// Gets the current capacity tier (0=5 bees, 1=10 bees)
     /// </summary>
     public int GetCapacityTier()
     {

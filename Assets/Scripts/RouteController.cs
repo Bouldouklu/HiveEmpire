@@ -2,92 +2,92 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Manages a route between an airport and the city, controlling airplane spawning
-/// with distance-based spacing. The number of airplanes on the route is dynamically
-/// determined by the airport's upgrade tier.
+/// Manages a route between an flowerPatch and the hive, controlling bee spawning
+/// with distance-based spacing. The number of bees on the route is dynamically
+/// determined by the flowerPatch's upgrade tier.
 /// </summary>
 public class RouteController : MonoBehaviour
 {
     [Header("Route Configuration")]
-    [Tooltip("Reference to the AirportController (automatically set in Awake if on same GameObject)")]
-    [SerializeField] private AirportController airportController;
+    [Tooltip("Reference to the FlowerPatchController (automatically set in Awake if on same GameObject)")]
+    [SerializeField] private FlowerPatchController flowerPatchController;
 
-    [Tooltip("Airplane prefab to spawn on this route")]
-    [SerializeField] private GameObject airplanePrefab;
+    [Tooltip("Bee prefab to spawn on this route")]
+    [SerializeField] private GameObject beePrefab;
 
-    [Tooltip("Speed of airplanes on this route (must match AirplaneController speed)")]
-    [SerializeField] private float airplaneSpeed = 10f;
+    [Tooltip("Speed of bees on this route (must match BeeController speed)")]
+    [SerializeField] private float beeSpeed = 10f;
 
-    [Tooltip("Cruising altitude of airplanes (must match AirplaneController cruisingAltitude)")]
+    [Tooltip("Cruising altitude of bees (must match BeeController cruisingAltitude)")]
     [SerializeField] private float cruisingAltitude = 12f;
 
     [Header("References")]
-    [Tooltip("The home airport transform (usually this GameObject's transform)")]
-    [SerializeField] private Transform homeAirport;
+    [Tooltip("The home flowerPatch transform (usually this GameObject's transform)")]
+    [SerializeField] private Transform homeFlowerPatch;
 
-    [Tooltip("The city destination transform")]
-    [SerializeField] private Transform cityDestination;
+    [Tooltip("The hive destination transform")]
+    [SerializeField] private Transform hiveDestination;
 
     [Header("Debug Info")]
-    [SerializeField] private int currentAirplaneCount = 0;
+    [SerializeField] private int currentBeeCount = 0;
     [SerializeField] private float calculatedSpawnInterval = 0f;
     [SerializeField] private float routeDistance = 0f;
 
     // Internal state
-    private List<GameObject> spawnedAirplanes = new List<GameObject>();
+    private List<GameObject> spawnedBees = new List<GameObject>();
     private float nextSpawnTime;
     private bool hasCompletedInitialSpawning = false;
 
     private void Awake()
     {
-        // Get AirportController reference if not set
-        if (airportController == null)
+        // Get FlowerPatchController reference if not set
+        if (flowerPatchController == null)
         {
-            airportController = GetComponent<AirportController>();
-            if (airportController == null)
+            flowerPatchController = GetComponent<FlowerPatchController>();
+            if (flowerPatchController == null)
             {
-                Debug.LogError($"RouteController on {gameObject.name}: No AirportController found! RouteController requires AirportController on same GameObject.", this);
+                Debug.LogError($"RouteController on {gameObject.name}: No FlowerPatchController found! RouteController requires FlowerPatchController on same GameObject.", this);
             }
         }
 
-        // Subscribe to airport events (for capacity upgrades that may affect spacing)
-        if (airportController != null)
+        // Subscribe to flowerPatch events (for capahive upgrades that may affect spacing)
+        if (flowerPatchController != null)
         {
-            airportController.OnAirportUpgraded.AddListener(OnAirportUpgraded);
-            airportController.OnCapacityUpgraded.AddListener(OnCapacityUpgraded);
+            flowerPatchController.OnFlowerPatchUpgraded.AddListener(OnFlowerPatchUpgraded);
+            flowerPatchController.OnCapacityUpgraded.AddListener(OnCapacityUpgraded);
         }
 
-        // Subscribe to fleet manager drone allocation events
-        if (DroneFleetManager.Instance != null)
+        // Subscribe to fleet manager bee allocation events
+        if (BeeFleetManager.Instance != null)
         {
-            DroneFleetManager.Instance.OnDroneAllocationChanged.AddListener(OnDroneAllocationChanged);
+            BeeFleetManager.Instance.OnBeeAllocationChanged.AddListener(OnBeeAllocationChanged);
         }
 
         // Default to this GameObject's transform if not set
-        if (homeAirport == null)
+        if (homeFlowerPatch == null)
         {
-            homeAirport = transform;
+            homeFlowerPatch = transform;
         }
 
-        // Find city if not set
-        if (cityDestination == null && CityController.Instance != null)
+        // Find hive if not set
+        if (hiveDestination == null && HiveController.Instance != null)
         {
-            cityDestination = CityController.Instance.transform;
+            hiveDestination = HiveController.Instance.transform;
         }
     }
 
     private void OnDestroy()
     {
         // Unsubscribe from events
-        if (airportController != null)
+        if (flowerPatchController != null)
         {
-            airportController.OnAirportUpgraded.RemoveListener(OnAirportUpgraded);
-            airportController.OnCapacityUpgraded.RemoveListener(OnCapacityUpgraded);
+            flowerPatchController.OnFlowerPatchUpgraded.RemoveListener(OnFlowerPatchUpgraded);
+            flowerPatchController.OnCapacityUpgraded.RemoveListener(OnCapacityUpgraded);
         }
 
-        if (DroneFleetManager.Instance != null)
+        if (BeeFleetManager.Instance != null)
         {
-            DroneFleetManager.Instance.OnDroneAllocationChanged.RemoveListener(OnDroneAllocationChanged);
+            BeeFleetManager.Instance.OnBeeAllocationChanged.RemoveListener(OnBeeAllocationChanged);
         }
     }
 
@@ -100,7 +100,7 @@ public class RouteController : MonoBehaviour
             return;
         }
 
-        // Calculate spawn interval based on distance and max airplanes
+        // Calculate spawn interval based on distance and max bees
         CalculateSpawnInterval();
 
         // Schedule first spawn immediately
@@ -109,16 +109,16 @@ public class RouteController : MonoBehaviour
 
     private void Update()
     {
-        int allocatedDrones = GetAllocatedDrones();
+        int allocatedBees = GetAllocatedBees();
 
         // Only spawn if we haven't reached allocated count
-        if (currentAirplaneCount < allocatedDrones && Time.time >= nextSpawnTime)
+        if (currentBeeCount < allocatedBees && Time.time >= nextSpawnTime)
         {
-            SpawnAirplane();
+            SpawnBee();
             nextSpawnTime = Time.time + calculatedSpawnInterval;
 
-            // Mark as complete when we've spawned all drones
-            if (currentAirplaneCount >= allocatedDrones)
+            // Mark as complete when we've spawned all bees
+            if (currentBeeCount >= allocatedBees)
             {
                 hasCompletedInitialSpawning = true;
             }
@@ -126,23 +126,23 @@ public class RouteController : MonoBehaviour
     }
 
     /// <summary>
-    /// Gets the number of drones allocated to this route from the global fleet
+    /// Gets the number of bees allocated to this route from the global fleet
     /// </summary>
-    private int GetAllocatedDrones()
+    private int GetAllocatedBees()
     {
-        if (airportController == null)
+        if (flowerPatchController == null)
         {
-            Debug.LogWarning($"RouteController on {gameObject.name}: airportController is null, defaulting to 0 drones");
+            Debug.LogWarning($"RouteController on {gameObject.name}: flowerPatchController is null, defaulting to 0 bees");
             return 0;
         }
 
-        if (DroneFleetManager.Instance == null)
+        if (BeeFleetManager.Instance == null)
         {
-            Debug.LogWarning($"RouteController on {gameObject.name}: DroneFleetManager.Instance is null, defaulting to 0 drones");
+            Debug.LogWarning($"RouteController on {gameObject.name}: BeeFleetManager.Instance is null, defaulting to 0 bees");
             return 0;
         }
 
-        return DroneFleetManager.Instance.GetAllocatedDrones(airportController);
+        return BeeFleetManager.Instance.GetAllocatedBees(flowerPatchController);
     }
 
     /// <summary>
@@ -150,27 +150,27 @@ public class RouteController : MonoBehaviour
     /// </summary>
     private bool ValidateConfiguration()
     {
-        if (airplanePrefab == null)
+        if (beePrefab == null)
         {
-            Debug.LogError($"RouteController on {gameObject.name}: airplanePrefab is not assigned!", this);
+            Debug.LogError($"RouteController on {gameObject.name}: beePrefab is not assigned!", this);
             return false;
         }
 
-        if (homeAirport == null)
+        if (homeFlowerPatch == null)
         {
-            Debug.LogError($"RouteController on {gameObject.name}: homeAirport is not assigned!", this);
+            Debug.LogError($"RouteController on {gameObject.name}: homeFlowerPatch is not assigned!", this);
             return false;
         }
 
-        if (cityDestination == null)
+        if (hiveDestination == null)
         {
-            Debug.LogError($"RouteController on {gameObject.name}: cityDestination is not assigned! Make sure CityController exists in scene.", this);
+            Debug.LogError($"RouteController on {gameObject.name}: hiveDestination is not assigned! Make sure HiveController exists in scene.", this);
             return false;
         }
 
-        if (airportController == null)
+        if (flowerPatchController == null)
         {
-            Debug.LogError($"RouteController on {gameObject.name}: airportController is not assigned!", this);
+            Debug.LogError($"RouteController on {gameObject.name}: flowerPatchController is not assigned!", this);
             return false;
         }
 
@@ -178,197 +178,197 @@ public class RouteController : MonoBehaviour
     }
 
     /// <summary>
-    /// Calculates the spawn interval based on route distance, airplane speed, and max count.
-    /// This ensures airplanes are evenly spaced along the route.
+    /// Calculates the spawn interval based on route distance, bee speed, and max count.
+    /// This ensures bees are evenly spaced along the route.
     /// Uses actual Bezier curve arc length for accurate spacing calculations.
     /// </summary>
     private void CalculateSpawnInterval()
     {
-        // Get airport and city landing positions
-        Vector3 airportPosition = homeAirport.position + new Vector3(0f, 0.5f, 0f);
-        Vector3 cityLanding = cityDestination.position;
-        if (CityController.Instance != null)
+        // Get flowerPatch and hive landing positions
+        Vector3 flowerPatchPosition = homeFlowerPatch.position + new Vector3(0f, 0.5f, 0f);
+        Vector3 hiveLanding = hiveDestination.position;
+        if (HiveController.Instance != null)
         {
-            cityLanding = CityController.Instance.LandingPosition;
+            hiveLanding = HiveController.Instance.LandingPosition;
         }
 
         // Calculate actual Bezier arc length (not straight-line distance)
-        // This matches the actual flight path that airplanes will follow
-        float oneWayArcLength = AirplaneController.CalculateBezierArcLength(airportPosition, cityLanding, cruisingAltitude);
+        // This matches the actual flight path that bees will follow
+        float oneWayArcLength = BeeController.CalculateBezierArcLength(flowerPatchPosition, hiveLanding, cruisingAltitude);
 
         // Store for debugging (one-way arc length)
         routeDistance = oneWayArcLength;
 
-        // Calculate round-trip duration (airport → city → airport)
-        // Airplanes complete a full loop, so we need to account for both directions
-        float oneWayDuration = oneWayArcLength / airplaneSpeed;
+        // Calculate round-trip duration (flowerPatch → hive → flowerPatch)
+        // Bees complete a full loop, so we need to account for both directions
+        float oneWayDuration = oneWayArcLength / beeSpeed;
         float roundTripDuration = oneWayDuration * 2f;
 
-        // Divide round-trip duration by number of drones to get even spacing around the full loop
-        // This creates natural spacing: further airports = more distance between planes
-        int allocatedDrones = GetAllocatedDrones();
+        // Divide round-trip duration by number of bees to get even spacing around the full loop
+        // This creates natural spacing: further flowerPatchs = more distance between planes
+        int allocatedBees = GetAllocatedBees();
 
-        // Avoid division by zero if no drones are allocated
-        if (allocatedDrones <= 0)
+        // Avoid division by zero if no bees are allocated
+        if (allocatedBees <= 0)
         {
             calculatedSpawnInterval = 0f;
-            Debug.Log($"RouteController on {gameObject.name}: No drones allocated, spawn interval = 0");
+            Debug.Log($"RouteController on {gameObject.name}: No bees allocated, spawn interval = 0");
             return;
         }
 
-        calculatedSpawnInterval = roundTripDuration / allocatedDrones;
+        calculatedSpawnInterval = roundTripDuration / allocatedBees;
 
         Debug.Log($"RouteController on {gameObject.name}: " +
                   $"ArcLength={oneWayArcLength:F1}u, RoundTripDuration={roundTripDuration:F1}s, " +
-                  $"SpawnInterval={calculatedSpawnInterval:F1}s for {allocatedDrones} drones");
+                  $"SpawnInterval={calculatedSpawnInterval:F1}s for {allocatedBees} bees");
     }
 
     /// <summary>
-    /// Spawns a new airplane and initializes it with route information
+    /// Spawns a new bee and initializes it with route information
     /// </summary>
-    private void SpawnAirplane()
+    private void SpawnBee()
     {
-        // Calculate spawn position (airport position with slight vertical offset)
-        Vector3 spawnPosition = homeAirport.position + new Vector3(0f, 0.5f, 0f);
+        // Calculate spawn position (flowerPatch position with slight vertical offset)
+        Vector3 spawnPosition = homeFlowerPatch.position + new Vector3(0f, 0.5f, 0f);
 
-        // Instantiate airplane
-        GameObject airplaneObject = Instantiate(airplanePrefab, spawnPosition, Quaternion.identity);
-        airplaneObject.name = $"Airplane_{gameObject.name}_{currentAirplaneCount + 1}";
+        // Instantiate bee
+        GameObject beeObject = Instantiate(beePrefab, spawnPosition, Quaternion.identity);
+        beeObject.name = $"Bee_{gameObject.name}_{currentBeeCount + 1}";
 
-        // Get airplane controller and initialize
-        AirplaneController airplane = airplaneObject.GetComponent<AirplaneController>();
-        if (airplane == null)
+        // Get bee controller and initialize
+        BeeController bee = beeObject.GetComponent<BeeController>();
+        if (bee == null)
         {
-            Debug.LogError($"Spawned airplane prefab does not have AirplaneController component!", airplaneObject);
-            Destroy(airplaneObject);
+            Debug.LogError($"Spawned bee prefab does not have BeeController component!", beeObject);
+            Destroy(beeObject);
             return;
         }
 
-        // Initialize airplane with route information
-        airplane.Initialize(homeAirport, cityDestination);
+        // Initialize bee with route information
+        bee.Initialize(homeFlowerPatch, hiveDestination);
 
-        // Track this airplane
-        spawnedAirplanes.Add(airplaneObject);
-        currentAirplaneCount = spawnedAirplanes.Count;
+        // Track this bee
+        spawnedBees.Add(beeObject);
+        currentBeeCount = spawnedBees.Count;
 
-        Debug.Log($"Spawned drone {currentAirplaneCount}/{GetAllocatedDrones()} on route {gameObject.name}");
+        Debug.Log($"Spawned bee {currentBeeCount}/{GetAllocatedBees()} on route {gameObject.name}");
     }
 
     /// <summary>
-    /// Unregisters an airplane from this route (called if airplane is destroyed)
+    /// Unregisters an bee from this route (called if bee is destroyed)
     /// </summary>
-    public void UnregisterAirplane(GameObject airplane)
+    public void UnregisterBee(GameObject bee)
     {
-        if (spawnedAirplanes.Contains(airplane))
+        if (spawnedBees.Contains(bee))
         {
-            spawnedAirplanes.Remove(airplane);
-            currentAirplaneCount = spawnedAirplanes.Count;
+            spawnedBees.Remove(bee);
+            currentBeeCount = spawnedBees.Count;
         }
     }
 
     /// <summary>
-    /// Cleans up null references from destroyed airplanes and handles deallocation
+    /// Cleans up null references from destroyed bees and handles deallocation
     /// </summary>
     private void LateUpdate()
     {
-        // Remove any null references (destroyed airplanes)
-        spawnedAirplanes.RemoveAll(plane => plane == null);
-        currentAirplaneCount = spawnedAirplanes.Count;
+        // Remove any null references (destroyed bees)
+        spawnedBees.RemoveAll(plane => plane == null);
+        currentBeeCount = spawnedBees.Count;
 
-        int allocatedDrones = GetAllocatedDrones();
+        int allocatedBees = GetAllocatedBees();
 
-        // If we've completed initial spawning but lost airplanes, allow respawning
-        // This handles cases where airplanes are destroyed externally
-        if (hasCompletedInitialSpawning && currentAirplaneCount < allocatedDrones)
+        // If we've completed initial spawning but lost bees, allow respawning
+        // This handles cases where bees are destroyed externally
+        if (hasCompletedInitialSpawning && currentBeeCount < allocatedBees)
         {
             hasCompletedInitialSpawning = false;
         }
 
-        // If we have more airplanes than allocated drones, destroy excess
-        // This handles drone deallocation
-        while (currentAirplaneCount > allocatedDrones && spawnedAirplanes.Count > 0)
+        // If we have more bees than allocated bees, destroy excess
+        // This handles bee deallocation
+        while (currentBeeCount > allocatedBees && spawnedBees.Count > 0)
         {
-            int lastIndex = spawnedAirplanes.Count - 1;
-            GameObject excessAirplane = spawnedAirplanes[lastIndex];
-            spawnedAirplanes.RemoveAt(lastIndex);
+            int lastIndex = spawnedBees.Count - 1;
+            GameObject excessBee = spawnedBees[lastIndex];
+            spawnedBees.RemoveAt(lastIndex);
 
-            if (excessAirplane != null)
+            if (excessBee != null)
             {
-                Destroy(excessAirplane);
-                Debug.Log($"Destroyed excess drone on route {gameObject.name}. Now {spawnedAirplanes.Count}/{allocatedDrones}");
+                Destroy(excessBee);
+                Debug.Log($"Destroyed excess bee on route {gameObject.name}. Now {spawnedBees.Count}/{allocatedBees}");
             }
 
-            currentAirplaneCount = spawnedAirplanes.Count;
+            currentBeeCount = spawnedBees.Count;
         }
     }
 
     /// <summary>
-    /// Called when the airport is upgraded. Recalculates spacing.
-    /// Note: Upgrades now add drones to global pool, not directly to this route.
+    /// Called when the flowerPatch is upgraded. Recalculates spacing.
+    /// Note: Upgrades now add bees to global pool, not directly to this route.
     /// </summary>
     /// <param name="newTier">The new tier level (1-3)</param>
-    private void OnAirportUpgraded(int newTier)
+    private void OnFlowerPatchUpgraded(int newTier)
     {
-        Debug.Log($"RouteController on {gameObject.name}: Airport upgraded to tier {newTier}");
+        Debug.Log($"RouteController on {gameObject.name}: FlowerPatch upgraded to tier {newTier}");
 
         // Recalculate spawn interval (allocation may have changed)
         CalculateSpawnInterval();
     }
 
     /// <summary>
-    /// Called when airport capacity is upgraded. Recalculates spacing.
+    /// Called when flowerPatch capahive is upgraded. Recalculates spacing.
     /// </summary>
     private void OnCapacityUpgraded()
     {
-        Debug.Log($"RouteController on {gameObject.name}: Airport capacity upgraded");
+        Debug.Log($"RouteController on {gameObject.name}: FlowerPatch capahive upgraded");
 
-        // Recalculate spawn interval (capacity changed, may affect allocation)
+        // Recalculate spawn interval (capahive changed, may affect allocation)
         CalculateSpawnInterval();
     }
 
     /// <summary>
-    /// Called when drone allocation changes for this airport.
-    /// Handles spawning or despawning drones based on new allocation.
+    /// Called when bee allocation changes for this flowerPatch.
+    /// Handles spawning or despawning bees based on new allocation.
     /// </summary>
-    /// <param name="airport">The airport whose allocation changed</param>
-    /// <param name="newAllocation">The new drone allocation count</param>
-    private void OnDroneAllocationChanged(AirportController airport, int newAllocation)
+    /// <param name="flowerPatch">The flowerPatch whose allocation changed</param>
+    /// <param name="newAllocation">The new bee allocation count</param>
+    private void OnBeeAllocationChanged(FlowerPatchController flowerPatch, int newAllocation)
     {
-        // Only respond if this is our airport
-        if (airport != airportController)
+        // Only respond if this is our flowerPatch
+        if (flowerPatch != flowerPatchController)
         {
             return;
         }
 
-        Debug.Log($"RouteController on {gameObject.name}: Drone allocation changed to {newAllocation}");
+        Debug.Log($"RouteController on {gameObject.name}: Bee allocation changed to {newAllocation}");
 
-        // Recalculate spawn interval for new drone count
+        // Recalculate spawn interval for new bee count
         CalculateSpawnInterval();
 
-        // If allocation increased, allow spawning more drones
-        if (newAllocation > currentAirplaneCount)
+        // If allocation increased, allow spawning more bees
+        if (newAllocation > currentBeeCount)
         {
             hasCompletedInitialSpawning = false;
             nextSpawnTime = Time.time; // Spawn immediately
         }
 
-        // If allocation decreased, excess drones will be destroyed in LateUpdate()
+        // If allocation decreased, excess bees will be destroyed in LateUpdate()
     }
 
     // private void OnDrawGizmos()
     // {
     //     // Visualize route in Scene view
-    //     if (homeAirport != null && cityDestination != null)
+    //     if (homeFlowerPatch != null && hiveDestination != null)
     //     {
     //         Gizmos.color = new Color(255f/255f, 187f/255f, 0f/255f, 0.3f); // #ffbb00 semi-transparent
     //
-    //         Vector3 cityLanding = cityDestination.position;
-    //         if (CityController.Instance != null)
+    //         Vector3 hiveLanding = hiveDestination.position;
+    //         if (HiveController.Instance != null)
     //         {
-    //             cityLanding = CityController.Instance.LandingPosition;
+    //             hiveLanding = HiveController.Instance.LandingPosition;
     //         }
     //
-    //         Gizmos.DrawLine(homeAirport.position + Vector3.up * 0.5f, cityLanding);
+    //         Gizmos.DrawLine(homeFlowerPatch.position + Vector3.up * 0.5f, hiveLanding);
     //     }
     // }
 }
