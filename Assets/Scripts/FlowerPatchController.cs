@@ -14,13 +14,19 @@ public class FlowerPatchController : MonoBehaviour
     [SerializeField] private BiomeType biomeType = BiomeType.Desert;
 
     [Header("Bee Capacity System")]
-    [Tooltip("Maximum bees that can be assigned to this flower patch's pollen route")]
-    [SerializeField] private int maxBeeCapacity = 5;
+    [Tooltip("Base bee capacity (before tier and bonus upgrades)")]
+    [SerializeField] private int baseCapacity = 5;
 
-    [Tooltip("Capacity upgrade tier (0=5 bees, 1=10 bees)")]
+    [Tooltip("Bonus capacity from capacity upgrades")]
+    [SerializeField] private int capacityBonus = 0;
+
+    [Tooltip("Capacity upgrade tier (0=no bonus, 1=+5 bonus)")]
     [SerializeField] private int capacityTier = 0;
 
-    [Tooltip("Cost to upgrade capacity from 5 to 10")]
+    [Tooltip("Bonus capacity added per capacity upgrade")]
+    [SerializeField] private int bonusCapacityPerUpgrade = 5;
+
+    [Tooltip("Cost to upgrade capacity (adds bonus capacity on top of base + tier)")]
     [SerializeField] private float capacityUpgradeCost = 100f;
 
     [Header("Upgrade System - Nectar Flow")]
@@ -41,7 +47,10 @@ public class FlowerPatchController : MonoBehaviour
     public UnityEvent OnCapacityUpgraded = new UnityEvent();
 
     // Public properties
-    public int MaxBeeCapacity => maxBeeCapacity;
+    /// <summary>
+    /// Calculates maximum bee capacity: base (5) + tier increases (tier × beesPerUpgrade) + capacity bonus
+    /// </summary>
+    public int MaxBeeCapacity => baseCapacity + (currentTier * beesPerUpgrade) + capacityBonus;
 
     private void OnDestroy()
     {
@@ -62,13 +71,13 @@ public class FlowerPatchController : MonoBehaviour
         // Map biome type to resource type
         return biomeType switch
         {
-            BiomeType.Forest => ResourceType.Wood,
-            BiomeType.Plains => ResourceType.Food,
-            BiomeType.Mountain => ResourceType.Stone,
-            BiomeType.Desert => ResourceType.Oil,
-            BiomeType.Coastal => ResourceType.Fish,
-            BiomeType.Tundra => ResourceType.Minerals,
-            _ => ResourceType.Wood // Default fallback
+            BiomeType.Forest => ResourceType.ForestPollen,
+            BiomeType.Plains => ResourceType.PlainsPollen,
+            BiomeType.Mountain => ResourceType.MountainPollen,
+            BiomeType.Desert => ResourceType.DesertPollen,
+            BiomeType.Coastal => ResourceType.CoastalPollen,
+            BiomeType.Tundra => ResourceType.TundraPollen,
+            _ => ResourceType.ForestPollen // Default fallback
         };
     }
 
@@ -195,11 +204,24 @@ public class FlowerPatchController : MonoBehaviour
         currentTier++;
         Debug.Log($"Flower patch {gameObject.name} upgraded to Tier {currentTier}");
 
-        // Add bees to global pool
+        // Add bees to global pool AND automatically allocate them to this route
         if (BeeFleetManager.Instance != null)
         {
             BeeFleetManager.Instance.AddBeesToPool(beesPerUpgrade);
             Debug.Log($"Added {beesPerUpgrade} bees to global pool");
+
+            // Auto-allocate the new bees to this flower patch
+            // This ensures the bees are immediately assigned to this route
+            // Capacity automatically increases via MaxBeeCapacity calculation (base + tier × beesPerUpgrade + bonus)
+            for (int i = 0; i < beesPerUpgrade; i++)
+            {
+                bool allocated = BeeFleetManager.Instance.AllocateBee(this);
+                if (!allocated)
+                {
+                    Debug.LogWarning($"Failed to allocate bee {i + 1}/{beesPerUpgrade} to {gameObject.name}");
+                }
+            }
+            Debug.Log($"Auto-allocated {beesPerUpgrade} bees to {gameObject.name}. New capacity: {MaxBeeCapacity}");
         }
 
         // Fire event so RouteController can adjust spawning
@@ -249,20 +271,21 @@ public class FlowerPatchController : MonoBehaviour
     }
 
     /// <summary>
-    /// Gets the capacity value after upgrade
+    /// Gets the capacity value after bonus capacity upgrade
     /// </summary>
-    /// <returns>New capacity value, or -1 if already at max</returns>
+    /// <returns>New capacity value after adding bonus, or -1 if already at max</returns>
     public int GetNextCapacity()
     {
         if (!CanUpgradeCapacity())
         {
             return -1;
         }
-        return 10; // Capacity upgrades from 5 to 10
+        // Calculate what capacity will be after adding the bonus
+        return baseCapacity + (currentTier * beesPerUpgrade) + capacityBonus + bonusCapacityPerUpgrade;
     }
 
     /// <summary>
-    /// Attempts to upgrade this flower patch's bee capacity from 5 to 10
+    /// Attempts to upgrade this flower patch's bee capacity by adding bonus capacity
     /// </summary>
     /// <returns>True if upgrade succeeded, false otherwise</returns>
     public bool UpgradeCapacity()
@@ -270,7 +293,7 @@ public class FlowerPatchController : MonoBehaviour
         // Check if upgrade is possible
         if (!CanUpgradeCapacity())
         {
-            Debug.LogWarning($"Flower patch {gameObject.name} is already at max capacity {maxBeeCapacity}");
+            Debug.LogWarning($"Flower patch {gameObject.name} is already at max capacity tier");
             return false;
         }
 
@@ -284,10 +307,10 @@ public class FlowerPatchController : MonoBehaviour
         // Spend money
         EconomyManager.Instance.SpendMoney(capacityUpgradeCost);
 
-        // Upgrade capacity
+        // Upgrade capacity by adding bonus
         capacityTier = 1;
-        maxBeeCapacity = 10;
-        Debug.Log($"Flower patch {gameObject.name} capacity upgraded to {maxBeeCapacity} bees");
+        capacityBonus += bonusCapacityPerUpgrade;
+        Debug.Log($"Flower patch {gameObject.name} capacity upgraded! Added +{bonusCapacityPerUpgrade} bonus capacity. New total capacity: {MaxBeeCapacity} bees");
 
         // Fire event
         OnCapacityUpgraded?.Invoke();

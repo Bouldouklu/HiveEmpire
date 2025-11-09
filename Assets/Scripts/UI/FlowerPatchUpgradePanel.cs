@@ -41,6 +41,9 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
     [Tooltip("Text displaying current capacity")]
     [SerializeField] private TextMeshProUGUI currentCapacityText;
 
+    [Tooltip("Text displaying capacity upgrade effect")]
+    [SerializeField] private TextMeshProUGUI capacityUpgradeEffectText;
+
     [Tooltip("Text displaying capacity upgrade cost")]
     [SerializeField] private TextMeshProUGUI capacityUpgradeCostText;
 
@@ -186,17 +189,17 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
             beeAllocationText.text = $"Bees: {allocatedBees} / {capacity}";
         }
 
-        // Display bees added to pool through upgrades (repurposed from bee count)
-        if (currentBeesText != null)
+        // Display currently allocated bees on this route
+        if (currentBeesText != null && BeeFleetManager.Instance != null)
         {
-            int beesAddedSoFar = currentFlowerPatch.GetMaxBeesForCurrentTier();
-            currentBeesText.text = $"Bees added via upgrades: {beesAddedSoFar}";
+            int allocatedBees = BeeFleetManager.Instance.GetAllocatedBees(currentFlowerPatch);
+            currentBeesText.text = $"Bees on route: {allocatedBees}";
         }
 
         // Capacity upgrade section
         UpdateCapacityUpgradeUI();
 
-        // Check if can upgrade
+        // Tier upgrade section
         bool canUpgrade = currentFlowerPatch.CanUpgrade();
         float upgradeCost = currentFlowerPatch.GetUpgradeCost();
         int nextTierPlanes = currentFlowerPatch.GetNextTierBeeCount();
@@ -204,12 +207,12 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
 
         if (canUpgrade)
         {
-            // Next tier benefit - shows bees that will be added to global pool
+            // Upgrade effect - shows bees that will be added and capacity increase
             if (nextTierBeesText != null)
             {
                 int beesAddedByUpgrade = nextTierPlanes - currentFlowerPatch.GetMaxBeesForCurrentTier();
-                nextTierBeesText.text = $"Upgrade adds: +{beesAddedByUpgrade} bees to global pool";
-                nextTierBeesText.gameObject.SetActive(true);
+                nextTierBeesText.text = $"Upgrade adds: +{beesAddedByUpgrade} bees & +{beesAddedByUpgrade} capacity";
+                nextTierBeesText.color = affordableColor;
             }
 
             // Upgrade cost
@@ -232,19 +235,20 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
         }
         else
         {
-            // Max tier reached
+            // Max tier reached - show in effect text
             if (nextTierBeesText != null)
             {
                 nextTierBeesText.text = "MAX TIER";
                 nextTierBeesText.color = maxTierColor;
-                nextTierBeesText.gameObject.SetActive(true);
             }
 
+            // Clear cost text when maxed
             if (upgradeCostText != null)
             {
                 upgradeCostText.text = "";
             }
 
+            // Disable button
             if (upgradeButton != null)
             {
                 upgradeButton.interactable = false;
@@ -315,14 +319,33 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
     {
         if (currentFlowerPatch == null) return;
 
-        // Current capacity display
+        // Current capacity display with breakdown
         if (currentCapacityText != null)
         {
             int capacity = currentFlowerPatch.MaxBeeCapacity;
-            currentCapacityText.text = $"Capacity: {capacity} bees";
+            int tier = currentFlowerPatch.GetCurrentTier();
+            int capacityTier = currentFlowerPatch.GetCapacityTier();
+
+            // Show breakdown: base (5) + tier upgrades (tier × 2) + bonus (if capacity upgraded)
+            string breakdown = $"Capacity: {capacity} bees";
+            if (tier > 0 || capacityTier > 0)
+            {
+                breakdown += $" (5 base";
+                if (tier > 0)
+                {
+                    breakdown += $" + {tier * 2} from tiers";
+                }
+                if (capacityTier > 0)
+                {
+                    breakdown += $" + 5 bonus";
+                }
+                breakdown += ")";
+            }
+
+            currentCapacityText.text = breakdown;
         }
 
-        // Check if can upgrade capacity
+        // Capacity upgrade section
         bool canUpgradeCapacity = currentFlowerPatch.CanUpgradeCapacity();
         float capacityCost = currentFlowerPatch.GetCapacityUpgradeCost();
         int nextCapacity = currentFlowerPatch.GetNextCapacity();
@@ -330,14 +353,21 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
 
         if (canUpgradeCapacity)
         {
-            // Capacity upgrade cost
+            // Upgrade effect - shows capacity that will be added
+            if (capacityUpgradeEffectText != null)
+            {
+                capacityUpgradeEffectText.text = $"Upgrade adds: +5 bonus capacity";
+                capacityUpgradeEffectText.color = affordableColor;
+            }
+
+            // Upgrade cost
             if (capacityUpgradeCostText != null)
             {
                 capacityUpgradeCostText.text = $"Cost: ${capacityCost}";
                 capacityUpgradeCostText.color = canAffordCapacity ? affordableColor : unaffordableColor;
             }
 
-            // Capacity upgrade button
+            // Upgrade button
             if (capacityUpgradeButton != null)
             {
                 capacityUpgradeButton.interactable = canAffordCapacity;
@@ -345,18 +375,25 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
 
             if (capacityUpgradeButtonText != null)
             {
-                capacityUpgradeButtonText.text = $"Upgrade Capacity to {nextCapacity}";
+                capacityUpgradeButtonText.text = "Upgrade";
             }
         }
         else
         {
-            // Max capacity reached
-            if (capacityUpgradeCostText != null)
+            // Max capacity reached - show in effect text
+            if (capacityUpgradeEffectText != null)
             {
-                capacityUpgradeCostText.text = "MAX CAPACITY";
-                capacityUpgradeCostText.color = maxTierColor;
+                capacityUpgradeEffectText.text = "MAX CAPACITY";
+                capacityUpgradeEffectText.color = maxTierColor;
             }
 
+            // Clear cost text when maxed
+            if (capacityUpgradeCostText != null)
+            {
+                capacityUpgradeCostText.text = "";
+            }
+
+            // Disable button
             if (capacityUpgradeButton != null)
             {
                 capacityUpgradeButton.interactable = false;

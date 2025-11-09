@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6167364075388375318}
   - component: {fileID: 1091592048739769171}
   m_Layer: 5
-  m_Name: AirportEntryPrefab
+  m_Name: FlowerPatchEntryPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -214,7 +214,7 @@ GameObject:
   - component: {fileID: 9069765141550356954}
   - component: {fileID: 6644830877453428371}
   m_Layer: 5
-  m_Name: AirportNameText
+  m_Name: FlowerPatchNameText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -267,7 +267,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '{Biome} Airport
+  m_text: '{Biome} Flower Patch
 
 '
   m_isRightToLeft: 0

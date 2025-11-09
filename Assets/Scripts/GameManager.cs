@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviour
         // Initialize starting demand for Wood (1 per minute)
         if (DemandManager.Instance != null)
         {
-            DemandManager.Instance.AddDemand(ResourceType.Wood, 1f);
+            DemandManager.Instance.AddDemand(ResourceType.ForestPollen, 1f);
             Debug.Log("GameManager: Initialized starting demand - Wood: 1/min");
         }
         else

@@ -4,12 +4,12 @@
 /// </summary>
 public enum ResourceType
 {
-    Wood,     // Forest biome
-    Food,     // Plains biome
-    Stone,    // Mountain biome
-    Oil,      // Desert biome
-    Fish,     // Coastal biome
-    Minerals  // Tundra biome
+    ForestPollen,     // Forest biome
+    PlainsPollen,     // Plains biome
+    MountainPollen,    // Mountain biome
+    DesertPollen,      // Desert biome
+    CoastalPollen,     // Coastal biome
+    TundraPollen  // Tundra biome
 }
 
 /// <summary>
@@ -18,10 +18,10 @@ public enum ResourceType
 /// </summary>
 public enum BiomeType
 {
-    Forest,   // Produces Wood (fast: 1 per 2s)
-    Plains,   // Produces Food (fast: 1 per 2s)
-    Mountain, // Produces Stone (medium: 1 per 4s)
-    Desert,   // Produces Oil (slow: 1 per 6s)
-    Coastal,  // Produces Fish (medium: 1 per 3s)
-    Tundra    // Produces Minerals (slow: 1 per 5s)
+    Forest,   // Produces ForestPollen (fast: 1 per 2s)
+    Plains,   // Produces PlainsPollen (fast: 1 per 2s)
+    Mountain, // Produces MountainPollen (medium: 1 per 4s)
+    Desert,   // Produces DesertPollen (slow: 1 per 6s)
+    Coastal,  // Produces CoastalPollen (medium: 1 per 3s)
+    Tundra    // Produces TundraPollen (slow: 1 per 5s)
 }

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3190524854098752732}
   - component: {fileID: 6425846905903079561}
   m_Layer: 0
-  m_Name: Airplane
+  m_Name: Bee
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -167,12 +167,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AirplaneController
   speed: 5
-  cruisingAltitude: 3
+  flightAltitude: 4
   rotationSpeed: 5
   currentState: 0
-  cargoCapacity: 1
+  pollenCapacity: 1
   showFlightPathGizmos: 1
-  currentCargo: 
+  currentPollen: 
 --- !u!1 &2975168251230277284
 GameObject:
   m_ObjectHideFlags: 0
@@ -200,13 +200,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2975168251230277284}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 7700344872795266684}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!33 &2210595025839361513
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -240,7 +240,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 0d67d355da30018439d5b85d66c8574a, type: 2}
+  - {fileID: 2100000, guid: 3556b4fa1fee8a6478783acc6533101b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

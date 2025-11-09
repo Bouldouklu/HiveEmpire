@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5188119375888041339}
   - component: {fileID: 4273321438880637036}
   m_Layer: 0
-  m_Name: MountainAirportPlaceholder
+  m_Name: MountainFlowerPatchPlaceholder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -28,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6401691754238293733}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 11.32, y: 0.5, z: -2.63}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
@@ -126,12 +126,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AirportPlaceholder
   biomeType: 2
-  airportPrefab: {fileID: 6159468505849121783, guid: 6331e05cf757eb54da6bddd7b19ae416, type: 3}
-  airplanePrefab: {fileID: 2869447232971713939, guid: a9559939e104bd44c8df21eebf92c5d1, type: 3}
+  flowerPatchPrefab: {fileID: 6159468505849121783, guid: 6331e05cf757eb54da6bddd7b19ae416, type: 3}
+  beePrefab: {fileID: 2869447232971713939, guid: a9559939e104bd44c8df21eebf92c5d1, type: 3}
   affordableMaterial: {fileID: 2100000, guid: a8187dd2453695142b91d4c3baa972d1, type: 2}
   unaffordableMaterial: {fileID: 2100000, guid: 3ba1e3672ed53b64284f76b62112b8d2, type: 2}
   defaultMaterial: {fileID: 2100000, guid: 590cf913ed9f8574e9a1e50ad0fe4d05, type: 2}
-  airportSpawnOffset: {x: 0, y: 0, z: 0}
+  flowerPatchSpawnOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &8006242309678363056
 GameObject:
   m_ObjectHideFlags: 0
