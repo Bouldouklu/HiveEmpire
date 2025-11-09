@@ -18,9 +18,6 @@ public class RouteController : MonoBehaviour
     [Tooltip("Speed of bees on this route (must match BeeController speed)")]
     [SerializeField] private float beeSpeed = 10f;
 
-    [Tooltip("Cruising altitude of bees (must match BeeController cruisingAltitude)")]
-    [SerializeField] private float cruisingAltitude = 12f;
-
     [Header("References")]
     [Tooltip("The home flowerPatch transform (usually this GameObject's transform)")]
     [SerializeField] private Transform homeFlowerPatch;
@@ -192,9 +189,20 @@ public class RouteController : MonoBehaviour
             hiveLanding = HiveController.Instance.LandingPosition;
         }
 
+        // Get flight altitude from bee prefab to ensure accuracy
+        float flightAltitude = 12f; // Default fallback
+        if (beePrefab != null)
+        {
+            BeeController beeController = beePrefab.GetComponent<BeeController>();
+            if (beeController != null)
+            {
+                flightAltitude = beeController.FlightAltitude;
+            }
+        }
+
         // Calculate actual Bezier arc length (not straight-line distance)
         // This matches the actual flight path that bees will follow
-        float oneWayArcLength = BeeController.CalculateBezierArcLength(flowerPatchPosition, hiveLanding, cruisingAltitude);
+        float oneWayArcLength = BeeController.CalculateBezierArcLength(flowerPatchPosition, hiveLanding, flightAltitude);
 
         // Store for debugging (one-way arc length)
         routeDistance = oneWayArcLength;

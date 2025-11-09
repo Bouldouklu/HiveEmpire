@@ -14,6 +14,11 @@ public class BeeController : MonoBehaviour
     [Tooltip("Maximum height of the flight arc")]
     [SerializeField] private float flightAltitude = 12f;
 
+    /// <summary>
+    /// Public accessor for flight altitude (used by RouteController for spawn interval calculations)
+    /// </summary>
+    public float FlightAltitude => flightAltitude;
+
     [Tooltip("How smoothly the bee rotates to face movement direction")]
     [SerializeField] private float rotationSpeed = 5f;
 
