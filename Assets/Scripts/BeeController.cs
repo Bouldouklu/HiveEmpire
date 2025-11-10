@@ -8,7 +8,10 @@ using UnityEngine;
 public class BeeController : MonoBehaviour
 {
     [Header("Movement Settings")]
-    [Tooltip("Speed of the bee (units per second)")]
+    [Tooltip("Base speed of the bee (units per second) - modified by seasonal effects")]
+    [SerializeField] private float baseSpeed = 10f;
+
+    [Tooltip("Current effective speed (base * seasonal modifier)")]
     [SerializeField] private float speed = 10f;
 
     [Tooltip("Maximum height of the flight arc")]
@@ -118,6 +121,44 @@ public class BeeController : MonoBehaviour
 
         // Start at flower patch, ready to pick up pollen
         currentState = FlightState.AtFlowerPatch;
+
+        // Subscribe to season changes for speed modifiers
+        if (SeasonManager.Instance != null)
+        {
+            SeasonManager.Instance.OnSeasonChanged.AddListener(OnSeasonChanged);
+            // Apply initial seasonal modifier
+            ApplySeasonalSpeedModifier();
+        }
+    }
+
+    /// <summary>
+    /// Called when the season changes to update bee speed
+    /// </summary>
+    private void OnSeasonChanged(Season newSeason)
+    {
+        ApplySeasonalSpeedModifier();
+    }
+
+    /// <summary>
+    /// Applies the current seasonal speed modifier to the bee's speed
+    /// </summary>
+    private void ApplySeasonalSpeedModifier()
+    {
+        if (SeasonManager.Instance == null)
+        {
+            speed = baseSpeed;
+            return;
+        }
+
+        SeasonData currentSeason = SeasonManager.Instance.GetCurrentSeasonData();
+        if (currentSeason == null)
+        {
+            speed = baseSpeed;
+            return;
+        }
+
+        // Apply seasonal bee speed modifier
+        speed = baseSpeed * currentSeason.beeSpeedModifier;
     }
 
     private void Update()
@@ -468,6 +509,12 @@ public class BeeController : MonoBehaviour
         if (GameManager.Instance != null)
         {
             GameManager.Instance.UnregisterBee();
+        }
+
+        // Unsubscribe from season changes
+        if (SeasonManager.Instance != null)
+        {
+            SeasonManager.Instance.OnSeasonChanged.RemoveListener(OnSeasonChanged);
         }
     }
 

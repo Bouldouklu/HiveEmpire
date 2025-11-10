@@ -190,16 +190,46 @@ public class RecipeProductionManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Start production for a recipe.
+    /// Start production for a recipe with seasonal modifiers applied.
     /// </summary>
     private void StartProduction(HoneyRecipe recipe)
     {
         var state = productionStates[recipe];
         state.isProducing = true;
-        state.timeRemaining = recipe.productionTimeSeconds;
-        state.totalTime = recipe.productionTimeSeconds;
 
-        Debug.Log($"Started production: {recipe.recipeName} (${recipe.honeyValue}, {recipe.productionTimeSeconds}s)");
+        // Apply seasonal production time modifier
+        float baseTime = recipe.productionTimeSeconds;
+        float modifiedTime = CalculateSeasonalProductionTime(baseTime);
+
+        state.timeRemaining = modifiedTime;
+        state.totalTime = modifiedTime;
+
+        if (SeasonManager.Instance != null)
+        {
+            Debug.Log($"Started production: {recipe.recipeName} (${recipe.honeyValue}, {modifiedTime:F1}s, base: {baseTime}s, season: {SeasonManager.Instance.CurrentSeason})");
+        }
+        else
+        {
+            Debug.Log($"Started production: {recipe.recipeName} (${recipe.honeyValue}, {modifiedTime:F1}s)");
+        }
+    }
+
+    /// <summary>
+    /// Calculate the modified production time with seasonal modifier applied.
+    /// </summary>
+    private float CalculateSeasonalProductionTime(float baseTime)
+    {
+        if (SeasonManager.Instance == null)
+            return baseTime;
+
+        SeasonData currentSeason = SeasonManager.Instance.GetCurrentSeasonData();
+        if (currentSeason == null)
+            return baseTime;
+
+        // Apply seasonal production time modifier
+        float modifiedTime = baseTime * currentSeason.productionTimeModifier;
+
+        return modifiedTime;
     }
 
     /// <summary>
@@ -211,15 +241,45 @@ public class RecipeProductionManager : MonoBehaviour
         state.isProducing = false;
         state.timeRemaining = 0f;
 
+        // Calculate final honey value with seasonal modifiers
+        float baseValue = recipe.honeyValue;
+        float finalValue = CalculateSeasonalValue(baseValue);
+
         // Generate income
         if (EconomyManager.Instance != null)
         {
-            EconomyManager.Instance.EarnMoney(recipe.honeyValue);
-            Debug.Log($"Completed recipe: {recipe.recipeName} - Earned ${recipe.honeyValue}");
+            EconomyManager.Instance.EarnMoney(finalValue);
+
+            if (SeasonManager.Instance != null)
+            {
+                Debug.Log($"Completed recipe: {recipe.recipeName} - Earned ${finalValue:F2} (base: ${baseValue}, season: {SeasonManager.Instance.CurrentSeason})");
+            }
+            else
+            {
+                Debug.Log($"Completed recipe: {recipe.recipeName} - Earned ${finalValue:F2}");
+            }
         }
 
         // Fire completion event for visual effects
-        OnRecipeCompleted?.Invoke(recipe, recipe.honeyValue);
+        OnRecipeCompleted?.Invoke(recipe, finalValue);
+    }
+
+    /// <summary>
+    /// Calculate the final honey value with seasonal income modifier applied.
+    /// </summary>
+    private float CalculateSeasonalValue(float baseValue)
+    {
+        if (SeasonManager.Instance == null)
+            return baseValue;
+
+        SeasonData currentSeason = SeasonManager.Instance.GetCurrentSeasonData();
+        if (currentSeason == null)
+            return baseValue;
+
+        // Apply seasonal income modifier
+        float modifiedValue = baseValue * currentSeason.incomeModifier;
+
+        return modifiedValue;
     }
 
     /// <summary>

@@ -29,7 +29,7 @@
 ## Core Game Loop
 
 ```
-Flower Patch generates Resource (Wood/Stone/Oil/Food)
+Flower Patch generates Resource (different types of pollen)
     ↓
 Bee automatically delivers to Hive
     ↓
@@ -49,8 +49,8 @@ LOOP with increasing complexity
 ## Win Condition
 
 **Goal:** Maximize income per second from ONE hive  
-**No failure state** - pure incremental progression  
-**Endgame:** Prestige system (reset with permanent bonuses)
+**Failure state** - TBD  
+**Endgame** - TBD
 
 ---
 

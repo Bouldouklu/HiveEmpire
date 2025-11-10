@@ -20,7 +20,10 @@ public class HiveController : MonoBehaviour
     [SerializeField] private Dictionary<ResourceType, int> resourceInventory = new Dictionary<ResourceType, int>();
 
     [Header("Storage Settings")]
-    [Tooltip("Storage capacity per pollen type (upgradeable)")]
+    [Tooltip("Base storage capacity per pollen type (before seasonal modifiers)")]
+    [SerializeField] private int baseStorageCapacity = 100;
+
+    [Tooltip("Current default storage capacity (base * seasonal modifier)")]
     [SerializeField] private int defaultStorageCapacity = 100;
 
     private Dictionary<ResourceType, int> storageCapacities = new Dictionary<ResourceType, int>();
@@ -194,6 +197,46 @@ public class HiveController : MonoBehaviour
         }
 
         Instance = this;
+
+        // Subscribe to season changes for storage capacity modifiers
+        if (SeasonManager.Instance != null)
+        {
+            SeasonManager.Instance.OnSeasonChanged.AddListener(OnSeasonChanged);
+            // Apply initial seasonal modifier
+            ApplySeasonalStorageModifier();
+        }
+    }
+
+    /// <summary>
+    /// Called when the season changes to update storage capacity
+    /// </summary>
+    private void OnSeasonChanged(Season newSeason)
+    {
+        ApplySeasonalStorageModifier();
+    }
+
+    /// <summary>
+    /// Applies the current seasonal storage capacity modifier
+    /// </summary>
+    private void ApplySeasonalStorageModifier()
+    {
+        if (SeasonManager.Instance == null)
+        {
+            defaultStorageCapacity = baseStorageCapacity;
+            return;
+        }
+
+        SeasonData currentSeason = SeasonManager.Instance.GetCurrentSeasonData();
+        if (currentSeason == null)
+        {
+            defaultStorageCapacity = baseStorageCapacity;
+            return;
+        }
+
+        // Apply seasonal storage capacity modifier
+        defaultStorageCapacity = Mathf.RoundToInt(baseStorageCapacity * currentSeason.storageCapacityModifier);
+
+        Debug.Log($"[HiveController] Applied seasonal storage modifier: {baseStorageCapacity} * {currentSeason.storageCapacityModifier} = {defaultStorageCapacity}");
     }
 
     private void OnDestroy()
@@ -202,6 +245,12 @@ public class HiveController : MonoBehaviour
         if (Instance == this)
         {
             Instance = null;
+        }
+
+        // Unsubscribe from season changes
+        if (SeasonManager.Instance != null)
+        {
+            SeasonManager.Instance.OnSeasonChanged.RemoveListener(OnSeasonChanged);
         }
     }
 
