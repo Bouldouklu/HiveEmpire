@@ -59,6 +59,12 @@ public class FlowerPatchController : MonoBehaviour
         {
             BeeFleetManager.Instance.UnregisterFlowerPatch(this);
         }
+
+        // Unregister from audio manager when destroyed
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.UnregisterFlowerPatch(this);
+        }
     }
 
     /// <summary>

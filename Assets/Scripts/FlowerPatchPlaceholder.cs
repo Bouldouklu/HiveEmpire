@@ -239,6 +239,12 @@ public class FlowerPatchPlaceholder : MonoBehaviour
             Debug.LogWarning($"BeeFleetManager or FlowerPatchController not found! Bees were not added to pool.");
         }
 
+        // Register with AudioManager for sound events
+        if (AudioManager.Instance != null && flowerPatchController != null)
+        {
+            AudioManager.Instance.RegisterFlowerPatch(flowerPatchController);
+        }
+
         Debug.Log($"Built {biomeType} flower patch at {gameObject.name} for ${cost:F0}");
 
         // Destroy this placeholder
