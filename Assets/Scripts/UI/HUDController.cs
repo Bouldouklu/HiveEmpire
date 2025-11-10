@@ -111,14 +111,27 @@ public class HUDController : MonoBehaviour
             beeCount = GameManager.Instance.TotalBeeCount;
         }
 
-        // Build resource display dynamically for all resource types
+        // Build resource display dynamically for all resource types with storage capacity
         string resourceText = "";
         if (HiveController.Instance != null)
         {
             foreach (ResourceType resourceType in System.Enum.GetValues(typeof(ResourceType)))
             {
                 int count = HiveController.Instance.GetResourceCount(resourceType);
-                resourceText += $"{resourceType}: {count}\n";
+                int capacity = HiveController.Instance.GetStorageCapacity(resourceType);
+
+                // Color code based on fullness
+                string color = "#FFFFFF"; // White default
+                if (count >= capacity)
+                {
+                    color = "#FF6666"; // Red when full
+                }
+                else if (count >= capacity * 0.8f)
+                {
+                    color = "#FFCC66"; // Yellow when 80%+ full
+                }
+
+                resourceText += $"<color={color}>{resourceType}: {count}/{capacity}</color>\n";
             }
         }
 

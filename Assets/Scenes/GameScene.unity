@@ -1134,7 +1134,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 20
+  orthographic size: 15
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1253,7 +1253,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f95956f0cafc474cb19bba88f2210f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EconomyManager
-  currentMoney: 1000
+  currentMoney: 900
   totalFlowerPatchesPlaced: 0
   commonBiomeCost: 10
   mediumBiomeCost: 20
@@ -1896,6 +1896,7 @@ Transform:
   - {fileID: 349254529}
   - {fileID: 624552356}
   - {fileID: 90170592}
+  - {fileID: 835138812}
   - {fileID: 473206413}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2630,6 +2631,62 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &835138811
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 835138812}
+  - component: {fileID: 835138813}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &835138812
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 835138811}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 567845744}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &835138813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 835138811}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b29952a115942d54da8fa76797f9644f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  musicSource: {fileID: 0}
+  ambientSource: {fileID: 0}
+  musicTrack: {fileID: 0}
+  ambientTrack: {fileID: 8300000, guid: a961c6301af5706439abe681b1cd1496, type: 3}
+  recipeCompletedClip: {fileID: 8300000, guid: 61c34ac878e5247468adfd3572668c87, type: 3}
+  flowerPatchUpgradedClip: {fileID: 0}
+  capacityUpgradedClip: {fileID: 0}
+  pollenDiscardedClip: {fileID: 0}
+  musicVolume: 0.7
+  ambientVolume: 0.5
+  sfxVolume: 0.8
+  sfxPoolSize: 10
 --- !u!1 &865947799
 GameObject:
   m_ObjectHideFlags: 0
@@ -4239,8 +4296,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1451455629}
   - component: {fileID: 1451455630}
+  - component: {fileID: 1451455632}
+  - component: {fileID: 1451455631}
   m_Layer: 0
-  m_Name: CityBuilding
+  m_Name: BeeHive
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4276,7 +4335,50 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityController
   landingOffset: {x: 0, y: 0.5, z: 0}
+  defaultStorageCapacity: 100
   OnResourcesChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnPollenDiscarded:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1451455631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1451455628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ba82cb995fa60041a187c155a21797e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoneyProductionVFX
+  honeyProductionParticles: {fileID: 0}
+  createParticlesAtRuntime: 1
+  incomePopupPrefab: {fileID: 0}
+  popupOffset: {x: 0, y: 2, z: 0}
+  popupDuration: 2
+  popupRiseDistance: 1.5
+--- !u!114 &1451455632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1451455628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a17107e185237f43b97165f6810d8a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RecipeProductionManager
+  activeRecipes:
+  - {fileID: 11400000, guid: 2ba62eae5b2001549967ec576a118559, type: 2}
+  - {fileID: 11400000, guid: f45a0399f5ab3c344987a483f071eefa, type: 2}
+  - {fileID: 11400000, guid: 6a5b78b41ca34e44f8303595938290cd, type: 2}
+  - {fileID: 11400000, guid: 31ec99b0b31eb8f44ad4892ec593d9a0, type: 2}
+  - {fileID: 11400000, guid: c855dfa018647284ba2aa0126647ee20, type: 2}
+  OnRecipeCompleted:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &1484809624

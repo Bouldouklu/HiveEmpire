@@ -166,9 +166,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e33080ec2d40de5469fd001f1f9ecc30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AirplaneController
-  speed: 5
+  speed: 3
   flightAltitude: 4
-  rotationSpeed: 5
+  rotationSpeed: 8
   currentState: 0
   pollenCapacity: 1
   showFlightPathGizmos: 1
@@ -297,7 +297,7 @@ GameObject:
   - component: {fileID: 6162055634838804392}
   - component: {fileID: 1513937452927599501}
   m_Layer: 0
-  m_Name: Cargo
+  m_Name: Pollen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -19,10 +19,21 @@ public class HiveController : MonoBehaviour
     [Tooltip("Current resource inventory (for debugging)")]
     [SerializeField] private Dictionary<ResourceType, int> resourceInventory = new Dictionary<ResourceType, int>();
 
+    [Header("Storage Settings")]
+    [Tooltip("Storage capacity per pollen type (upgradeable)")]
+    [SerializeField] private int defaultStorageCapacity = 100;
+
+    private Dictionary<ResourceType, int> storageCapacities = new Dictionary<ResourceType, int>();
+
     /// <summary>
     /// Event fired when resources are delivered to the hive
     /// </summary>
     public UnityEvent OnResourcesChanged = new UnityEvent();
+
+    /// <summary>
+    /// Event fired when pollen is discarded due to full storage (passes resource type and amount discarded)
+    /// </summary>
+    public UnityEvent<ResourceType, int> OnPollenDiscarded = new UnityEvent<ResourceType, int>();
 
     /// <summary>
     /// The position where bees should aim to arrive
@@ -31,7 +42,7 @@ public class HiveController : MonoBehaviour
 
     /// <summary>
     /// Receives pollen delivered by a bee.
-    /// Updates resource inventory, earns money, and fires OnResourcesChanged event.
+    /// Adds to inventory up to storage capacity. Overflow is discarded.
     /// </summary>
     public void ReceiveResources(List<ResourceType> resources)
     {
@@ -40,71 +51,121 @@ public class HiveController : MonoBehaviour
             return;
         }
 
-        // Add each resource to inventory and record deliveries
+        int totalReceived = 0;
+        int totalDiscarded = 0;
+
+        // Add each resource to inventory, respecting storage caps
         foreach (ResourceType resource in resources)
         {
+            // Initialize inventory and capacity if needed
             if (!resourceInventory.ContainsKey(resource))
             {
                 resourceInventory[resource] = 0;
             }
-            resourceInventory[resource]++;
 
-            // Record delivery with DemandManager for tracking
-            if (DemandManager.Instance != null)
+            int currentAmount = resourceInventory[resource];
+            int capacity = GetStorageCapacity(resource);
+
+            // Check if we can add this pollen
+            if (currentAmount < capacity)
             {
-                DemandManager.Instance.RecordDelivery(resource);
+                resourceInventory[resource]++;
+                totalReceived++;
+
+                // Record delivery with DemandManager for tracking
+                if (DemandManager.Instance != null)
+                {
+                    DemandManager.Instance.RecordDelivery(resource);
+                }
+            }
+            else
+            {
+                // Storage full - discard overflow
+                totalDiscarded++;
+                OnPollenDiscarded?.Invoke(resource, 1);
+                Debug.LogWarning($"Storage full for {resource}! Discarded 1 pollen. Current: {currentAmount}/{capacity}");
             }
         }
 
-        // Calculate and earn money from delivered resources
-        // Payment amount depends on whether demand is met (1.0x if met, 0.5x if not)
-        float totalValue = CalculateResourceValue(resources);
-        if (EconomyManager.Instance != null)
+        if (totalReceived > 0)
         {
-            EconomyManager.Instance.EarnMoney(totalValue);
+            // Debug.Log($"Hive received {totalReceived} pollen ({totalDiscarded} discarded). New totals: " + GetResourceSummary());
+            // Fire event to notify UI
+            OnResourcesChanged?.Invoke();
         }
-        else
-        {
-            Debug.LogWarning("HiveController: EconomyManager not found. Money not earned.");
-        }
-
-        Debug.Log($"Hive received {resources.Count} pollen. New totals: " + GetResourceSummary());
-
-        // Fire event to notify UI
-        OnResourcesChanged?.Invoke();
     }
 
     /// <summary>
-    /// Calculates the monetary value of delivered resources based on demand fulfillment.
-    /// Base value: $1 per resource
-    /// Multiplier: 1.0x if demand met, 0.5x if demand not met
-    /// Future: Will calculate synergy combo values.
+    /// Try to consume resources for a recipe. Returns true if successful.
+    /// Used by RecipeProductionManager to start recipe production.
     /// </summary>
-    private float CalculateResourceValue(List<ResourceType> resources)
+    public bool TryConsumeResources(HoneyRecipe recipe)
     {
-        float totalValue = 0f;
+        if (recipe == null)
+            return false;
 
-        // Calculate value for each resource based on demand status
-        foreach (ResourceType resource in resources)
+        // Check if we have enough of each ingredient
+        foreach (var ingredient in recipe.ingredients)
         {
-            float baseValue = 1f; // $1 per resource base
-            float multiplier = 1f; // Default multiplier
-
-            // Get demand-based payment multiplier if DemandManager exists
-            if (DemandManager.Instance != null)
+            if (GetResourceCount(ingredient.pollenType) < ingredient.quantity)
             {
-                multiplier = DemandManager.Instance.GetPaymentMultiplier(resource);
+                return false;
             }
-
-            totalValue += baseValue * multiplier;
         }
 
-        // TODO: Future feature - Implement combo synergy calculations:
-        // - Two-resource combos: $8-12
-        // - Three-resource combos: $40-50
-        // - Four-resource combos: $200+
+        // Consume the resources
+        foreach (var ingredient in recipe.ingredients)
+        {
+            resourceInventory[ingredient.pollenType] -= ingredient.quantity;
+        }
 
-        return totalValue;
+        Debug.Log($"Consumed resources for recipe: {recipe.recipeName}");
+        OnResourcesChanged?.Invoke();
+        return true;
+    }
+
+    /// <summary>
+    /// Get a copy of the current pollen inventory.
+    /// Used by RecipeProductionManager for allocation checks.
+    /// </summary>
+    public Dictionary<ResourceType, int> GetPollenInventory()
+    {
+        return new Dictionary<ResourceType, int>(resourceInventory);
+    }
+
+    /// <summary>
+    /// Get the storage capacity for a specific resource type.
+    /// Can be upgraded in the future.
+    /// </summary>
+    public int GetStorageCapacity(ResourceType resourceType)
+    {
+        // Check if this resource has a custom capacity
+        if (storageCapacities.ContainsKey(resourceType))
+        {
+            return storageCapacities[resourceType];
+        }
+
+        // Return default capacity
+        return defaultStorageCapacity;
+    }
+
+    /// <summary>
+    /// Set the storage capacity for a specific resource type.
+    /// Used for upgrades.
+    /// </summary>
+    public void SetStorageCapacity(ResourceType resourceType, int capacity)
+    {
+        storageCapacities[resourceType] = Mathf.Max(1, capacity);
+        Debug.Log($"Updated storage capacity for {resourceType}: {capacity}");
+    }
+
+    /// <summary>
+    /// Upgrade storage capacity for a resource type by a specific amount.
+    /// </summary>
+    public void UpgradeStorageCapacity(ResourceType resourceType, int additionalCapacity)
+    {
+        int currentCapacity = GetStorageCapacity(resourceType);
+        SetStorageCapacity(resourceType, currentCapacity + additionalCapacity);
     }
 
     /// <summary>
