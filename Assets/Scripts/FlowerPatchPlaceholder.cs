@@ -245,6 +245,12 @@ public class FlowerPatchPlaceholder : MonoBehaviour
             AudioManager.Instance.RegisterFlowerPatch(flowerPatchController);
         }
 
+        // Play unlock sound
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayFlowerPatchUnlockSound();
+        }
+
         Debug.Log($"Built {biomeType} flower patch at {gameObject.name} for ${cost:F0}");
 
         // Destroy this placeholder

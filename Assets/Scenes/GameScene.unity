@@ -3656,6 +3656,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   totalBeeCount: 0
   elapsedTime: 0
+  currentGameSpeed: 1
 --- !u!1 &818742854
 GameObject:
   m_ObjectHideFlags: 0
@@ -3926,6 +3927,7 @@ MonoBehaviour:
   musicTrack: {fileID: 0}
   ambientTrack: {fileID: 8300000, guid: a961c6301af5706439abe681b1cd1496, type: 3}
   recipeCompletedClip: {fileID: 8300000, guid: 61c34ac878e5247468adfd3572668c87, type: 3}
+  flowerPatchUnlockedClip: {fileID: 8300000, guid: 61c34ac878e5247468adfd3572668c87, type: 3}
   flowerPatchUpgradedClip: {fileID: 8300000, guid: 61c34ac878e5247468adfd3572668c87, type: 3}
   capacityUpgradedClip: {fileID: 8300000, guid: 61c34ac878e5247468adfd3572668c87, type: 3}
   pollenDiscardedClip: {fileID: 8300000, guid: 61c34ac878e5247468adfd3572668c87, type: 3}

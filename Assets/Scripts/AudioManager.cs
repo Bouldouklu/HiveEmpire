@@ -19,6 +19,7 @@ public class AudioManager : MonoBehaviour
 
     [Header("SFX Clips")]
     [SerializeField] private AudioClip recipeCompletedClip;
+    [SerializeField] private AudioClip flowerPatchUnlockedClip;
     [SerializeField] private AudioClip flowerPatchUpgradedClip;
     [SerializeField] private AudioClip capacityUpgradedClip;
     [SerializeField] private AudioClip pollenDiscardedClip;
@@ -240,6 +241,17 @@ public class AudioManager : MonoBehaviour
         flowerPatch.OnFlowerPatchUpgraded.RemoveListener(OnFlowerPatchUpgraded);
         flowerPatch.OnCapacityUpgraded.RemoveListener(OnCapacityUpgraded);
         subscribedFlowerPatches.Remove(flowerPatch);
+    }
+
+    /// <summary>
+    /// Play the flower patch unlock sound effect
+    /// </summary>
+    public void PlayFlowerPatchUnlockSound()
+    {
+        if (flowerPatchUnlockedClip != null)
+        {
+            PlaySFX(flowerPatchUnlockedClip);
+        }
     }
 
     /// <summary>
