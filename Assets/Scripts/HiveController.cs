@@ -71,12 +71,6 @@ public class HiveController : MonoBehaviour
             {
                 resourceInventory[resource]++;
                 totalReceived++;
-
-                // Record delivery with DemandManager for tracking
-                if (DemandManager.Instance != null)
-                {
-                    DemandManager.Instance.RecordDelivery(resource);
-                }
             }
             else
             {
