@@ -242,3 +242,4 @@ This is a **rapid prototype** project focused on validating core mechanics quick
 5. Making "go/no-go" decision after Week 1 validation
 
 If Week 1 doesn't feel good, pivot quickly. If successful, expand to Steam with meta-content (prestige system, challenge modes, multiple maps).
+- don't embed 2 classes in one single file

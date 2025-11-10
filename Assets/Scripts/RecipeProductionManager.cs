@@ -24,6 +24,7 @@ public class RecipeProductionManager : MonoBehaviour
     private class ProductionState
     {
         public bool isProducing;
+        public bool isPaused;
         public float timeRemaining;
         public float totalTime;
     }
@@ -75,6 +76,7 @@ public class RecipeProductionManager : MonoBehaviour
                 productionStates[recipe] = new ProductionState
                 {
                     isProducing = false,
+                    isPaused = false,
                     timeRemaining = 0f,
                     totalTime = recipe.productionTimeSeconds
                 };
@@ -94,7 +96,8 @@ public class RecipeProductionManager : MonoBehaviour
             var recipe = kvp.Key;
             var state = kvp.Value;
 
-            if (state.isProducing)
+            // Only update timer if producing and not paused
+            if (state.isProducing && !state.isPaused)
             {
                 state.timeRemaining -= Time.deltaTime;
 
@@ -135,8 +138,8 @@ public class RecipeProductionManager : MonoBehaviour
 
             var state = productionStates[recipe];
 
-            // Skip if already producing
-            if (state.isProducing)
+            // Skip if already producing or paused
+            if (state.isProducing || state.isPaused)
                 continue;
 
             // Check if we can produce with currently available resources
@@ -267,6 +270,7 @@ public class RecipeProductionManager : MonoBehaviour
             productionStates[recipe] = new ProductionState
             {
                 isProducing = false,
+                isPaused = false,
                 timeRemaining = 0f,
                 totalTime = recipe.productionTimeSeconds
             };
@@ -309,6 +313,51 @@ public class RecipeProductionManager : MonoBehaviour
             activeRecipes[index] = activeRecipes[index + 1];
             activeRecipes[index + 1] = recipe;
         }
+    }
+
+    /// <summary>
+    /// Check if a recipe is currently paused.
+    /// </summary>
+    public bool IsPaused(HoneyRecipe recipe)
+    {
+        if (recipe == null || !productionStates.ContainsKey(recipe))
+            return false;
+
+        return productionStates[recipe].isPaused;
+    }
+
+    /// <summary>
+    /// Pause production for a specific recipe.
+    /// </summary>
+    public void PauseRecipe(HoneyRecipe recipe)
+    {
+        if (recipe == null || !productionStates.ContainsKey(recipe))
+            return;
+
+        productionStates[recipe].isPaused = true;
+    }
+
+    /// <summary>
+    /// Resume production for a specific recipe.
+    /// </summary>
+    public void ResumeRecipe(HoneyRecipe recipe)
+    {
+        if (recipe == null || !productionStates.ContainsKey(recipe))
+            return;
+
+        productionStates[recipe].isPaused = false;
+    }
+
+    /// <summary>
+    /// Toggle pause state for a specific recipe.
+    /// </summary>
+    public void TogglePause(HoneyRecipe recipe)
+    {
+        if (recipe == null || !productionStates.ContainsKey(recipe))
+            return;
+
+        var state = productionStates[recipe];
+        state.isPaused = !state.isPaused;
     }
 
     private void OnValidate()
