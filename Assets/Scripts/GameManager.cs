@@ -15,6 +15,10 @@ public class GameManager : MonoBehaviour
     [Tooltip("Elapsed game time in seconds")]
     [SerializeField] private float elapsedTime = 0f;
 
+    [Header("Time Control")]
+    [Tooltip("Current game speed multiplier (1x = normal, 2x = double speed, 5x = fast testing)")]
+    [SerializeField] private float currentGameSpeed = 1f;
+
     /// <summary>
     /// Gets the current total number of bees in the scene.
     /// </summary>
@@ -36,6 +40,9 @@ public class GameManager : MonoBehaviour
         }
 
         Instance = this;
+
+        // Initialize game speed to normal (always reset on game start)
+        SetGameSpeed(1f);
     }
 
     private void Start()
@@ -47,6 +54,20 @@ public class GameManager : MonoBehaviour
     {
         // Track elapsed game time
         elapsedTime += Time.deltaTime;
+
+        // Keyboard shortcuts for game speed control (testing purposes)
+        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1))
+        {
+            SetGameSpeed(1f);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2))
+        {
+            SetGameSpeed(2f);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3))
+        {
+            SetGameSpeed(5f);
+        }
     }
 
     /// <summary>
@@ -70,6 +91,19 @@ public class GameManager : MonoBehaviour
             totalBeeCount = 0;
         }
         Debug.Log($"Bee unregistered. Total count: {totalBeeCount}");
+    }
+
+    /// <summary>
+    /// Sets the game speed multiplier for testing purposes.
+    /// Affects all time-dependent systems via Time.timeScale.
+    /// </summary>
+    /// <param name="speed">Speed multiplier (e.g., 1f = normal, 2f = double speed, 5f = fast)</param>
+    public void SetGameSpeed(float speed)
+    {
+        // Clamp to reasonable range for safety
+        currentGameSpeed = Mathf.Clamp(speed, 0.25f, 10f);
+        Time.timeScale = currentGameSpeed;
+        Debug.Log($"[GameManager] Game speed set to {currentGameSpeed}x");
     }
 
     private void OnDestroy()
