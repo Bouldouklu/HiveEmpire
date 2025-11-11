@@ -19,7 +19,7 @@ MonoBehaviour:
     quantity: 1
   - pollenType: 3
     quantity: 1
-  productionTimeSeconds: 15
+  productionTimeSeconds: 25
   honeyValue: 25
   icon: {fileID: -521504964, guid: 89d87a64dbdce564386c14feac5219bd, type: 3}
   honeyColor: {r: 1, g: 0.75, b: 0.2, a: 1}

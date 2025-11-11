@@ -9,12 +9,8 @@ using UnityEngine;
 public class FlowerPatchPlaceholder : MonoBehaviour
 {
     [Header("Flower Patch Configuration")]
-    [Tooltip("What type of biome/pollen this flower patch will produce")]
-    [SerializeField] private BiomeType biomeType = BiomeType.Forest;
-
-    [Header("Prefab References")]
-    [Tooltip("Flower patch prefab to spawn when clicked")]
-    [SerializeField] private GameObject flowerPatchPrefab;
+    [Tooltip("ScriptableObject containing all configuration for this flower patch")]
+    [SerializeField] private FlowerPatchData flowerPatchData;
 
     [Tooltip("Bee prefab for the spawned flower patch's pollen route")]
     [SerializeField] private GameObject beePrefab;
@@ -110,9 +106,9 @@ public class FlowerPatchPlaceholder : MonoBehaviour
     /// </summary>
     private void UpdateVisualFeedback()
     {
-        if (meshRenderer == null || economyManager == null) return;
+        if (meshRenderer == null || economyManager == null || flowerPatchData == null) return;
 
-        float cost = economyManager.GetFlowerPatchPlacementCost(biomeType);
+        float cost = flowerPatchData.placementCost;
         bool canAfford = economyManager.CanAfford(cost);
 
         if (canAfford && affordableMaterial != null)
@@ -138,19 +134,25 @@ public class FlowerPatchPlaceholder : MonoBehaviour
             return;
         }
 
-        if (flowerPatchPrefab == null)
+        if (flowerPatchData == null)
         {
-            Debug.LogError($"FlowerPatchPlaceholder on {gameObject.name}: Flower patch prefab is not assigned!", this);
+            Debug.LogError($"FlowerPatchPlaceholder on {gameObject.name}: Flower patch data is not assigned!", this);
             return;
         }
 
-        // Get cost
-        float cost = economyManager.GetFlowerPatchPlacementCost(biomeType);
+        if (flowerPatchData.flowerPatchPrefab == null)
+        {
+            Debug.LogError($"FlowerPatchPlaceholder on {gameObject.name}: Flower patch prefab is not assigned in FlowerPatchData!", this);
+            return;
+        }
+
+        // Get cost from FlowerPatchData
+        float cost = flowerPatchData.placementCost;
 
         // Check affordability
         if (!economyManager.CanAfford(cost))
         {
-            Debug.Log($"Cannot afford {biomeType} flower patch! Cost: ${cost:F0}, Available: ${economyManager.GetCurrentMoney():F0}");
+            Debug.Log($"Cannot afford {flowerPatchData.displayName}! Cost: ${cost:F0}, Available: ${economyManager.GetCurrentMoney():F0}");
             return;
         }
 
@@ -163,14 +165,14 @@ public class FlowerPatchPlaceholder : MonoBehaviour
 
         // Spawn flower patch
         Vector3 spawnPosition = transform.position + flowerPatchSpawnOffset;
-        GameObject flowerPatch = Instantiate(flowerPatchPrefab, spawnPosition, transform.rotation);
-        flowerPatch.name = $"FlowerPatch_{biomeType}_{gameObject.name}";
+        GameObject flowerPatch = Instantiate(flowerPatchData.flowerPatchPrefab, spawnPosition, transform.rotation);
+        flowerPatch.name = $"FlowerPatch_{flowerPatchData.biomeType}_{gameObject.name}";
 
-        // Configure FlowerPatchController
+        // Configure FlowerPatchController with FlowerPatchData
         FlowerPatchController flowerPatchController = flowerPatch.GetComponent<FlowerPatchController>();
         if (flowerPatchController != null)
         {
-            flowerPatchController.SetBiomeType(biomeType);
+            flowerPatchController.InitializeFromData(flowerPatchData);
         }
         else
         {
@@ -213,14 +215,11 @@ public class FlowerPatchPlaceholder : MonoBehaviour
             }
         }
 
-        // Register placement with economy manager (for cost scaling)
-        economyManager.RegisterFlowerPatchPlaced();
-
         // Add bees to global pool (+3 bees per flower patch)
         if (BeeFleetManager.Instance != null && flowerPatchController != null)
         {
             BeeFleetManager.Instance.AddBeesToPool(3);
-            Debug.Log($"Added 3 bees to global pool for new {biomeType} flower patch");
+            Debug.Log($"Added 3 bees to global pool for new {flowerPatchData.displayName}");
 
             // Automatically allocate the 3 bees to this flower patch's route
             for (int i = 0; i < 3; i++)
@@ -232,7 +231,7 @@ public class FlowerPatchPlaceholder : MonoBehaviour
                     break;
                 }
             }
-            Debug.Log($"Auto-allocated 3 bees to new {biomeType} flower patch pollen route");
+            Debug.Log($"Auto-allocated 3 bees to new {flowerPatchData.displayName} pollen route");
         }
         else
         {
@@ -251,7 +250,7 @@ public class FlowerPatchPlaceholder : MonoBehaviour
             AudioManager.Instance.PlayFlowerPatchUnlockSound();
         }
 
-        Debug.Log($"Built {biomeType} flower patch at {gameObject.name} for ${cost:F0}");
+        Debug.Log($"Built {flowerPatchData.displayName} at {gameObject.name} for ${cost:F0}");
 
         // Destroy this placeholder
         Destroy(gameObject);
@@ -273,7 +272,7 @@ public class FlowerPatchPlaceholder : MonoBehaviour
     /// </summary>
     public BiomeType GetBiomeType()
     {
-        return biomeType;
+        return flowerPatchData != null ? flowerPatchData.biomeType : BiomeType.Forest;
     }
 
     /// <summary>
@@ -281,7 +280,14 @@ public class FlowerPatchPlaceholder : MonoBehaviour
     /// </summary>
     public float GetCost()
     {
-        if (economyManager == null) return 0f;
-        return economyManager.GetFlowerPatchPlacementCost(biomeType);
+        return flowerPatchData != null ? flowerPatchData.placementCost : 0f;
+    }
+
+    /// <summary>
+    /// Gets the FlowerPatchData for this placeholder (for debugging/UI).
+    /// </summary>
+    public FlowerPatchData GetFlowerPatchData()
+    {
+        return flowerPatchData;
     }
 }

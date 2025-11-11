@@ -73,6 +73,15 @@ public class BeeFleetManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Gets the total number of registered flower patches (flower patches with bee allocations).
+    /// </summary>
+    /// <returns>Count of flower patches currently registered with the fleet manager</returns>
+    public int GetRegisteredFlowerPatchCount()
+    {
+        return beeAllocations.Count;
+    }
+
+    /// <summary>
     /// Adds bees to the global pool (called when purchasing flower patches or upgrading).
     /// </summary>
     /// <param name="count">Number of bees to add (must be positive)</param>

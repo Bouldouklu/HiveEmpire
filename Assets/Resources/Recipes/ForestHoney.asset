@@ -17,7 +17,7 @@ MonoBehaviour:
   ingredients:
   - pollenType: 0
     quantity: 1
-  productionTimeSeconds: 5
+  productionTimeSeconds: 7
   honeyValue: 2
   icon: {fileID: -850028183, guid: 89d87a64dbdce564386c14feac5219bd, type: 3}
   honeyColor: {r: 1, g: 0.75, b: 0.2, a: 1}

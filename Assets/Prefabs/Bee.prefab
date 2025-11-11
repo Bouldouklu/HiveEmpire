@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6425846905903079561}
   m_Layer: 0
   m_Name: Bee
-  m_TagString: Untagged
+  m_TagString: Bee
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -166,12 +166,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e33080ec2d40de5469fd001f1f9ecc30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AirplaneController
+  baseSpeed: 3
   speed: 3
   flightAltitude: 4
-  rotationSpeed: 8
+  rotationSpeed: 10
   currentState: 0
   pollenCapacity: 1
-  showFlightPathGizmos: 1
+  showFlightPathGizmos: 0
   currentPollen: 
 --- !u!1 &2975168251230277284
 GameObject:
@@ -223,7 +224,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2975168251230277284}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -334,7 +335,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7657024076595669558}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0

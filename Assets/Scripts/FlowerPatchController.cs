@@ -13,6 +13,9 @@ public class FlowerPatchController : MonoBehaviour
     [Tooltip("Biome type determines what pollen this flower patch produces")]
     [SerializeField] private BiomeType biomeType = BiomeType.Desert;
 
+    [Tooltip("FlowerPatchData used to initialize this flower patch (for reference)")]
+    [SerializeField] private FlowerPatchData flowerPatchData;
+
     [Header("Bee Capacity System")]
     [Tooltip("Base bee capacity (before tier and bonus upgrades)")]
     [SerializeField] private int baseCapacity = 5;
@@ -102,6 +105,38 @@ public class FlowerPatchController : MonoBehaviour
     public void SetBiomeType(BiomeType newBiomeType)
     {
         biomeType = newBiomeType;
+    }
+
+    /// <summary>
+    /// Initializes this flower patch from FlowerPatchData ScriptableObject.
+    /// Called by FlowerPatchPlaceholder when spawning a new flower patch.
+    /// </summary>
+    /// <param name="data">The FlowerPatchData containing configuration</param>
+    public void InitializeFromData(FlowerPatchData data)
+    {
+        if (data == null)
+        {
+            Debug.LogError($"FlowerPatchController on {gameObject.name}: Cannot initialize from null FlowerPatchData!", this);
+            return;
+        }
+
+        // Store reference to data
+        flowerPatchData = data;
+
+        // Set biome type
+        biomeType = data.biomeType;
+
+        // Initialize upgrade costs from data
+        upgradeCosts = new float[data.upgradeCosts.Length];
+        System.Array.Copy(data.upgradeCosts, upgradeCosts, data.upgradeCosts.Length);
+
+        // Initialize capacity settings from data
+        baseCapacity = data.baseCapacity;
+        beesPerUpgrade = data.beesPerUpgrade;
+        capacityUpgradeCost = data.capacityUpgradeCost;
+        bonusCapacityPerUpgrade = data.bonusCapacityPerUpgrade;
+
+        Debug.Log($"FlowerPatchController initialized from {data.name}: Biome={biomeType}, BaseCapacity={baseCapacity}, UpgradeCosts=[{string.Join(", ", upgradeCosts)}]");
     }
 
     // ============================================

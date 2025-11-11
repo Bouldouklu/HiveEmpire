@@ -252,9 +252,9 @@ public class YearStatsTracker : MonoBehaviour
         }
 
         // Track flower patches placed
-        if (EconomyManager.Instance != null)
+        if (BeeFleetManager.Instance != null)
         {
-            flowerPatchesPlaced = EconomyManager.Instance.GetTotalFlowerPatchsPlaced();
+            flowerPatchesPlaced = BeeFleetManager.Instance.GetRegisteredFlowerPatchCount();
         }
 
         // Note: We're tracking this event, but detailed resource counting

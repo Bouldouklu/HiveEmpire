@@ -7,10 +7,10 @@
 ## SYSTEM
 - [ ] stamina/energy system?
 - [ ] dynamic weather and event system
-- [ ] camera control
-- [ ] Fog of war
-- [ ] Centralized color management?
-- [ ] End of year panel with stats and summary
+- [ ] Analytics to implement
+- [ ] camera control??
+- [ ] Fog of war??
+- [ ] Centralized color management??
 ---
 ## ASSETS
 - [ ] icon for type of pollen
@@ -27,4 +27,4 @@
 - [ ] UI panel above each airport showing the current rate and type of resource.
 ---
 ## MISC
-- [ ] Change naming everywhere for Hive Empire (remmote repo specially)
+- [ ] Change naming everywhere for Hive Empire (remote repo specially)

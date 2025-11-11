@@ -14,23 +14,6 @@ public class EconomyManager : MonoBehaviour
     [Tooltip("Current player money balance")]
     private float currentMoney = 0f;
 
-    [SerializeField]
-    [Tooltip("Total number of flowerPatchs placed (for scaling placement costs)")]
-    private int totalFlowerPatchesPlaced = 0;
-
-    [Header("FlowerPatch Placement Costs")]
-    [Tooltip("Base cost for Forest/Plains biomes")]
-    [SerializeField] private float commonBiomeCost = 10f;
-
-    [Tooltip("Base cost for Mountain/Coastal biomes")]
-    [SerializeField] private float mediumBiomeCost = 20f;
-
-    [Tooltip("Base cost for Desert/Tundra biomes")]
-    [SerializeField] private float rareBiomeCost = 30f;
-
-    [Tooltip("Cost scaling multiplier per flowerPatch placed (e.g., 0.5 = 50% increase per flowerPatch)")]
-    [SerializeField] private float costScalingMultiplier = 0.5f;
-
     [Header("Events")]
     [Tooltip("Fired when money amount changes. Passes new total money amount.")]
     public UnityEvent<float> OnMoneyChanged;
@@ -126,58 +109,13 @@ public class EconomyManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Calculates the cost to place an flowerPatch based on biome type and scaling.
-    /// Cost = baseCost × (1 + scalingMultiplier × flowerPatchsPlaced)
-    /// </summary>
-    /// <param name="biome">Biome type where flowerPatch will be placed</param>
-    /// <returns>Total cost for placing flowerPatch at this biome</returns>
-    public float GetFlowerPatchPlacementCost(BiomeType biome)
-    {
-        // Get base cost by biome rarity
-        float baseCost = biome switch
-        {
-            BiomeType.Forest => commonBiomeCost,
-            BiomeType.Plains => commonBiomeCost,
-            BiomeType.Mountain => mediumBiomeCost,
-            BiomeType.Coastal => mediumBiomeCost,
-            BiomeType.Desert => rareBiomeCost,
-            BiomeType.Tundra => rareBiomeCost,
-            _ => commonBiomeCost // Fallback
-        };
-
-        // Apply scaling based on total flowerPatchs placed
-        float scaledCost = baseCost * (1f + (costScalingMultiplier * totalFlowerPatchesPlaced));
-
-        return Mathf.Round(scaledCost); // Round to whole number for cleaner UI
-    }
-
-    /// <summary>
-    /// Increments the flowerPatch placement counter (called when an flowerPatch is successfully placed).
-    /// Should be called by PlacementController after spending money.
-    /// </summary>
-    public void RegisterFlowerPatchPlaced()
-    {
-        totalFlowerPatchesPlaced++;
-        Debug.Log($"EconomyManager: Total flowerPatchs placed: {totalFlowerPatchesPlaced}");
-    }
-
-    /// <summary>
-    /// Gets the total number of flowerPatchs placed.
-    /// </summary>
-    public int GetTotalFlowerPatchsPlaced()
-    {
-        return totalFlowerPatchesPlaced;
-    }
-
-    /// <summary>
     /// Reset economy to initial state for new year playthrough.
     /// </summary>
     public void ResetToInitialState()
     {
         currentMoney = 0f;
-        totalFlowerPatchesPlaced = 0;
         OnMoneyChanged?.Invoke(currentMoney);
 
-        Debug.Log("[EconomyManager] Reset to initial state - Money: $0, Flower Patches: 0");
+        Debug.Log("[EconomyManager] Reset to initial state - Money: $0");
     }
 }
