@@ -428,7 +428,6 @@ public class EndOfYearPanel : MonoBehaviour
         if (highScoreSummaryText != null)
         {
             StringBuilder summary = new StringBuilder();
-            summary.AppendLine("<b>Your Best:</b>");
             summary.AppendLine($"Money Earned: ${comparison.bestMoneyEarned:F0}");
             summary.AppendLine($"Recipes: {comparison.bestRecipes}");
             summary.AppendLine($"Resources: {comparison.bestResources}");
