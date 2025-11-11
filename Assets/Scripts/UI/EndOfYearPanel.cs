@@ -116,8 +116,6 @@ public class EndOfYearPanel : MonoBehaviour
 
         Instance = this;
 
-        Debug.Log("[EndOfYearPanel] Awake - Instance created");
-
         // Setup button listeners
         if (playAgainButton != null)
         {
@@ -146,26 +144,15 @@ public class EndOfYearPanel : MonoBehaviour
         TrySubscribeToSeasonManager();
     }
 
-    private void OnEnable()
-    {
-        // Backup subscription attempt (in case Start hasn't run yet)
-        TrySubscribeToSeasonManager();
-    }
-
     /// <summary>
-    /// Attempt to subscribe to SeasonManager's OnYearEnded event.
+    /// Subscribe to SeasonManager's OnYearEnded event.
     /// </summary>
     private void TrySubscribeToSeasonManager()
     {
         if (SeasonManager.Instance != null)
         {
-            // Remove listener first to avoid duplicates
             SeasonManager.Instance.OnYearEnded.RemoveListener(OnYearEnded);
-
-            // Add listener
             SeasonManager.Instance.OnYearEnded.AddListener(OnYearEnded);
-
-            Debug.Log("[EndOfYearPanel] Successfully subscribed to OnYearEnded event");
         }
     }
 
@@ -207,7 +194,6 @@ public class EndOfYearPanel : MonoBehaviour
     /// </summary>
     private void OnYearEnded()
     {
-        Debug.Log("[EndOfYearPanel] Year ended - showing summary");
         ShowYearSummary();
     }
 
@@ -269,45 +255,46 @@ public class EndOfYearPanel : MonoBehaviour
         // Hero stats
         if (totalMoneyEarnedText != null)
         {
-            totalMoneyEarnedText.text = $"${summary.totalMoneyEarned:F0}";
+            totalMoneyEarnedText.text = $"Money Earned: ${summary.totalMoneyEarned:F0}";
         }
 
         if (totalRecipesText != null)
         {
-            totalRecipesText.text = $"{summary.totalRecipesCompleted}";
+            totalRecipesText.text = $"Recipes Completed: {summary.totalRecipesCompleted}";
         }
 
         if (totalResourcesText != null)
         {
             int totalResources = GetTotalResourceCount(summary.totalResourcesCollected);
-            totalResourcesText.text = $"{totalResources}";
+            totalResourcesText.text = $"Resources Collected: {totalResources}";
         }
 
         // Economic stats
         if (startingMoneyText != null)
         {
-            startingMoneyText.text = $"${summary.startingMoney:F0}";
+            startingMoneyText.text = $"Starting Money: ${summary.startingMoney:F0}";
         }
 
         if (endingMoneyText != null)
         {
-            endingMoneyText.text = $"${summary.endingMoney:F0}";
+            endingMoneyText.text = $"Ending Money: ${summary.endingMoney:F0}";
         }
 
+        // Highest transaction removed - not interesting with only 5 recipes
         if (highestTransactionText != null)
         {
-            highestTransactionText.text = $"${summary.highestTransaction:F0}";
+            highestTransactionText.gameObject.SetActive(false);
         }
 
         // Empire stats
         if (flowerPatchesText != null)
         {
-            flowerPatchesText.text = $"{summary.flowerPatchesPlaced}";
+            flowerPatchesText.text = $"Flower Patches: {summary.flowerPatchesPlaced}";
         }
 
         if (peakBeeFleetText != null)
         {
-            peakBeeFleetText.text = $"{summary.peakBeeFleetSize}";
+            peakBeeFleetText.text = $"Peak Bee Fleet: {summary.peakBeeFleetSize}";
         }
 
         // Season breakdown
@@ -328,31 +315,31 @@ public class EndOfYearPanel : MonoBehaviour
         // Spring
         if (springMoneyText != null)
         {
-            springMoneyText.text = $"${summary.springStats.moneyEarned:F0}";
+            springMoneyText.text = $"Revenue: ${summary.springStats.moneyEarned:F0}";
         }
         if (springRecipesText != null)
         {
-            springRecipesText.text = $"{summary.springStats.recipesCompleted}";
+            springRecipesText.text = $"Recipes: {summary.springStats.recipesCompleted}";
         }
 
         // Summer
         if (summerMoneyText != null)
         {
-            summerMoneyText.text = $"${summary.summerStats.moneyEarned:F0}";
+            summerMoneyText.text = $"Revenue: ${summary.summerStats.moneyEarned:F0}";
         }
         if (summerRecipesText != null)
         {
-            summerRecipesText.text = $"{summary.summerStats.recipesCompleted}";
+            summerRecipesText.text = $"Recipes: {summary.summerStats.recipesCompleted}";
         }
 
         // Autumn
         if (autumnMoneyText != null)
         {
-            autumnMoneyText.text = $"${summary.autumnStats.moneyEarned:F0}";
+            autumnMoneyText.text = $"Revenue: ${summary.autumnStats.moneyEarned:F0}";
         }
         if (autumnRecipesText != null)
         {
-            autumnRecipesText.text = $"{summary.autumnStats.recipesCompleted}";
+            autumnRecipesText.text = $"Recipes: {summary.autumnStats.recipesCompleted}";
         }
     }
 
@@ -409,25 +396,17 @@ public class EndOfYearPanel : MonoBehaviour
         if (comparison == null)
             return;
 
-        // New records message
+        // Hide new records text (feature removed for future redesign)
         if (newRecordsText != null)
         {
-            if (comparison.AnyNewRecords())
-            {
-                int count = comparison.GetNewRecordsCount();
-                newRecordsText.text = $"<color=#{ColorUtility.ToHtmlStringRGB(newRecordColor)}>{count} NEW RECORD{(count > 1 ? "S" : "")}!</color>";
-                newRecordsText.gameObject.SetActive(true);
-            }
-            else
-            {
-                newRecordsText.gameObject.SetActive(false);
-            }
+            newRecordsText.gameObject.SetActive(false);
         }
 
         // High score summary
         if (highScoreSummaryText != null)
         {
             StringBuilder summary = new StringBuilder();
+            summary.AppendLine("<b>Your Highscore:</b>");
             summary.AppendLine($"Money Earned: ${comparison.bestMoneyEarned:F0}");
             summary.AppendLine($"Recipes: {comparison.bestRecipes}");
             summary.AppendLine($"Resources: {comparison.bestResources}");
@@ -473,8 +452,6 @@ public class EndOfYearPanel : MonoBehaviour
         {
             Debug.LogError("[EndOfYearPanel] Panel Blocker is NULL!");
         }
-
-        Debug.Log("[EndOfYearPanel] Panel displayed");
     }
 
     /// <summary>
@@ -498,8 +475,6 @@ public class EndOfYearPanel : MonoBehaviour
     /// </summary>
     private void OnPlayAgainClicked()
     {
-        Debug.Log("[EndOfYearPanel] Restarting year...");
-
         // Hide panel and resume time
         HidePanel();
         Time.timeScale = 1f;

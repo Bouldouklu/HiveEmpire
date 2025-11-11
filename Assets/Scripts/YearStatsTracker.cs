@@ -13,6 +13,7 @@ public class YearStatsTracker : MonoBehaviour
 
     // Money & Economic Stats
     private float startingMoney;
+    private float lastKnownMoney; // Track previous money for delta calculation
     private float totalMoneyEarned;
     private float highestTransaction;
 
@@ -59,16 +60,19 @@ public class YearStatsTracker : MonoBehaviour
 
     private void Start()
     {
+        // Subscribe to events after all managers are initialized
+        SubscribeToEvents();
+
         // Capture starting money after EconomyManager initializes
         if (EconomyManager.Instance != null)
         {
             startingMoney = EconomyManager.Instance.CurrentMoney;
+            lastKnownMoney = startingMoney;
         }
-    }
-
-    private void OnEnable()
-    {
-        SubscribeToEvents();
+        else
+        {
+            Debug.LogError("[YearStatsTracker] EconomyManager not found - money tracking will not work!");
+        }
     }
 
     private void OnDisable()
@@ -90,6 +94,7 @@ public class YearStatsTracker : MonoBehaviour
     private void InitializeStats()
     {
         startingMoney = 0f;
+        lastKnownMoney = 0f;
         totalMoneyEarned = 0f;
         highestTransaction = 0f;
         totalRecipesCompleted = 0;
@@ -116,21 +121,25 @@ public class YearStatsTracker : MonoBehaviour
     {
         if (EconomyManager.Instance != null)
         {
+            EconomyManager.Instance.OnMoneyChanged.RemoveListener(OnMoneyChanged);
             EconomyManager.Instance.OnMoneyChanged.AddListener(OnMoneyChanged);
         }
 
         if (RecipeProductionManager.Instance != null)
         {
+            RecipeProductionManager.Instance.OnRecipeCompleted.RemoveListener(OnRecipeCompleted);
             RecipeProductionManager.Instance.OnRecipeCompleted.AddListener(OnRecipeCompleted);
         }
 
         if (HiveController.Instance != null)
         {
+            HiveController.Instance.OnResourcesChanged.RemoveListener(OnResourcesChanged);
             HiveController.Instance.OnResourcesChanged.AddListener(OnResourcesChanged);
         }
 
         if (SeasonManager.Instance != null)
         {
+            SeasonManager.Instance.OnSeasonChanged.RemoveListener(OnSeasonChanged);
             SeasonManager.Instance.OnSeasonChanged.AddListener(OnSeasonChanged);
         }
     }
@@ -168,11 +177,8 @@ public class YearStatsTracker : MonoBehaviour
     /// </summary>
     private void OnMoneyChanged(float newTotal)
     {
-        if (EconomyManager.Instance == null)
-            return;
-
-        float previousTotal = newTotal - (newTotal - EconomyManager.Instance.CurrentMoney);
-        float change = newTotal - previousTotal;
+        // Calculate change from last known value
+        float change = newTotal - lastKnownMoney;
 
         // Only track positive changes (money earned, not spent)
         if (change > 0f)
@@ -191,6 +197,9 @@ public class YearStatsTracker : MonoBehaviour
                 highestTransaction = change;
             }
         }
+
+        // Update last known money
+        lastKnownMoney = newTotal;
     }
 
     /// <summary>
@@ -217,8 +226,6 @@ public class YearStatsTracker : MonoBehaviour
         {
             seasonalStats[currentSeason].recipesCompleted++;
         }
-
-        Debug.Log($"[YearStatsTracker] Recipe completed: {recipeName} (Total: {totalRecipesCompleted})");
     }
 
     /// <summary>
@@ -362,10 +369,11 @@ public class YearStatsTracker : MonoBehaviour
     {
         InitializeStats();
 
-        // Capture new starting money
+        // Capture new starting money and reset tracking
         if (EconomyManager.Instance != null)
         {
             startingMoney = EconomyManager.Instance.CurrentMoney;
+            lastKnownMoney = startingMoney;
         }
 
         Debug.Log("[YearStatsTracker] Stats reset for new year");
