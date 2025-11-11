@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8dfd901a1fa9b846ad88848f25e05a9, type: 3}
+  m_Name: SweetSuccess
+  m_EditorClassIdentifier: Assembly-CSharp::Achievement
+  achievementId: sweet_success
+  achievementName: Sweet Success
+  description: Earn $1.000 in a single year
+  achievementType: 0
+  unlockThreshold: 1000

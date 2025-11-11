@@ -10,6 +10,7 @@
 - [ ] camera control
 - [ ] Fog of war
 - [ ] Centralized color management?
+- [ ] End of year panel with stats and summary
 ---
 ## ASSETS
 - [ ] icon for type of pollen

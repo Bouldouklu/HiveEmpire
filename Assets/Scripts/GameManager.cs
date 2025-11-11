@@ -106,6 +106,84 @@ public class GameManager : MonoBehaviour
         Debug.Log($"[GameManager] Game speed set to {currentGameSpeed}x");
     }
 
+    /// <summary>
+    /// Resets the game state for a new year playthrough.
+    /// Resets all managers, destroys flower patches, and restarts the season cycle.
+    /// </summary>
+    public void ResetYear()
+    {
+        Debug.Log("[GameManager] Resetting year for new playthrough...");
+
+        // Reset elapsed time
+        elapsedTime = 0f;
+
+        // Reset game speed to normal
+        SetGameSpeed(1f);
+
+        // Reset economy manager
+        if (EconomyManager.Instance != null)
+        {
+            EconomyManager.Instance.ResetToInitialState();
+        }
+        else
+        {
+            Debug.LogWarning("[GameManager] EconomyManager not found during reset");
+        }
+
+        // Reset bee fleet manager
+        if (BeeFleetManager.Instance != null)
+        {
+            BeeFleetManager.Instance.ResetToInitialState();
+        }
+        else
+        {
+            Debug.LogWarning("[GameManager] BeeFleetManager not found during reset");
+        }
+
+        // Reset hive controller (clear inventory)
+        if (HiveController.Instance != null)
+        {
+            HiveController.Instance.ResetInventory();
+        }
+        else
+        {
+            Debug.LogWarning("[GameManager] HiveController not found during reset");
+        }
+
+        // Destroy all flower patch GameObjects
+        FlowerPatchController[] allFlowerPatches = FindObjectsByType<FlowerPatchController>(FindObjectsSortMode.None);
+        foreach (var flowerPatch in allFlowerPatches)
+        {
+            if (flowerPatch != null)
+            {
+                Destroy(flowerPatch.gameObject);
+            }
+        }
+        Debug.Log($"[GameManager] Destroyed {allFlowerPatches.Length} flower patches");
+
+        // Reset year stats tracker
+        if (YearStatsTracker.Instance != null)
+        {
+            YearStatsTracker.Instance.ResetStats();
+        }
+        else
+        {
+            Debug.LogWarning("[GameManager] YearStatsTracker not found during reset");
+        }
+
+        // Reset season manager to start new year
+        if (SeasonManager.Instance != null)
+        {
+            SeasonManager.Instance.StartNewYear();
+        }
+        else
+        {
+            Debug.LogWarning("[GameManager] SeasonManager not found during reset");
+        }
+
+        Debug.Log("[GameManager] Year reset complete - ready for new playthrough!");
+    }
+
     private void OnDestroy()
     {
         // Clean up singleton reference

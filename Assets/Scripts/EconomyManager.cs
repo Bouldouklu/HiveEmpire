@@ -168,4 +168,16 @@ public class EconomyManager : MonoBehaviour
     {
         return totalFlowerPatchesPlaced;
     }
+
+    /// <summary>
+    /// Reset economy to initial state for new year playthrough.
+    /// </summary>
+    public void ResetToInitialState()
+    {
+        currentMoney = 0f;
+        totalFlowerPatchesPlaced = 0;
+        OnMoneyChanged?.Invoke(currentMoney);
+
+        Debug.Log("[EconomyManager] Reset to initial state - Money: $0, Flower Patches: 0");
+    }
 }

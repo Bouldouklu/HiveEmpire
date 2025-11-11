@@ -208,4 +208,17 @@ public class BeeFleetManager : MonoBehaviour
 
         Debug.Log($"BeeFleetManager: Total bees set to: {totalBeesOwned}");
     }
+
+    /// <summary>
+    /// Reset bee fleet to initial state for new year playthrough.
+    /// Clears all allocations and resets bee count to zero.
+    /// </summary>
+    public void ResetToInitialState()
+    {
+        totalBeesOwned = 0;
+        beeAllocations.Clear();
+        OnTotalBeesChanged?.Invoke(totalBeesOwned);
+
+        Debug.Log("[BeeFleetManager] Reset to initial state - Total bees: 0, Allocations cleared");
+    }
 }

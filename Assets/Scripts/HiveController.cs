@@ -89,6 +89,12 @@ public class HiveController : MonoBehaviour
             // Debug.Log($"Hive received {totalReceived} pollen ({totalDiscarded} discarded). New totals: " + GetResourceSummary());
             // Fire event to notify UI
             OnResourcesChanged?.Invoke();
+
+            // Track resources for year stats
+            if (YearStatsTracker.Instance != null)
+            {
+                YearStatsTracker.Instance.RecordResourcesCollected(resources);
+            }
         }
     }
 
@@ -252,6 +258,24 @@ public class HiveController : MonoBehaviour
         {
             SeasonManager.Instance.OnSeasonChanged.RemoveListener(OnSeasonChanged);
         }
+    }
+
+    /// <summary>
+    /// Reset inventory to initial state for new year playthrough.
+    /// Clears all resources and resets storage capacities.
+    /// </summary>
+    public void ResetInventory()
+    {
+        resourceInventory.Clear();
+        storageCapacities.Clear();
+        defaultStorageCapacity = baseStorageCapacity;
+
+        // Reapply seasonal modifiers if needed
+        ApplySeasonalStorageModifier();
+
+        OnResourcesChanged?.Invoke();
+
+        Debug.Log("[HiveController] Inventory reset - all resources cleared");
     }
 
     private void OnDrawGizmos()
