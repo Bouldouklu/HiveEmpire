@@ -12,21 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 489c7e82fe416ad4d900055c6f7eba00, type: 3}
   m_Name: PremiumBlend
   m_EditorClassIdentifier: Assembly-CSharp::HoneyRecipe
-  recipeName: Premium Blend
+  recipeName: Honey Blend
   description: 
   ingredients:
   - pollenType: 0
-    quantity: 1
+    quantity: 2
   - pollenType: 1
-    quantity: 1
+    quantity: 2
   - pollenType: 2
-    quantity: 1
+    quantity: 2
   - pollenType: 3
-    quantity: 1
+    quantity: 2
   - pollenType: 4
-    quantity: 1
+    quantity: 2
   - pollenType: 5
-    quantity: 1
+    quantity: 2
   productionTimeSeconds: 45
   honeyValue: 80
   icon: {fileID: -1681535153, guid: 89d87a64dbdce564386c14feac5219bd, type: 3}

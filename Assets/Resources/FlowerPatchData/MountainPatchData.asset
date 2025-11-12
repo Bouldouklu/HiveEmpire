@@ -15,7 +15,7 @@ MonoBehaviour:
   biomeType: 2
   displayName: Mountain Flower Patch
   description: 
-  placementCost: 70
+  placementCost: 50
   flowerPatchPrefab: {fileID: 6159468505849121783, guid: 6331e05cf757eb54da6bddd7b19ae416, type: 3}
   upgradeCosts:
   - 50
