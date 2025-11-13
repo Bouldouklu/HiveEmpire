@@ -272,7 +272,7 @@ public class FlowerPatchPlaceholder : MonoBehaviour
     /// </summary>
     public BiomeType GetBiomeType()
     {
-        return flowerPatchData != null ? flowerPatchData.biomeType : BiomeType.Forest;
+        return flowerPatchData != null ? flowerPatchData.biomeType : BiomeType.WildMeadow;
     }
 
     /// <summary>

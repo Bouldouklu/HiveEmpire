@@ -4,24 +4,24 @@
 /// </summary>
 public enum ResourceType
 {
-    ForestPollen,     // Forest biome
-    PlainsPollen,     // Plains biome
-    MountainPollen,    // Mountain biome
-    DesertPollen,      // Desert biome
-    CoastalPollen,     // Coastal biome
-    TundraPollen  // Tundra biome
+    WildMeadowPollen,           // Wild Meadow biome
+    OrchardPollen,              // Orchard biome
+    CultivatedGardenPollen,     // Cultivated Garden biome
+    MarshPollen,                // Marsh biome
+    ForestEdgePollen,           // Forest Edge biome
+    AgriculturalFieldPollen     // Agricultural Field biome
 }
 
 /// <summary>
-/// Defines the biome types for airports, which determine what resource they produce.
-/// Generation rates: Fast (Forest, Plains), Medium (Mountain, Coastal, Tundra), Slow (Desert)
+/// Defines the biome types for flower patches, which determine what resource they produce.
+/// Generation rates: Fast (Wild Meadow, Orchard), Medium (Cultivated Garden, Forest Edge, Agricultural Field), Slow (Marsh)
 /// </summary>
 public enum BiomeType
 {
-    Forest,   // Produces ForestPollen (fast: 1 per 2s)
-    Plains,   // Produces PlainsPollen (fast: 1 per 2s)
-    Mountain, // Produces MountainPollen (medium: 1 per 4s)
-    Desert,   // Produces DesertPollen (slow: 1 per 6s)
-    Coastal,  // Produces CoastalPollen (medium: 1 per 3s)
-    Tundra    // Produces TundraPollen (slow: 1 per 5s)
+    WildMeadow,         // Produces WildMeadowPollen (fast: 1 per 2s)
+    Orchard,            // Produces OrchardPollen (fast: 1 per 2s)
+    CultivatedGarden,   // Produces CultivatedGardenPollen (medium: 1 per 4s)
+    Marsh,              // Produces MarshPollen (slow: 1 per 6s)
+    ForestEdge,         // Produces ForestEdgePollen (medium: 1 per 3s)
+    AgriculturalField   // Produces AgriculturalFieldPollen (slow: 1 per 5s)
 }

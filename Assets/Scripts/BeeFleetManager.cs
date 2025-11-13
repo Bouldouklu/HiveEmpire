@@ -38,6 +38,7 @@ public class BeeFleetManager : MonoBehaviour
         }
 
         Instance = this;
+        transform.parent = null; // Detach from parent to make root GameObject
         DontDestroyOnLoad(gameObject);
     }
 

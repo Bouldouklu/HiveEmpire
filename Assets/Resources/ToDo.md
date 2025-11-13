@@ -5,8 +5,8 @@
 - [ ] Where does the player needs to put attention to? do some action? 
 ---
 ## SYSTEM
+- [ ] WebGl build not working!
 - [ ] Tier system of recipe productions. Over time, the player can increase the tier of the recipe, that will consume more resources, use a little bit less time, and create more value. For example: tier 1 Forest honey: 1 forest pollen create 2€ in 7 sec. Tier 2, 2 forest pollen, creates 5€, in 6.5secs.
-- [ ] upgrade to implement that decrease production time
 - [ ] stamina/energy system?
 - [ ] dynamic weather and event system
 - [ ] Analytics to implement

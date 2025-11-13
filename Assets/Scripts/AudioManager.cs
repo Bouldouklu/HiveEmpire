@@ -45,6 +45,7 @@ public class AudioManager : MonoBehaviour
         }
 
         Instance = this;
+        transform.parent = null; // Detach from parent to make root GameObject
         DontDestroyOnLoad(gameObject);
 
         InitializeAudioSources();

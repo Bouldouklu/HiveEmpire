@@ -11,7 +11,7 @@ public class FlowerPatchController : MonoBehaviour
 {
     [Header("Flower Patch Settings")]
     [Tooltip("Biome type determines what pollen this flower patch produces")]
-    [SerializeField] private BiomeType biomeType = BiomeType.Desert;
+    [SerializeField] private BiomeType biomeType = BiomeType.Marsh;
 
     [Tooltip("FlowerPatchData used to initialize this flower patch (for reference)")]
     [SerializeField] private FlowerPatchData flowerPatchData;
@@ -80,13 +80,13 @@ public class FlowerPatchController : MonoBehaviour
         // Map biome type to resource type
         return biomeType switch
         {
-            BiomeType.Forest => ResourceType.ForestPollen,
-            BiomeType.Plains => ResourceType.PlainsPollen,
-            BiomeType.Mountain => ResourceType.MountainPollen,
-            BiomeType.Desert => ResourceType.DesertPollen,
-            BiomeType.Coastal => ResourceType.CoastalPollen,
-            BiomeType.Tundra => ResourceType.TundraPollen,
-            _ => ResourceType.ForestPollen // Default fallback
+            BiomeType.WildMeadow => ResourceType.WildMeadowPollen,
+            BiomeType.Orchard => ResourceType.OrchardPollen,
+            BiomeType.CultivatedGarden => ResourceType.CultivatedGardenPollen,
+            BiomeType.Marsh => ResourceType.MarshPollen,
+            BiomeType.ForestEdge => ResourceType.ForestEdgePollen,
+            BiomeType.AgriculturalField => ResourceType.AgriculturalFieldPollen,
+            _ => ResourceType.WildMeadowPollen // Default fallback
         };
     }
 

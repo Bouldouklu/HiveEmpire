@@ -51,17 +51,17 @@ public class IngredientEntryUI : MonoBehaviour
         // Temporary color mapping - replace with actual icon sprites later
         switch (type)
         {
-            case ResourceType.ForestPollen:
+            case ResourceType.WildMeadowPollen:
                 return new Color(0.6f, 0.4f, 0.2f); // Brown (Wood)
-            case ResourceType.PlainsPollen:
+            case ResourceType.OrchardPollen:
                 return new Color(0.8f, 0.8f, 0.2f); // Yellow (Food)
-            case ResourceType.MountainPollen:
+            case ResourceType.CultivatedGardenPollen:
                 return new Color(0.5f, 0.5f, 0.5f); // Gray (Stone)
-            case ResourceType.DesertPollen:
+            case ResourceType.MarshPollen:
                 return new Color(0.2f, 0.2f, 0.2f); // Black (Oil)
-            case ResourceType.CoastalPollen:
+            case ResourceType.ForestEdgePollen:
                 return new Color(0.2f, 0.5f, 0.8f); // Blue (Fish)
-            case ResourceType.TundraPollen:
+            case ResourceType.AgriculturalFieldPollen:
                 return new Color(0.8f, 0.9f, 1.0f); // Light blue (Minerals)
             default:
                 return Color.white;

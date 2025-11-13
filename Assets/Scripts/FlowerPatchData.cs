@@ -10,7 +10,7 @@ public class FlowerPatchData : ScriptableObject
 {
     [Header("Identity")]
     [Tooltip("The biome type this flower patch represents")]
-    public BiomeType biomeType = BiomeType.Forest;
+    public BiomeType biomeType = BiomeType.WildMeadow;
 
     [Tooltip("Display name for UI (e.g., 'Forest Flower Patch')")]
     public string displayName = "Flower Patch";

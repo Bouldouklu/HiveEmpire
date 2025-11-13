@@ -126,8 +126,20 @@ PrefabInstance:
       value: cactus 6
       objectReference: {fileID: 0}
     - target: {fileID: 9223038255998982863, guid: 76633cc4b41235742a3a1736058b4f98, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.34593
+      objectReference: {fileID: 0}
+    - target: {fileID: 9223038255998982863, guid: 76633cc4b41235742a3a1736058b4f98, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.34593
+      objectReference: {fileID: 0}
+    - target: {fileID: 9223038255998982863, guid: 76633cc4b41235742a3a1736058b4f98, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.34593
+      objectReference: {fileID: 0}
+    - target: {fileID: 9223038255998982863, guid: 76633cc4b41235742a3a1736058b4f98, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.55
+      value: -1.25
       objectReference: {fileID: 0}
     - target: {fileID: 9223038255998982863, guid: 76633cc4b41235742a3a1736058b4f98, type: 3}
       propertyPath: m_LocalPosition.y
@@ -135,7 +147,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9223038255998982863, guid: 76633cc4b41235742a3a1736058b4f98, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.924
       objectReference: {fileID: 0}
     - target: {fileID: 9223038255998982863, guid: 76633cc4b41235742a3a1736058b4f98, type: 3}
       propertyPath: m_LocalRotation.w

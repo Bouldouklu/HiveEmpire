@@ -25,12 +25,12 @@ public class FlowerPatchDataGenerator : EditorWindow
         // Define all biome configurations
         var biomeConfigs = new[]
         {
-            new { BiomeType = BiomeType.Forest, DisplayName = "Forest Flower Patch", Cost = 10f, PrefabPath = "Assets/Prefabs/FlowerPatches/ForestFlowerPatch.prefab" },
-            new { BiomeType = BiomeType.Plains, DisplayName = "Plains Flower Patch", Cost = 10f, PrefabPath = "Assets/Prefabs/FlowerPatches/PlainsFlowerPatch.prefab" },
-            new { BiomeType = BiomeType.Mountain, DisplayName = "Mountain Flower Patch", Cost = 20f, PrefabPath = "Assets/Prefabs/FlowerPatches/MountainFlowerPatch.prefab" },
-            new { BiomeType = BiomeType.Coastal, DisplayName = "Coastal Flower Patch", Cost = 20f, PrefabPath = "Assets/Prefabs/FlowerPatches/CoastalFlowerPatch.prefab" },
-            new { BiomeType = BiomeType.Desert, DisplayName = "Desert Flower Patch", Cost = 30f, PrefabPath = "Assets/Prefabs/FlowerPatches/DesertFlowerPatch.prefab" },
-            new { BiomeType = BiomeType.Tundra, DisplayName = "Tundra Flower Patch", Cost = 30f, PrefabPath = "Assets/Prefabs/FlowerPatches/TundraFlowerPatch.prefab" }
+            new { BiomeType = BiomeType.WildMeadow, DisplayName = "Wild Meadow Patch", Cost = 10f, PrefabPath = "Assets/Prefabs/FlowerPatches/WildMeadowPatch.prefab" },
+            new { BiomeType = BiomeType.Orchard, DisplayName = "Orchard Patch", Cost = 10f, PrefabPath = "Assets/Prefabs/FlowerPatches/OrchardPatch.prefab" },
+            new { BiomeType = BiomeType.CultivatedGarden, DisplayName = "Cultivated Garden Patch", Cost = 20f, PrefabPath = "Assets/Prefabs/FlowerPatches/CultivatedGardenPatch.prefab" },
+            new { BiomeType = BiomeType.ForestEdge, DisplayName = "Forest Edge Patch", Cost = 20f, PrefabPath = "Assets/Prefabs/FlowerPatches/ForestEdgePatch.prefab" },
+            new { BiomeType = BiomeType.Marsh, DisplayName = "Marsh Patch", Cost = 30f, PrefabPath = "Assets/Prefabs/FlowerPatches/MarshPatch.prefab" },
+            new { BiomeType = BiomeType.AgriculturalField, DisplayName = "Agricultural Field Patch", Cost = 30f, PrefabPath = "Assets/Prefabs/FlowerPatches/AgriculturalFieldPatch.prefab" }
         };
 
         int createdCount = 0;
