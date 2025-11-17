@@ -15,9 +15,6 @@ public class RouteController : MonoBehaviour
     [Tooltip("Bee prefab to spawn on this route")]
     [SerializeField] private GameObject beePrefab;
 
-    [Tooltip("Speed of bees on this route (must match BeeController speed)")]
-    [SerializeField] private float beeSpeed = 10f;
-
     [Header("References")]
     [Tooltip("The home flowerPatch transform (usually this GameObject's transform)")]
     [SerializeField] private Transform homeFlowerPatch;
@@ -187,14 +184,16 @@ public class RouteController : MonoBehaviour
             hiveLanding = HiveController.Instance.LandingPosition;
         }
 
-        // Get flight altitude from bee prefab to ensure accuracy
+        // Get flight altitude and speed from bee prefab to ensure accuracy
         float flightAltitude = 12f; // Default fallback
+        float beeSpeed = 10f; // Default fallback
         if (beePrefab != null)
         {
             BeeController beeController = beePrefab.GetComponent<BeeController>();
             if (beeController != null)
             {
                 flightAltitude = beeController.FlightAltitude;
+                beeSpeed = beeController.BaseSpeed;
             }
         }
 

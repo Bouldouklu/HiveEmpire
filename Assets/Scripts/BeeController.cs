@@ -22,6 +22,11 @@ public class BeeController : MonoBehaviour
     /// </summary>
     public float FlightAltitude => flightAltitude;
 
+    /// <summary>
+    /// Public accessor for base speed (used by RouteController for spawn interval calculations)
+    /// </summary>
+    public float BaseSpeed => baseSpeed;
+
     [Tooltip("How smoothly the bee rotates to face movement direction")]
     [SerializeField] private float rotationSpeed = 5f;
 
