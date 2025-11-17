@@ -12,8 +12,7 @@ public class RecipeProductionManager : MonoBehaviour
     public static RecipeProductionManager Instance { get; private set; }
 
     [Header("Recipe Configuration")]
-    [Tooltip("List of active recipes, ordered by priority (top = highest priority)")]
-    [SerializeField]
+    [Tooltip("Active recipes - populated automatically from RecipeProgressionManager (unlocked recipes only)")]
     private List<HoneyRecipe> activeRecipes = new List<HoneyRecipe>();
 
     [Header("Events")]
@@ -27,6 +26,7 @@ public class RecipeProductionManager : MonoBehaviour
         public bool isPaused;
         public float timeRemaining;
         public float totalTime;
+        public int tier; // Current upgrade tier when production started
     }
 
     private Dictionary<HoneyRecipe, ProductionState> productionStates = new Dictionary<HoneyRecipe, ProductionState>();
@@ -46,11 +46,53 @@ public class RecipeProductionManager : MonoBehaviour
         InitializeRecipes();
     }
 
+    private void Start()
+    {
+        // Subscribe to recipe unlock events
+        if (RecipeProgressionManager.Instance != null)
+        {
+            RecipeProgressionManager.Instance.OnRecipeUnlocked.AddListener(OnRecipeUnlocked);
+
+            // Initialize with all currently unlocked recipes (handles isUnlockedByDefault recipes)
+            List<HoneyRecipe> unlockedRecipes = RecipeProgressionManager.Instance.GetAllUnlockedRecipes();
+            foreach (var recipe in unlockedRecipes)
+            {
+                if (recipe != null && !activeRecipes.Contains(recipe))
+                {
+                    AddRecipe(recipe);
+                    Debug.Log($"RecipeProductionManager: Added default-unlocked recipe '{recipe.recipeName}' to production");
+                }
+            }
+        }
+        else
+        {
+            Debug.LogWarning("RecipeProductionManager: RecipeProgressionManager not found! No recipes will be available.");
+        }
+    }
+
     private void OnDestroy()
     {
         if (Instance == this)
         {
             Instance = null;
+        }
+
+        // Unsubscribe from events
+        if (RecipeProgressionManager.Instance != null)
+        {
+            RecipeProgressionManager.Instance.OnRecipeUnlocked.RemoveListener(OnRecipeUnlocked);
+        }
+    }
+
+    /// <summary>
+    /// Callback when a recipe is unlocked - add it to active recipes automatically.
+    /// </summary>
+    private void OnRecipeUnlocked(HoneyRecipe recipe)
+    {
+        if (recipe != null && !activeRecipes.Contains(recipe))
+        {
+            AddRecipe(recipe);
+            Debug.Log($"RecipeProductionManager: Auto-added unlocked recipe '{recipe.recipeName}' to production");
         }
     }
 
@@ -65,10 +107,13 @@ public class RecipeProductionManager : MonoBehaviour
 
     /// <summary>
     /// Initialize production state tracking for all recipes.
+    /// Called on Awake (may be empty) and when recipe list changes.
     /// </summary>
     private void InitializeRecipes()
     {
         productionStates.Clear();
+
+        // activeRecipes may be empty on startup - will be populated in Start()
         foreach (var recipe in activeRecipes)
         {
             if (recipe != null)
@@ -78,7 +123,8 @@ public class RecipeProductionManager : MonoBehaviour
                     isProducing = false,
                     isPaused = false,
                     timeRemaining = 0f,
-                    totalTime = recipe.productionTimeSeconds
+                    totalTime = recipe.productionTimeSeconds,
+                    tier = 0
                 };
             }
         }
@@ -118,10 +164,11 @@ public class RecipeProductionManager : MonoBehaviour
     /// <summary>
     /// Try to start production for recipes that have ingredients available.
     /// Uses priority-based resource allocation.
+    /// Only processes unlocked recipes.
     /// </summary>
     private void TryStartRecipes()
     {
-        if (HiveController.Instance == null)
+        if (HiveController.Instance == null || RecipeProgressionManager.Instance == null)
             return;
 
         // Get current inventory snapshot
@@ -136,23 +183,33 @@ public class RecipeProductionManager : MonoBehaviour
             if (recipe == null)
                 continue;
 
+            // Skip locked recipes
+            if (!RecipeProgressionManager.Instance.IsRecipeUnlocked(recipe))
+                continue;
+
             var state = productionStates[recipe];
 
             // Skip if already producing or paused
             if (state.isProducing || state.isPaused)
                 continue;
 
-            // Check if we can produce with currently available resources
-            if (CanProduceWithResources(recipe, availableResources))
+            // Get current upgrade tier for this recipe
+            int tier = RecipeProgressionManager.Instance.GetRecipeTier(recipe);
+
+            // Check if we can produce with currently available resources (tier-adjusted)
+            if (CanProduceWithResources(recipe, tier, availableResources))
             {
                 // Consume resources from working copy (for allocation)
-                ConsumeResourcesFromPool(recipe, availableResources);
+                ConsumeResourcesFromPool(recipe, tier, availableResources);
+
+                // Get tier-adjusted ingredients
+                List<HoneyRecipe.Ingredient> adjustedIngredients = recipe.GetIngredients(tier);
 
                 // Actually consume from hive inventory
-                if (HiveController.Instance.TryConsumeResources(recipe))
+                if (HiveController.Instance.TryConsumeResources(adjustedIngredients))
                 {
-                    // Start production
-                    StartProduction(recipe);
+                    // Start production with tier
+                    StartProduction(recipe, tier);
                 }
                 else
                 {
@@ -163,11 +220,12 @@ public class RecipeProductionManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Check if recipe can be produced with given resource pool.
+    /// Check if recipe can be produced with given resource pool (tier-adjusted).
     /// </summary>
-    private bool CanProduceWithResources(HoneyRecipe recipe, Dictionary<ResourceType, int> resources)
+    private bool CanProduceWithResources(HoneyRecipe recipe, int tier, Dictionary<ResourceType, int> resources)
     {
-        foreach (var ingredient in recipe.ingredients)
+        List<HoneyRecipe.Ingredient> adjustedIngredients = recipe.GetIngredients(tier);
+        foreach (var ingredient in adjustedIngredients)
         {
             if (!resources.ContainsKey(ingredient.pollenType) ||
                 resources[ingredient.pollenType] < ingredient.quantity)
@@ -179,38 +237,44 @@ public class RecipeProductionManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Consume resources from a resource pool (for allocation simulation).
+    /// Consume resources from a resource pool (for allocation simulation, tier-adjusted).
     /// </summary>
-    private void ConsumeResourcesFromPool(HoneyRecipe recipe, Dictionary<ResourceType, int> resources)
+    private void ConsumeResourcesFromPool(HoneyRecipe recipe, int tier, Dictionary<ResourceType, int> resources)
     {
-        foreach (var ingredient in recipe.ingredients)
+        List<HoneyRecipe.Ingredient> adjustedIngredients = recipe.GetIngredients(tier);
+        foreach (var ingredient in adjustedIngredients)
         {
             resources[ingredient.pollenType] -= ingredient.quantity;
         }
     }
 
     /// <summary>
-    /// Start production for a recipe with seasonal modifiers applied.
+    /// Start production for a recipe with tier and seasonal modifiers applied.
     /// </summary>
-    private void StartProduction(HoneyRecipe recipe)
+    private void StartProduction(HoneyRecipe recipe, int tier)
     {
         var state = productionStates[recipe];
         state.isProducing = true;
+        state.tier = tier; // Store tier for completion
 
-        // Apply seasonal production time modifier
-        float baseTime = recipe.productionTimeSeconds;
-        float modifiedTime = CalculateSeasonalProductionTime(baseTime);
+        // Get tier-adjusted production time
+        float baseTierTime = recipe.GetProductionTime(tier);
+        // Apply seasonal production time modifier on top of tier adjustment
+        float modifiedTime = CalculateSeasonalProductionTime(baseTierTime);
 
         state.timeRemaining = modifiedTime;
         state.totalTime = modifiedTime;
 
+        // Get tier-adjusted value for logging
+        float tierValue = recipe.GetHoneyValue(tier);
+
         if (SeasonManager.Instance != null)
         {
-            Debug.Log($"Started production: {recipe.recipeName} (${recipe.honeyValue}, {modifiedTime:F1}s, base: {baseTime}s, season: {SeasonManager.Instance.CurrentSeason})");
+            Debug.Log($"Started production: {recipe.recipeName} Tier {tier} (${tierValue:F2}, {modifiedTime:F1}s, base: {baseTierTime}s, season: {SeasonManager.Instance.CurrentSeason})");
         }
         else
         {
-            Debug.Log($"Started production: {recipe.recipeName} (${recipe.honeyValue}, {modifiedTime:F1}s)");
+            Debug.Log($"Started production: {recipe.recipeName} Tier {tier} (${tierValue:F2}, {modifiedTime:F1}s)");
         }
     }
 
@@ -234,16 +298,18 @@ public class RecipeProductionManager : MonoBehaviour
 
     /// <summary>
     /// Complete a recipe production, generate income, and trigger visual effects.
+    /// Uses tier-adjusted value from when production started.
     /// </summary>
     private void CompleteRecipe(HoneyRecipe recipe)
     {
         var state = productionStates[recipe];
+        int tier = state.tier; // Use tier from when production started
         state.isProducing = false;
         state.timeRemaining = 0f;
 
-        // Calculate final honey value with seasonal modifiers
-        float baseValue = recipe.honeyValue;
-        float finalValue = CalculateSeasonalValue(baseValue);
+        // Calculate final honey value with tier adjustment and seasonal modifiers
+        float baseTierValue = recipe.GetHoneyValue(tier);
+        float finalValue = CalculateSeasonalValue(baseTierValue);
 
         // Generate income
         if (EconomyManager.Instance != null)
@@ -252,11 +318,11 @@ public class RecipeProductionManager : MonoBehaviour
 
             if (SeasonManager.Instance != null)
             {
-                Debug.Log($"Completed recipe: {recipe.recipeName} - Earned ${finalValue:F2} (base: ${baseValue}, season: {SeasonManager.Instance.CurrentSeason})");
+                Debug.Log($"Completed recipe: {recipe.recipeName} Tier {tier} - Earned ${finalValue:F2} (base tier value: ${baseTierValue:F2}, season: {SeasonManager.Instance.CurrentSeason})");
             }
             else
             {
-                Debug.Log($"Completed recipe: {recipe.recipeName} - Earned ${finalValue:F2}");
+                Debug.Log($"Completed recipe: {recipe.recipeName} Tier {tier} - Earned ${finalValue:F2}");
             }
         }
 
@@ -332,7 +398,8 @@ public class RecipeProductionManager : MonoBehaviour
                 isProducing = false,
                 isPaused = false,
                 timeRemaining = 0f,
-                totalTime = recipe.productionTimeSeconds
+                totalTime = recipe.productionTimeSeconds,
+                tier = 0
             };
         }
     }

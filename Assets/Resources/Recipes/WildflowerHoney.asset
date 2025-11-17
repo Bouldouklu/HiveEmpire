@@ -14,10 +14,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HoneyRecipe
   recipeName: Wildflower Honey
   description: 
+  isUnlockedByDefault: 0
+  unlockCost: 50
+  prerequisiteRecipes: []
   ingredients:
   - pollenType: 1
     quantity: 3
   productionTimeSeconds: 10
   honeyValue: 5
+  upgradeCosts:
+  - 200
+  - 500
+  - 1000
+  ingredientReductionPercent:
+  - 0
+  - 10
+  - 20
+  - 30
+  productionTimeReductionPercent:
+  - 0
+  - 15
+  - 25
+  - 35
+  valueIncreasePercent:
+  - 0
+  - 20
+  - 40
+  - 60
   icon: {fileID: 726207499, guid: 89d87a64dbdce564386c14feac5219bd, type: 3}
   honeyColor: {r: 1, g: 0.75, b: 0.2, a: 1}

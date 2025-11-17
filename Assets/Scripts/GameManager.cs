@@ -150,6 +150,17 @@ public class GameManager : MonoBehaviour
             Debug.LogWarning("[GameManager] HiveController not found during reset");
         }
 
+        // Destroy all bee GameObjects
+        BeeController[] allBees = FindObjectsByType<BeeController>(FindObjectsSortMode.None);
+        foreach (var bee in allBees)
+        {
+            if (bee != null)
+            {
+                Destroy(bee.gameObject);
+            }
+        }
+        Debug.Log($"[GameManager] Destroyed {allBees.Length} bees");
+
         // Destroy all flower patch GameObjects
         FlowerPatchController[] allFlowerPatches = FindObjectsByType<FlowerPatchController>(FindObjectsSortMode.None);
         foreach (var flowerPatch in allFlowerPatches)
@@ -169,6 +180,16 @@ public class GameManager : MonoBehaviour
         else
         {
             Debug.LogWarning("[GameManager] YearStatsTracker not found during reset");
+        }
+
+        // Reset recipe progression (unlock/upgrade state)
+        if (RecipeProgressionManager.Instance != null)
+        {
+            RecipeProgressionManager.Instance.ResetToInitialState();
+        }
+        else
+        {
+            Debug.LogWarning("[GameManager] RecipeProgressionManager not found during reset");
         }
 
         // Reset season manager to start new year

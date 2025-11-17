@@ -107,8 +107,20 @@ public class HiveController : MonoBehaviour
         if (recipe == null)
             return false;
 
+        return TryConsumeResources(recipe.ingredients);
+    }
+
+    /// <summary>
+    /// Try to consume a specific list of ingredients. Returns true if successful.
+    /// Used by RecipeProductionManager to support tier-adjusted recipes.
+    /// </summary>
+    public bool TryConsumeResources(List<HoneyRecipe.Ingredient> ingredients)
+    {
+        if (ingredients == null)
+            return false;
+
         // Check if we have enough of each ingredient
-        foreach (var ingredient in recipe.ingredients)
+        foreach (var ingredient in ingredients)
         {
             if (GetResourceCount(ingredient.pollenType) < ingredient.quantity)
             {
@@ -117,12 +129,12 @@ public class HiveController : MonoBehaviour
         }
 
         // Consume the resources
-        foreach (var ingredient in recipe.ingredients)
+        foreach (var ingredient in ingredients)
         {
             resourceInventory[ingredient.pollenType] -= ingredient.quantity;
         }
 
-        Debug.Log($"Consumed resources for recipe: {recipe.recipeName}");
+        Debug.Log($"Consumed resources from hive inventory");
         OnResourcesChanged?.Invoke();
         return true;
     }

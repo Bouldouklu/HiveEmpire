@@ -96,6 +96,13 @@ public class RecipeDisplayPanel : MonoBehaviour
         {
             RecipeProductionManager.Instance.OnRecipeCompleted.AddListener(OnRecipeCompleted);
         }
+
+        // Subscribe to recipe progression events
+        if (RecipeProgressionManager.Instance != null)
+        {
+            RecipeProgressionManager.Instance.OnRecipeUnlocked.AddListener(OnRecipeUnlocked);
+            RecipeProgressionManager.Instance.OnRecipeUpgraded.AddListener(OnRecipeUpgraded);
+        }
     }
 
     private void OnDisable()
@@ -109,6 +116,13 @@ public class RecipeDisplayPanel : MonoBehaviour
         if (RecipeProductionManager.Instance != null)
         {
             RecipeProductionManager.Instance.OnRecipeCompleted.RemoveListener(OnRecipeCompleted);
+        }
+
+        // Unsubscribe from recipe progression events
+        if (RecipeProgressionManager.Instance != null)
+        {
+            RecipeProgressionManager.Instance.OnRecipeUnlocked.RemoveListener(OnRecipeUnlocked);
+            RecipeProgressionManager.Instance.OnRecipeUpgraded.RemoveListener(OnRecipeUpgraded);
         }
     }
 
@@ -202,31 +216,32 @@ public class RecipeDisplayPanel : MonoBehaviour
     }
 
     /// <summary>
-    /// Refreshes the entire recipe list from RecipeProductionManager.
+    /// Refreshes the entire recipe list showing ALL recipes (locked + unlocked).
     /// </summary>
     private void RefreshRecipeList()
     {
-        if (RecipeProductionManager.Instance == null || recipeListContainer == null)
+        if (RecipeProgressionManager.Instance == null || recipeListContainer == null)
         {
+            Debug.LogWarning("RecipeDisplayPanel: RecipeProgressionManager or container not available!");
             return;
         }
 
         // Clear existing entries
         ClearRecipeEntries();
 
-        // Get all active recipes from manager
-        List<HoneyRecipe> activeRecipes = RecipeProductionManager.Instance.GetActiveRecipes();
+        // Get ALL recipes (locked + unlocked) from RecipeProgressionManager
+        List<HoneyRecipe> allRecipes = RecipeProgressionManager.Instance.GetAllRecipes();
 
-        if (activeRecipes == null || activeRecipes.Count == 0)
+        if (allRecipes == null || allRecipes.Count == 0)
         {
-            // No recipes to display
+            Debug.LogWarning("RecipeDisplayPanel: No recipes found in RecipeProgressionManager!");
             return;
         }
 
-        // Create UI entry for each recipe
-        for (int i = 0; i < activeRecipes.Count; i++)
+        // Create UI entry for each recipe (locked recipes will show grayed out)
+        for (int i = 0; i < allRecipes.Count; i++)
         {
-            HoneyRecipe recipe = activeRecipes[i];
+            HoneyRecipe recipe = allRecipes[i];
             GameObject entryObj = Instantiate(recipeEntryPrefab, recipeListContainer);
             RecipeEntryUI entryUI = entryObj.GetComponent<RecipeEntryUI>();
 
@@ -316,6 +331,36 @@ public class RecipeDisplayPanel : MonoBehaviour
     /// </summary>
     public void OnPriorityChanged()
     {
+        RefreshRecipeList();
+    }
+
+    /// <summary>
+    /// Event handler: Called when a recipe is unlocked.
+    /// Refreshes the panel to show the newly unlocked recipe.
+    /// </summary>
+    private void OnRecipeUnlocked(HoneyRecipe unlockedRecipe)
+    {
+        if (!isPanelOpen)
+        {
+            return;
+        }
+
+        Debug.Log($"RecipeDisplayPanel: Recipe unlocked - {unlockedRecipe.recipeName}. Refreshing panel.");
+        RefreshRecipeList();
+    }
+
+    /// <summary>
+    /// Event handler: Called when a recipe is upgraded.
+    /// Refreshes the panel to show updated tier and stats.
+    /// </summary>
+    private void OnRecipeUpgraded(HoneyRecipe upgradedRecipe, int newTier)
+    {
+        if (!isPanelOpen)
+        {
+            return;
+        }
+
+        Debug.Log($"RecipeDisplayPanel: Recipe upgraded - {upgradedRecipe.recipeName} to Tier {newTier}. Refreshing panel.");
         RefreshRecipeList();
     }
 

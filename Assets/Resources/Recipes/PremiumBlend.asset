@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HoneyRecipe
   recipeName: Honey Blend
   description: 
+  isUnlockedByDefault: 0
+  unlockCost: 100
+  prerequisiteRecipes: []
   ingredients:
   - pollenType: 0
     quantity: 2
@@ -29,5 +32,24 @@ MonoBehaviour:
     quantity: 2
   productionTimeSeconds: 45
   honeyValue: 80
+  upgradeCosts:
+  - 200
+  - 500
+  - 1000
+  ingredientReductionPercent:
+  - 0
+  - 10
+  - 20
+  - 30
+  productionTimeReductionPercent:
+  - 0
+  - 15
+  - 25
+  - 35
+  valueIncreasePercent:
+  - 0
+  - 20
+  - 40
+  - 60
   icon: {fileID: -1681535153, guid: 89d87a64dbdce564386c14feac5219bd, type: 3}
   honeyColor: {r: 1, g: 0.75, b: 0.2, a: 1}
