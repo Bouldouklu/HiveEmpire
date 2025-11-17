@@ -15,7 +15,7 @@ MonoBehaviour:
   biomeType: 3
   displayName: Marsh Patch
   description: 
-  placementCost: 90
+  placementCost: 200
   flowerPatchPrefab: {fileID: 6159468505849121783, guid: 61e4f81cb5c6b4940988f68953110730, type: 3}
   capacityUpgradeCosts:
   - 50
@@ -26,3 +26,4 @@ MonoBehaviour:
   bonusCapacityPerUpgrade: 5
   maxCapacityTier: 5
   baseCapacity: 5
+  gatheringDuration: 3

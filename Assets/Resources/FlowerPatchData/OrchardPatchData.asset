@@ -15,7 +15,7 @@ MonoBehaviour:
   biomeType: 1
   displayName: Orchard Patch
   description: 
-  placementCost: 15
+  placementCost: 20
   flowerPatchPrefab: {fileID: 6159468505849121783, guid: e0339b1ccc8c37e49b61fb5b10155338, type: 3}
   capacityUpgradeCosts:
   - 50
@@ -26,3 +26,4 @@ MonoBehaviour:
   bonusCapacityPerUpgrade: 5
   maxCapacityTier: 5
   baseCapacity: 5
+  gatheringDuration: 2.5

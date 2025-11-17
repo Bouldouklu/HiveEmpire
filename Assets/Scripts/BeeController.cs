@@ -57,13 +57,31 @@ public class BeeController : MonoBehaviour
     private float journeyProgress; // 0 to 1
     private float journeyDistance;
 
+    // Gathering behavior
+    private float gatheringDuration; // Cached from FlowerPatchData
+    private float gatheringTimer; // Tracks elapsed time in gathering state
+    private Vector3 gatheringCenterPosition; // Reference point for hovering
+    private float perlinOffsetX; // Random seed for Perlin noise X
+    private float perlinOffsetY; // Random seed for Perlin noise Y
+
+    [Header("Gathering Settings")]
+    [Tooltip("Maximum distance from gathering center during hover (units)")]
+    [SerializeField] private float gatheringRadius = 1.5f;
+
+    [Tooltip("Speed of Perlin noise sampling (higher = faster/more erratic movement)")]
+    [SerializeField] private float gatheringSpeed = 0.5f;
+
+    [Tooltip("Smoothness of position transitions during gathering (higher = smoother)")]
+    [SerializeField] private float gatheringLerpSpeed = 2f;
+
     private enum FlightState
     {
         Idle,
         ToHive,
         AtHive,
         ToFlowerPatch,
-        AtFlowerPatch
+        AtFlowerPatch,
+        Gathering
     }
 
     /// <summary>
@@ -129,6 +147,21 @@ public class BeeController : MonoBehaviour
             // Apply initial seasonal modifier
             ApplySeasonalSpeedModifier();
         }
+
+        // Cache gathering duration from FlowerPatchData
+        if (homeFlowerPatchController != null && homeFlowerPatchController.FlowerPatchData != null)
+        {
+            gatheringDuration = homeFlowerPatchController.FlowerPatchData.gatheringDuration;
+        }
+        else
+        {
+            Debug.LogWarning($"Bee {name}: Could not cache gathering duration. Using default value of 2.5 seconds.");
+            gatheringDuration = 2.5f;
+        }
+
+        // Generate random Perlin noise seeds for unique movement patterns per bee
+        perlinOffsetX = Random.Range(0f, 1000f);
+        perlinOffsetY = Random.Range(0f, 1000f);
     }
 
     /// <summary>
@@ -180,9 +213,13 @@ public class BeeController : MonoBehaviour
                 break;
 
             case FlightState.AtFlowerPatch:
-                // Pick up pollen and depart to hive
-                PickupPollen();
-                StartJourneyToHive();
+                // Start gathering behavior instead of immediately picking up pollen
+                StartGathering();
+                break;
+
+            case FlightState.Gathering:
+                // Hover above flower patch with Perlin noise movement
+                UpdateGatheringMovement();
                 break;
         }
     }
@@ -221,6 +258,23 @@ public class BeeController : MonoBehaviour
 
         SetupFlightPath();
         currentState = FlightState.ToFlowerPatch;
+    }
+
+    /// <summary>
+    /// Starts the gathering phase where bee hovers above flower patch
+    /// </summary>
+    private void StartGathering()
+    {
+        // Reset gathering timer
+        gatheringTimer = 0f;
+
+        // Set gathering center position (current position)
+        gatheringCenterPosition = transform.position;
+
+        // Transition to gathering state
+        currentState = FlightState.Gathering;
+
+        Debug.Log($"Bee {name}: Started gathering at {homeFlowerPatchController.GetBiomeType()} patch for {gatheringDuration} seconds");
     }
 
     /// <summary>
@@ -283,6 +337,59 @@ public class BeeController : MonoBehaviour
 
         // Move to new position
         transform.position = newPosition;
+    }
+
+    /// <summary>
+    /// Updates the bee's position during gathering phase using Perlin noise for smooth random movement
+    /// </summary>
+    private void UpdateGatheringMovement()
+    {
+        // Increment gathering timer
+        gatheringTimer += Time.deltaTime;
+
+        // Check if gathering is complete
+        if (gatheringTimer >= gatheringDuration)
+        {
+            // Show pollen visually (gathering complete)
+            PickupPollen();
+
+            // Start journey to hive
+            StartJourneyToHive();
+            return;
+        }
+
+        // Calculate Perlin noise offsets for smooth random movement
+        float time = Time.time * gatheringSpeed;
+
+        // Sample Perlin noise for X and Z axes (horizontal movement)
+        float noiseX = Mathf.PerlinNoise(perlinOffsetX + time, 0f);
+        float noiseZ = Mathf.PerlinNoise(perlinOffsetY + time, 0f);
+
+        // Sample Perlin noise for Y axis (vertical bobbing) - slower movement
+        float noiseY = Mathf.PerlinNoise(time * 0.5f, 1000f);
+
+        // Convert noise values (0-1) to offset values (-1 to 1)
+        Vector3 offset = new Vector3(
+            (noiseX - 0.5f) * 2f * gatheringRadius,      // X: full radius
+            (noiseY - 0.5f) * 0.5f,                       // Y: gentle bobbing (half of radius)
+            (noiseZ - 0.5f) * 2f * gatheringRadius       // Z: full radius
+        );
+
+        // Calculate target position
+        Vector3 targetPosition = gatheringCenterPosition + offset;
+
+        // Smoothly move towards target position
+        transform.position = Vector3.Lerp(transform.position, targetPosition, gatheringLerpSpeed * Time.deltaTime);
+
+        // Calculate direction for rotation (face movement direction)
+        Vector3 direction = targetPosition - transform.position;
+
+        if (direction.sqrMagnitude > 0.001f)
+        {
+            // Rotate to face movement direction
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        }
     }
 
     /// <summary>

@@ -23,8 +23,6 @@
 ---
 ## UI
 ### Bugs
-- [ ] hover not working on beehive
-- [ ] money not updated when starting the game
 - [ ] production UI inventory not updated when panel is open. Can't see the inventory going up if player stays with panel open for a few seconds
 
 ### IMPLEMENTATION
@@ -34,5 +32,3 @@
 - [ ] UI to show airport price before purchasing as tooltip or bubble.
 - [ ] UI panel above each airport showing the current rate and type of resource.
 ---
-## MISC
-- [ ] Change naming everywhere for Hive Empire (remote repo specially)

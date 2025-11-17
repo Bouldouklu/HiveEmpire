@@ -41,6 +41,10 @@ public class FlowerPatchData : ScriptableObject
     [Tooltip("Base bee capacity before any upgrades")]
     public int baseCapacity = 5;
 
+    [Header("Gathering Behavior")]
+    [Tooltip("Time (in seconds) bees spend hovering at this patch before returning to hive")]
+    public float gatheringDuration = 2.5f;
+
     /// <summary>
     /// Validates configuration in the Unity Inspector.
     /// Called when the asset is loaded or values are changed in the Inspector.
@@ -97,6 +101,13 @@ public class FlowerPatchData : ScriptableObject
         {
             Debug.LogWarning($"[{name}] Base capacity must be at least 1. Setting to 5.", this);
             baseCapacity = 5;
+        }
+
+        // Ensure gathering duration is positive
+        if (gatheringDuration < 0.1f)
+        {
+            Debug.LogWarning($"[{name}] Gathering duration must be at least 0.1 seconds. Setting to 2.5.", this);
+            gatheringDuration = 2.5f;
         }
 
         // Warn if prefab is missing

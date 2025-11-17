@@ -26,3 +26,4 @@ MonoBehaviour:
   bonusCapacityPerUpgrade: 5
   maxCapacityTier: 5
   baseCapacity: 5
+  gatheringDuration: 2.5

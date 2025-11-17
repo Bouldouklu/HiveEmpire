@@ -15,7 +15,7 @@ MonoBehaviour:
   biomeType: 5
   displayName: Agricultural Field Patch
   description: 
-  placementCost: 150
+  placementCost: 1200
   flowerPatchPrefab: {fileID: 6159468505849121783, guid: 42280dd1e794d754ea574214f837dcef, type: 3}
   capacityUpgradeCosts:
   - 50
@@ -26,3 +26,4 @@ MonoBehaviour:
   bonusCapacityPerUpgrade: 5
   maxCapacityTier: 5
   baseCapacity: 5
+  gatheringDuration: 1.8

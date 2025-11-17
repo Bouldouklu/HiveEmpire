@@ -1696,6 +1696,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DroneFleetManager
   totalBeesOwned: 0
   currentPurchaseTier: 0
+  startingBees: 3
   beeFleetUpgradeData: {fileID: 11400000, guid: c522072906c1eb44dad3798742a9b350, type: 2}
   OnBeeAllocationChanged:
     m_PersistentCalls:

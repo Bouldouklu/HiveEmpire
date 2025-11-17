@@ -46,6 +46,11 @@ public class FlowerPatchController : MonoBehaviour
     /// </summary>
     public int MaxBeeCapacity => baseCapacity + capacityBonus;
 
+    /// <summary>
+    /// Public accessor for the FlowerPatchData ScriptableObject
+    /// </summary>
+    public FlowerPatchData FlowerPatchData => flowerPatchData;
+
     private void OnDestroy()
     {
         // Unregister from fleet manager when destroyed

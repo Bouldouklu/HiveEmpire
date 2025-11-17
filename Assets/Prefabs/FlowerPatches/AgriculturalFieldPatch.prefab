@@ -301,8 +301,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
-  - {fileID: 7720928953938833631}
   - {fileID: 6079799790558530323}
+  - {fileID: 7720928953938833631}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8727611450410979576
@@ -323,16 +323,13 @@ MonoBehaviour:
   capacityBonus: 0
   capacityTier: 0
   bonusCapacityPerUpgrade: 5
-  capacityUpgradeCost: 100
-  currentTier: 0
-  upgradeCosts:
+  capacityUpgradeCosts:
   - 50
   - 150
   - 400
-  beesPerUpgrade: 2
-  OnFlowerPatchUpgraded:
-    m_PersistentCalls:
-      m_Calls: []
+  - 900
+  - 2000
+  maxCapacityTier: 5
   OnCapacityUpgraded:
     m_PersistentCalls:
       m_Calls: []
@@ -370,9 +367,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AirportClickHandler
   flowerPatchController: {fileID: 0}
   upgradePanel: {fileID: 0}
-  hoverMaterial: {fileID: 2100000, guid: c7e8ee0ad856b514999bb152851af25d, type: 2}
-  flowerPatchRenderer: {fileID: 0}
-  hoverTint: {r: 1.2, g: 1.2, b: 1.2, a: 1}
+  hoverBrightness: 1.3
+  hoverEmissionColor: {r: 0.2, g: 0.2, b: 0.1, a: 1}
+  flowerPatchRenderer: {fileID: 5901799413720046256}
 --- !u!65 &1444884533984530987
 BoxCollider:
   m_ObjectHideFlags: 0

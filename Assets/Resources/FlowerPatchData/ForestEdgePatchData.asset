@@ -15,7 +15,7 @@ MonoBehaviour:
   biomeType: 4
   displayName: Forest Edge Patch
   description: 
-  placementCost: 100
+  placementCost: 500
   flowerPatchPrefab: {fileID: 6159468505849121783, guid: c69a46ee174616b49921433a90db4fd9, type: 3}
   capacityUpgradeCosts:
   - 50
@@ -26,3 +26,4 @@ MonoBehaviour:
   bonusCapacityPerUpgrade: 5
   maxCapacityTier: 5
   baseCapacity: 5
+  gatheringDuration: 2.8

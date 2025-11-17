@@ -194,7 +194,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: For
+  m_text: Forest Edge
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -301,8 +301,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
-  - {fileID: 5780816158158974735}
   - {fileID: 6079799790558530323}
+  - {fileID: 5780816158158974735}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8727611450410979576
@@ -323,16 +323,13 @@ MonoBehaviour:
   capacityBonus: 0
   capacityTier: 0
   bonusCapacityPerUpgrade: 5
-  capacityUpgradeCost: 100
-  currentTier: 0
-  upgradeCosts:
+  capacityUpgradeCosts:
   - 50
   - 150
   - 400
-  beesPerUpgrade: 2
-  OnFlowerPatchUpgraded:
-    m_PersistentCalls:
-      m_Calls: []
+  - 900
+  - 2000
+  maxCapacityTier: 5
   OnCapacityUpgraded:
     m_PersistentCalls:
       m_Calls: []
@@ -370,9 +367,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AirportClickHandler
   flowerPatchController: {fileID: 0}
   upgradePanel: {fileID: 0}
-  hoverMaterial: {fileID: 2100000, guid: 3a67554cf710762418eaf91a2e3d7fc1, type: 2}
-  flowerPatchRenderer: {fileID: 0}
-  hoverTint: {r: 1.2, g: 1.2, b: 1.2, a: 1}
+  hoverBrightness: 1.3
+  hoverEmissionColor: {r: 0.2, g: 0.2, b: 0.1, a: 1}
+  flowerPatchRenderer: {fileID: 5901799413720046256}
 --- !u!65 &7383371010206060064
 BoxCollider:
   m_ObjectHideFlags: 0
