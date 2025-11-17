@@ -16,6 +16,15 @@ public class BeeFleetManager : MonoBehaviour
     [Tooltip("Total number of bees owned by the player")]
     private int totalBeesOwned = 0;
 
+    [SerializeField]
+    [Tooltip("Current bee purchase tier (0-based index)")]
+    private int currentPurchaseTier = 0;
+
+    [Header("Configuration")]
+    [SerializeField]
+    [Tooltip("Bee fleet upgrade data defining purchase costs and bee amounts")]
+    private BeeFleetUpgradeData beeFleetUpgradeData;
+
     // Track bee allocation per flower patch (FlowerPatch -> allocated bee count)
     private Dictionary<FlowerPatchController, int> beeAllocations = new Dictionary<FlowerPatchController, int>();
 
@@ -98,6 +107,119 @@ public class BeeFleetManager : MonoBehaviour
         OnTotalBeesChanged?.Invoke(totalBeesOwned);
 
         Debug.Log($"BeeFleetManager: Added {count} bees. Total owned: {totalBeesOwned}, Available: {GetAvailableBees()}");
+    }
+
+    // ============================================
+    // GLOBAL BEE PURCHASE SYSTEM
+    // ============================================
+
+    /// <summary>
+    /// Checks if bees can be purchased (not at max tier)
+    /// </summary>
+    public bool CanPurchaseBees()
+    {
+        if (beeFleetUpgradeData == null)
+        {
+            Debug.LogError("BeeFleetManager: BeeFleetUpgradeData is not assigned!");
+            return false;
+        }
+
+        return currentPurchaseTier < beeFleetUpgradeData.maxPurchaseTier;
+    }
+
+    /// <summary>
+    /// Gets the cost for the next bee purchase
+    /// </summary>
+    /// <returns>Purchase cost, or -1 if cannot purchase</returns>
+    public float GetBeePurchaseCost()
+    {
+        if (!CanPurchaseBees())
+        {
+            return -1f;
+        }
+
+        return beeFleetUpgradeData.GetPurchaseCost(currentPurchaseTier);
+    }
+
+    /// <summary>
+    /// Gets the number of bees that will be added for the next purchase
+    /// </summary>
+    /// <returns>Number of bees, or -1 if cannot purchase</returns>
+    public int GetBeePurchaseAmount()
+    {
+        if (!CanPurchaseBees())
+        {
+            return -1;
+        }
+
+        return beeFleetUpgradeData.GetBeesForTier(currentPurchaseTier);
+    }
+
+    /// <summary>
+    /// Gets the current bee purchase tier
+    /// </summary>
+    public int GetCurrentPurchaseTier()
+    {
+        return currentPurchaseTier;
+    }
+
+    /// <summary>
+    /// Gets the maximum bee purchase tier
+    /// </summary>
+    public int GetMaxPurchaseTier()
+    {
+        return beeFleetUpgradeData != null ? beeFleetUpgradeData.maxPurchaseTier : 0;
+    }
+
+    /// <summary>
+    /// Purchases bees from the global bee pool upgrade system.
+    /// Adds bees to the pool WITHOUT auto-allocation - player manually allocates via Fleet Management Panel.
+    /// </summary>
+    /// <returns>True if purchase succeeded, false otherwise</returns>
+    public bool PurchaseBees()
+    {
+        // Validate bee fleet upgrade data
+        if (beeFleetUpgradeData == null)
+        {
+            Debug.LogError("BeeFleetManager: Cannot purchase bees - BeeFleetUpgradeData is not assigned!");
+            return false;
+        }
+
+        // Check if purchase is possible
+        if (!CanPurchaseBees())
+        {
+            Debug.LogWarning($"BeeFleetManager: Already at max bee purchase tier ({beeFleetUpgradeData.maxPurchaseTier})");
+            return false;
+        }
+
+        // Get purchase cost and bee amount for current tier
+        float purchaseCost = GetBeePurchaseCost();
+        int beeAmount = GetBeePurchaseAmount();
+
+        if (purchaseCost < 0f || beeAmount < 0)
+        {
+            Debug.LogError("BeeFleetManager: Invalid purchase cost or bee amount");
+            return false;
+        }
+
+        // Check if player can afford it
+        if (!EconomyManager.Instance.CanAfford(purchaseCost))
+        {
+            Debug.Log($"BeeFleetManager: Cannot afford bee purchase. Cost: ${purchaseCost}");
+            return false;
+        }
+
+        // Spend money
+        EconomyManager.Instance.SpendMoney(purchaseCost);
+
+        // Add bees to global pool (NO auto-allocation - player manually allocates)
+        AddBeesToPool(beeAmount);
+
+        // Increment purchase tier
+        currentPurchaseTier++;
+        Debug.Log($"BeeFleetManager: Purchased {beeAmount} bees for ${purchaseCost}. Purchase tier: {currentPurchaseTier}/{beeFleetUpgradeData.maxPurchaseTier}");
+
+        return true;
     }
 
     /// <summary>
@@ -226,9 +348,10 @@ public class BeeFleetManager : MonoBehaviour
     public void ResetToInitialState()
     {
         totalBeesOwned = 0;
+        currentPurchaseTier = 0;
         beeAllocations.Clear();
         OnTotalBeesChanged?.Invoke(totalBeesOwned);
 
-        Debug.Log("[BeeFleetManager] Reset to initial state - Total bees: 0, Allocations cleared");
+        Debug.Log("[BeeFleetManager] Reset to initial state - Total bees: 0, Purchase tier: 0, Allocations cleared");
     }
 }

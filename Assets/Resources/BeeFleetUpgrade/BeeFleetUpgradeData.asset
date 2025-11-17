@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ddcdbfcdc6f093448bc046530a7d79b, type: 3}
+  m_Name: BeeFleetUpgradeData
+  m_EditorClassIdentifier: Assembly-CSharp::BeeFleetUpgradeData
+  beePurchaseCosts:
+  - 50
+  - 100
+  - 200
+  - 400
+  beesPerPurchase: 02000000030000000500000008000000
+  maxPurchaseTier: 4

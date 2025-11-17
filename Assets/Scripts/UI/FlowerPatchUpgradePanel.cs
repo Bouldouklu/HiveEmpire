@@ -16,26 +16,8 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
     [Tooltip("Text displaying flowerPatch name/biome")]
     [SerializeField] private TextMeshProUGUI flowerPatchNameText;
 
-    [Tooltip("Text displaying current tier")]
-    [SerializeField] private TextMeshProUGUI currentTierText;
-
-    [Tooltip("Text displaying current bee count")]
-    [SerializeField] private TextMeshProUGUI currentBeesText;
-
-    [Tooltip("Text displaying next tier bee count")]
-    [SerializeField] private TextMeshProUGUI nextTierBeesText;
-
-    [Tooltip("Text displaying upgrade cost")]
-    [SerializeField] private TextMeshProUGUI upgradeCostText;
-
-    [Tooltip("Upgrade button")]
-    [SerializeField] private Button upgradeButton;
-
     [Tooltip("Close button")]
     [SerializeField] private Button closeButton;
-
-    [Tooltip("Text on upgrade button")]
-    [SerializeField] private TextMeshProUGUI upgradeButtonText;
 
     [Header("Capacity Upgrade UI")]
     [Tooltip("Text displaying current capacity")]
@@ -73,11 +55,6 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
     private void Awake()
     {
         // Setup button listeners
-        if (upgradeButton != null)
-        {
-            upgradeButton.onClick.AddListener(OnUpgradeButtonClicked);
-        }
-
         if (capacityUpgradeButton != null)
         {
             capacityUpgradeButton.onClick.AddListener(OnCapacityUpgradeButtonClicked);
@@ -101,11 +78,6 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
     private void OnDestroy()
     {
         // Unsubscribe from events
-        if (upgradeButton != null)
-        {
-            upgradeButton.onClick.RemoveListener(OnUpgradeButtonClicked);
-        }
-
         if (capacityUpgradeButton != null)
         {
             capacityUpgradeButton.onClick.RemoveListener(OnCapacityUpgradeButtonClicked);
@@ -175,12 +147,6 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
             flowerPatchNameText.text = $"{biomeName} FlowerPatch";
         }
 
-        // Current tier
-        if (currentTierText != null)
-        {
-            currentTierText.text = $"Tier: {currentFlowerPatch.GetTierDisplayName()}";
-        }
-
         // Bee allocation display
         if (beeAllocationText != null && BeeFleetManager.Instance != null)
         {
@@ -189,107 +155,8 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
             beeAllocationText.text = $"Bees: {allocatedBees} / {capacity}";
         }
 
-        // Display currently allocated bees on this route
-        if (currentBeesText != null && BeeFleetManager.Instance != null)
-        {
-            int allocatedBees = BeeFleetManager.Instance.GetAllocatedBees(currentFlowerPatch);
-            currentBeesText.text = $"Bees on route: {allocatedBees}";
-        }
-
         // Capacity upgrade section
         UpdateCapacityUpgradeUI();
-
-        // Tier upgrade section
-        bool canUpgrade = currentFlowerPatch.CanUpgrade();
-        float upgradeCost = currentFlowerPatch.GetUpgradeCost();
-        int nextTierPlanes = currentFlowerPatch.GetNextTierBeeCount();
-        bool canAfford = EconomyManager.Instance != null && EconomyManager.Instance.CanAfford(upgradeCost);
-
-        if (canUpgrade)
-        {
-            // Upgrade effect - shows bees that will be added and capacity increase
-            if (nextTierBeesText != null)
-            {
-                int beesAddedByUpgrade = nextTierPlanes - currentFlowerPatch.GetMaxBeesForCurrentTier();
-                nextTierBeesText.text = $"Upgrade adds: +{beesAddedByUpgrade} bees & +{beesAddedByUpgrade} capacity";
-                nextTierBeesText.color = affordableColor;
-            }
-
-            // Upgrade cost
-            if (upgradeCostText != null)
-            {
-                upgradeCostText.text = $"Cost: ${upgradeCost}";
-                upgradeCostText.color = canAfford ? affordableColor : unaffordableColor;
-            }
-
-            // Upgrade button
-            if (upgradeButton != null)
-            {
-                upgradeButton.interactable = canAfford;
-            }
-
-            if (upgradeButtonText != null)
-            {
-                upgradeButtonText.text = "Upgrade";
-            }
-        }
-        else
-        {
-            // Max tier reached - show in effect text
-            if (nextTierBeesText != null)
-            {
-                nextTierBeesText.text = "MAX TIER";
-                nextTierBeesText.color = maxTierColor;
-            }
-
-            // Clear cost text when maxed
-            if (upgradeCostText != null)
-            {
-                upgradeCostText.text = "";
-            }
-
-            // Disable button
-            if (upgradeButton != null)
-            {
-                upgradeButton.interactable = false;
-            }
-
-            if (upgradeButtonText != null)
-            {
-                upgradeButtonText.text = "Max Tier";
-            }
-        }
-    }
-
-    /// <summary>
-    /// Called when the upgrade button is clicked
-    /// </summary>
-    private void OnUpgradeButtonClicked()
-    {
-        if (currentFlowerPatch == null)
-        {
-            Debug.LogError("FlowerPatchUpgradePanel: No flowerPatch selected");
-            return;
-        }
-
-        // Attempt to upgrade
-        bool success = currentFlowerPatch.UpgradeFlowerPatch();
-
-        if (success)
-        {
-            Debug.Log($"Successfully upgraded {currentFlowerPatch.gameObject.name} to tier {currentFlowerPatch.GetCurrentTier()}");
-
-            // Update UI to reflect new tier
-            UpdateUI();
-
-            // Optionally close panel after upgrade (comment out if you want it to stay open)
-            // HidePanel();
-        }
-        else
-        {
-            Debug.LogWarning($"Failed to upgrade {currentFlowerPatch.gameObject.name}");
-            // UI will be updated by OnMoneyChanged if it was an affordability issue
-        }
     }
 
     /// <summary>
@@ -323,23 +190,15 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
         if (currentCapacityText != null)
         {
             int capacity = currentFlowerPatch.MaxBeeCapacity;
-            int tier = currentFlowerPatch.GetCurrentTier();
             int capacityTier = currentFlowerPatch.GetCapacityTier();
 
-            // Show breakdown: base (5) + tier upgrades (tier × 2) + bonus (if capacity upgraded)
+            // Show breakdown: base + bonus from capacity upgrades (capacity is now independent of nectar flow tiers)
             string breakdown = $"Capacity: {capacity} bees";
-            if (tier > 0 || capacityTier > 0)
+            if (capacityTier > 0)
             {
-                breakdown += $" (5 base";
-                if (tier > 0)
-                {
-                    breakdown += $" + {tier * 2} from tiers";
-                }
-                if (capacityTier > 0)
-                {
-                    breakdown += $" + 5 bonus";
-                }
-                breakdown += ")";
+                int baseCapacity = 5; // Default base capacity
+                int bonusCapacity = capacity - baseCapacity;
+                breakdown += $" ({baseCapacity} base + {bonusCapacity} from upgrades)";
             }
 
             currentCapacityText.text = breakdown;
@@ -353,10 +212,14 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
 
         if (canUpgradeCapacity)
         {
-            // Upgrade effect - shows capacity that will be added
+            // Calculate capacity bonus that will be added
+            int capacityBonus = nextCapacity - currentFlowerPatch.MaxBeeCapacity;
+            int currentCapacityTier = currentFlowerPatch.GetCapacityTier();
+
+            // Upgrade effect - shows tier and capacity that will be added
             if (capacityUpgradeEffectText != null)
             {
-                capacityUpgradeEffectText.text = $"Upgrade adds: +5 bonus capacity";
+                capacityUpgradeEffectText.text = $"Tier {currentCapacityTier + 1}: +{capacityBonus} capacity";
                 capacityUpgradeEffectText.color = affordableColor;
             }
 
@@ -375,7 +238,8 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
 
             if (capacityUpgradeButtonText != null)
             {
-                capacityUpgradeButtonText.text = "Upgrade";
+                int maxCapacityTier = currentFlowerPatch.GetMaxCapacityTier();
+                capacityUpgradeButtonText.text = $"Upgrade ({currentCapacityTier + 1}/{maxCapacityTier})";
             }
         }
         else

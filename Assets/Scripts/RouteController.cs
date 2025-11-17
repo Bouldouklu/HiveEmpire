@@ -50,7 +50,6 @@ public class RouteController : MonoBehaviour
         // Subscribe to flowerPatch events (for capahive upgrades that may affect spacing)
         if (flowerPatchController != null)
         {
-            flowerPatchController.OnFlowerPatchUpgraded.AddListener(OnFlowerPatchUpgraded);
             flowerPatchController.OnCapacityUpgraded.AddListener(OnCapacityUpgraded);
         }
 
@@ -78,7 +77,6 @@ public class RouteController : MonoBehaviour
         // Unsubscribe from events
         if (flowerPatchController != null)
         {
-            flowerPatchController.OnFlowerPatchUpgraded.RemoveListener(OnFlowerPatchUpgraded);
             flowerPatchController.OnCapacityUpgraded.RemoveListener(OnCapacityUpgraded);
         }
 
@@ -308,19 +306,6 @@ public class RouteController : MonoBehaviour
 
             currentBeeCount = spawnedBees.Count;
         }
-    }
-
-    /// <summary>
-    /// Called when the flowerPatch is upgraded. Recalculates spacing.
-    /// Note: Upgrades now add bees to global pool, not directly to this route.
-    /// </summary>
-    /// <param name="newTier">The new tier level (1-3)</param>
-    private void OnFlowerPatchUpgraded(int newTier)
-    {
-        Debug.Log($"RouteController on {gameObject.name}: FlowerPatch upgraded to tier {newTier}");
-
-        // Recalculate spawn interval (allocation may have changed)
-        CalculateSpawnInterval();
     }
 
     /// <summary>

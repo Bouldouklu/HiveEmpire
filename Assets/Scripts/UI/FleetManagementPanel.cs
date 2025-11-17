@@ -27,6 +27,16 @@ public class FleetManagementPanel : MonoBehaviour
     [Tooltip("Text displaying available bees")]
     [SerializeField] private TextMeshProUGUI availableBeesText;
 
+    [Header("UI References - Bee Purchase")]
+    [Tooltip("Button to purchase more bees")]
+    [SerializeField] private Button buyBeesButton;
+
+    [Tooltip("Text on buy bees button")]
+    [SerializeField] private TextMeshProUGUI buyBeesButtonText;
+
+    [Tooltip("Text displaying next bee purchase info (+X bees for Y gold)")]
+    [SerializeField] private TextMeshProUGUI beePurchaseInfoText;
+
     [Header("UI References - FlowerPatch List")]
     [Tooltip("Container for flowerPatch allocation entries (vertical layout group)")]
     [SerializeField] private Transform flowerPatchListContainer;
@@ -55,6 +65,11 @@ public class FleetManagementPanel : MonoBehaviour
             closeButton.onClick.AddListener(OnCloseButtonClicked);
         }
 
+        if (buyBeesButton != null)
+        {
+            buyBeesButton.onClick.AddListener(OnBuyBeesButtonClicked);
+        }
+
         // Hide panel by default
         HidePanel();
 
@@ -78,6 +93,11 @@ public class FleetManagementPanel : MonoBehaviour
         if (closeButton != null)
         {
             closeButton.onClick.RemoveListener(OnCloseButtonClicked);
+        }
+
+        if (buyBeesButton != null)
+        {
+            buyBeesButton.onClick.RemoveListener(OnBuyBeesButtonClicked);
         }
 
         if (BeeFleetManager.Instance != null)
@@ -168,6 +188,62 @@ public class FleetManagementPanel : MonoBehaviour
         if (availableBeesText != null)
         {
             availableBeesText.text = $"Available: {availableBees}";
+        }
+
+        // Update bee purchase UI
+        UpdateBeePurchaseUI();
+    }
+
+    /// <summary>
+    /// Updates bee purchase UI (Buy Bees button and info text)
+    /// </summary>
+    private void UpdateBeePurchaseUI()
+    {
+        if (BeeFleetManager.Instance == null) return;
+
+        bool canPurchase = BeeFleetManager.Instance.CanPurchaseBees();
+        float purchaseCost = BeeFleetManager.Instance.GetBeePurchaseCost();
+        int beeAmount = BeeFleetManager.Instance.GetBeePurchaseAmount();
+        bool canAfford = EconomyManager.Instance != null && EconomyManager.Instance.CanAfford(purchaseCost);
+
+        if (canPurchase)
+        {
+            // Update info text
+            if (beePurchaseInfoText != null)
+            {
+                int currentTier = BeeFleetManager.Instance.GetCurrentPurchaseTier();
+                int maxTier = BeeFleetManager.Instance.GetMaxPurchaseTier();
+                beePurchaseInfoText.text = $"Tier {currentTier + 1}/{maxTier}: +{beeAmount} bees for ${purchaseCost}";
+            }
+
+            // Update button
+            if (buyBeesButton != null)
+            {
+                buyBeesButton.interactable = canAfford;
+            }
+
+            if (buyBeesButtonText != null)
+            {
+                buyBeesButtonText.text = canAfford ? "Buy Bees" : "Buy Bees (Can't Afford)";
+            }
+        }
+        else
+        {
+            // Max tier reached
+            if (beePurchaseInfoText != null)
+            {
+                beePurchaseInfoText.text = "MAX TIER - All bees purchased";
+            }
+
+            if (buyBeesButton != null)
+            {
+                buyBeesButton.interactable = false;
+            }
+
+            if (buyBeesButtonText != null)
+            {
+                buyBeesButtonText.text = "Max Bees";
+            }
         }
     }
 
@@ -387,6 +463,31 @@ public class FleetManagementPanel : MonoBehaviour
     /// <summary>
     /// Called when the close button is clicked
     /// </summary>
+    /// <summary>
+    /// Handles Buy Bees button click
+    /// </summary>
+    private void OnBuyBeesButtonClicked()
+    {
+        if (BeeFleetManager.Instance == null)
+        {
+            Debug.LogWarning("FleetManagementPanel: BeeFleetManager instance not found");
+            return;
+        }
+
+        // Attempt to purchase bees
+        bool success = BeeFleetManager.Instance.PurchaseBees();
+
+        if (success)
+        {
+            // Update UI to reflect purchase (UpdateGlobalStats will be called via OnTotalBeesChanged event)
+            Debug.Log("FleetManagementPanel: Bee purchase successful!");
+        }
+        else
+        {
+            Debug.Log("FleetManagementPanel: Bee purchase failed (see BeeFleetManager logs for details)");
+        }
+    }
+
     private void OnCloseButtonClicked()
     {
         HidePanel();

@@ -63,11 +63,10 @@ public class FlowerPatchDataGenerator : EditorWindow
             data.placementCost = config.Cost;
             data.flowerPatchPrefab = prefab;
 
-            // Set upgrade costs (standard values)
-            data.upgradeCosts = new float[] { 50f, 150f, 400f };
-            data.beesPerUpgrade = 2;
-            data.capacityUpgradeCost = 100f;
-            data.bonusCapacityPerUpgrade = 5;
+            // Set capacity upgrade costs (standard values)
+            data.capacityUpgradeCosts = new float[] { 100f, 250f, 500f };
+            data.bonusCapacityPerUpgrade = 3;
+            data.maxCapacityTier = 3;
             data.baseCapacity = 5;
 
             if (isUpdate)

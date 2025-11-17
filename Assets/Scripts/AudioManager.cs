@@ -169,7 +169,6 @@ public class AudioManager : MonoBehaviour
         {
             if (flowerPatch != null)
             {
-                flowerPatch.OnFlowerPatchUpgraded.RemoveListener(OnFlowerPatchUpgraded);
                 flowerPatch.OnCapacityUpgraded.RemoveListener(OnCapacityUpgraded);
             }
         }
@@ -183,14 +182,6 @@ public class AudioManager : MonoBehaviour
         if (recipeCompletedClip != null)
         {
             PlaySFX(recipeCompletedClip);
-        }
-    }
-
-    private void OnFlowerPatchUpgraded(int newTier)
-    {
-        if (flowerPatchUpgradedClip != null)
-        {
-            PlaySFX(flowerPatchUpgradedClip);
         }
     }
 
@@ -224,7 +215,6 @@ public class AudioManager : MonoBehaviour
         if (flowerPatch == null || subscribedFlowerPatches.Contains(flowerPatch))
             return;
 
-        flowerPatch.OnFlowerPatchUpgraded.AddListener(OnFlowerPatchUpgraded);
         flowerPatch.OnCapacityUpgraded.AddListener(OnCapacityUpgraded);
         subscribedFlowerPatches.Add(flowerPatch);
     }
@@ -239,7 +229,6 @@ public class AudioManager : MonoBehaviour
         if (flowerPatch == null || !subscribedFlowerPatches.Contains(flowerPatch))
             return;
 
-        flowerPatch.OnFlowerPatchUpgraded.RemoveListener(OnFlowerPatchUpgraded);
         flowerPatch.OnCapacityUpgraded.RemoveListener(OnCapacityUpgraded);
         subscribedFlowerPatches.Remove(flowerPatch);
     }
