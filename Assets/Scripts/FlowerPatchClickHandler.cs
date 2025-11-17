@@ -14,19 +14,15 @@ public class FlowerPatchClickHandler : MonoBehaviour
     [Tooltip("Reference to the upgrade panel UI")]
     [SerializeField] private FlowerPatchUpgradePanel upgradePanel;
 
-    [Header("Visual Feedback")]
-    [Tooltip("Material to use when hovering over flower patch (optional - will create default if not assigned)")]
-    [SerializeField] private Material hoverMaterial;
-
-    [Tooltip("Renderer component for visual feedback")]
-    [SerializeField] private Renderer flowerPatchRenderer;
-
-    [Tooltip("Color to brighten material on hover (if hoverMaterial not assigned)")]
-    [SerializeField] private Color hoverTint = new Color(1.2f, 1.2f, 1.2f, 1f);
+    [Header("Hover Visual Settings")]
+    [SerializeField] private float hoverBrightness = 1.3f;
+    [SerializeField] private Color hoverEmissionColor = new Color(0.2f, 0.2f, 0.1f);
 
     // Internal state
+    [SerializeField] private Renderer flowerPatchRenderer;
     private Material originalMaterial;
-    private Material runtimeHoverMaterial;
+    private Material hoverMaterial;
+    private bool isHovering = false;
 
     private void Awake()
     {
@@ -44,37 +40,25 @@ public class FlowerPatchClickHandler : MonoBehaviour
         if (flowerPatchRenderer == null)
         {
             flowerPatchRenderer = GetComponent<Renderer>();
+            if (flowerPatchRenderer == null)
+            {
+                flowerPatchRenderer = GetComponentInChildren<Renderer>();
+                Debug.Log($"[FlowerPatchClickHandler] {gameObject.name}: Renderer found in children", this);
+            }
+            else
+            {
+                Debug.Log($"[FlowerPatchClickHandler] {gameObject.name}: Renderer found on root", this);
+            }
         }
 
-        // Store original material and create hover material if needed
-        if (flowerPatchRenderer != null)
+        if (flowerPatchRenderer == null)
         {
-            originalMaterial = flowerPatchRenderer.material;
-
-            // Create runtime hover material if no hover material assigned
-            if (hoverMaterial == null)
-            {
-                runtimeHoverMaterial = new Material(originalMaterial);
-
-                // Brighten the material for hover effect
-                if (runtimeHoverMaterial.HasProperty("_Color"))
-                {
-                    Color originalColor = runtimeHoverMaterial.color;
-                    runtimeHoverMaterial.color = new Color(
-                        originalColor.r * hoverTint.r,
-                        originalColor.g * hoverTint.g,
-                        originalColor.b * hoverTint.b,
-                        originalColor.a
-                    );
-                }
-
-                // Add emission for glow effect
-                if (runtimeHoverMaterial.HasProperty("_EmissionColor"))
-                {
-                    runtimeHoverMaterial.EnableKeyword("_EMISSION");
-                    runtimeHoverMaterial.SetColor("_EmissionColor", Color.white * 0.2f);
-                }
-            }
+            Debug.LogError($"[FlowerPatchClickHandler] {gameObject.name}: NO RENDERER FOUND - hover effect will not work!", this);
+        }
+        else
+        {
+            originalMaterial = flowerPatchRenderer.sharedMaterial;
+            Debug.Log($"[FlowerPatchClickHandler] {gameObject.name}: Original material captured: {originalMaterial?.name}", this);
         }
 
         // Find upgrade panel in scene if not set
@@ -90,28 +74,52 @@ public class FlowerPatchClickHandler : MonoBehaviour
 
     private void OnMouseEnter()
     {
-        // Visual feedback on hover
-        if (flowerPatchRenderer != null)
+        Debug.Log($"[FlowerPatchClickHandler] {gameObject.name}: OnMouseEnter called", this);
+
+        if (flowerPatchRenderer != null && originalMaterial != null)
         {
-            // Use assigned hover material if available, otherwise use runtime-generated one
-            Material materialToUse = hoverMaterial != null ? hoverMaterial : runtimeHoverMaterial;
+            isHovering = true;
 
-            if (materialToUse != null)
+            // Create hover material with brighter appearance and emission
+            hoverMaterial = new Material(originalMaterial);
+            hoverMaterial.color = originalMaterial.color * hoverBrightness;
+
+            // Add emission glow if supported
+            if (hoverMaterial.HasProperty("_EmissionColor"))
             {
-                flowerPatchRenderer.material = materialToUse;
+                hoverMaterial.EnableKeyword("_EMISSION");
+                hoverMaterial.SetColor("_EmissionColor", hoverEmissionColor);
             }
-        }
 
-        // Change cursor (optional)
-        Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+            Debug.Log($"[FlowerPatchClickHandler] {gameObject.name}: Applying hover material", this);
+            flowerPatchRenderer.material = hoverMaterial;
+        }
+        else
+        {
+            Debug.LogWarning($"[FlowerPatchClickHandler] {gameObject.name}: Cannot apply hover - renderer={flowerPatchRenderer != null}, originalMaterial={originalMaterial != null}", this);
+        }
     }
 
     private void OnMouseExit()
     {
-        // Restore original material
-        if (flowerPatchRenderer != null && originalMaterial != null)
+        Debug.Log($"[FlowerPatchClickHandler] {gameObject.name}: OnMouseExit called", this);
+
+        if (flowerPatchRenderer != null && originalMaterial != null && isHovering)
         {
+            isHovering = false;
+            Debug.Log($"[FlowerPatchClickHandler] {gameObject.name}: Restoring original material: {originalMaterial.name}", this);
             flowerPatchRenderer.material = originalMaterial;
+
+            // Clean up hover material to prevent memory leak
+            if (hoverMaterial != null)
+            {
+                Destroy(hoverMaterial);
+                hoverMaterial = null;
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"[FlowerPatchClickHandler] {gameObject.name}: Cannot restore - renderer={flowerPatchRenderer != null}, originalMaterial={originalMaterial != null}, isHovering={isHovering}", this);
         }
     }
 
@@ -131,16 +139,11 @@ public class FlowerPatchClickHandler : MonoBehaviour
 
     private void OnDestroy()
     {
-        // Clean up material instances to prevent memory leaks
-        if (flowerPatchRenderer != null && flowerPatchRenderer.material != originalMaterial)
+        // Clean up any runtime-created materials
+        if (hoverMaterial != null)
         {
-            Destroy(flowerPatchRenderer.material);
-        }
-
-        // Clean up runtime hover material
-        if (runtimeHoverMaterial != null)
-        {
-            Destroy(runtimeHoverMaterial);
+            Destroy(hoverMaterial);
+            hoverMaterial = null;
         }
     }
 }

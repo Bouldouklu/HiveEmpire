@@ -33,9 +33,27 @@ public class HiveClickHandler : MonoBehaviour
 
         // Get renderer for hover effects
         hiveRenderer = GetComponent<Renderer>();
-        if (hiveRenderer != null)
+        if (hiveRenderer == null)
         {
-            originalMaterial = hiveRenderer.material;
+            hiveRenderer = GetComponentInChildren<Renderer>();
+            if (hiveRenderer != null)
+            {
+                Debug.Log($"[HiveClickHandler] {gameObject.name}: Renderer found in children", this);
+            }
+        }
+        else
+        {
+            Debug.Log($"[HiveClickHandler] {gameObject.name}: Renderer found on root", this);
+        }
+
+        if (hiveRenderer == null)
+        {
+            Debug.LogError($"[HiveClickHandler] {gameObject.name}: NO RENDERER FOUND - hover effect will not work!", this);
+        }
+        else
+        {
+            originalMaterial = hiveRenderer.sharedMaterial;
+            Debug.Log($"[HiveClickHandler] {gameObject.name}: Original material captured: {originalMaterial?.name}", this);
         }
     }
 
@@ -55,6 +73,8 @@ public class HiveClickHandler : MonoBehaviour
 
     private void OnMouseEnter()
     {
+        Debug.Log($"[HiveClickHandler] {gameObject.name}: OnMouseEnter called", this);
+
         if (hiveRenderer != null && originalMaterial != null)
         {
             isHovering = true;
@@ -70,15 +90,23 @@ public class HiveClickHandler : MonoBehaviour
                 hoverMaterial.SetColor("_EmissionColor", hoverEmissionColor);
             }
 
+            Debug.Log($"[HiveClickHandler] {gameObject.name}: Applying hover material", this);
             hiveRenderer.material = hoverMaterial;
+        }
+        else
+        {
+            Debug.LogWarning($"[HiveClickHandler] {gameObject.name}: Cannot apply hover - renderer={hiveRenderer != null}, originalMaterial={originalMaterial != null}", this);
         }
     }
 
     private void OnMouseExit()
     {
+        Debug.Log($"[HiveClickHandler] {gameObject.name}: OnMouseExit called", this);
+
         if (hiveRenderer != null && originalMaterial != null && isHovering)
         {
             isHovering = false;
+            Debug.Log($"[HiveClickHandler] {gameObject.name}: Restoring original material: {originalMaterial.name}", this);
             hiveRenderer.material = originalMaterial;
 
             // Clean up hover material to prevent memory leak
@@ -87,6 +115,10 @@ public class HiveClickHandler : MonoBehaviour
                 Destroy(hoverMaterial);
                 hoverMaterial = null;
             }
+        }
+        else
+        {
+            Debug.LogWarning($"[HiveClickHandler] {gameObject.name}: Cannot restore - renderer={hiveRenderer != null}, originalMaterial={originalMaterial != null}, isHovering={isHovering}", this);
         }
     }
 
