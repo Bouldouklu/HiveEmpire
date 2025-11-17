@@ -13,9 +13,15 @@ MonoBehaviour:
   m_Name: BeeFleetUpgradeData
   m_EditorClassIdentifier: Assembly-CSharp::BeeFleetUpgradeData
   beePurchaseCosts:
-  - 50
-  - 100
-  - 200
-  - 400
-  beesPerPurchase: 02000000030000000500000008000000
-  maxPurchaseTier: 4
+  - 25
+  - 60
+  - 150
+  - 350
+  - 800
+  - 1800
+  - 4000
+  - 8500
+  - 18000
+  - 38000
+  beesPerPurchase: 020000000300000005000000080000000c0000001200000019000000230000003200000046000000
+  maxPurchaseTier: 10

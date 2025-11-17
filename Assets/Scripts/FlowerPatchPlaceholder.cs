@@ -215,29 +215,6 @@ public class FlowerPatchPlaceholder : MonoBehaviour
             }
         }
 
-        // Add bees to global pool (+3 bees per flower patch)
-        if (BeeFleetManager.Instance != null && flowerPatchController != null)
-        {
-            BeeFleetManager.Instance.AddBeesToPool(3);
-            Debug.Log($"Added 3 bees to global pool for new {flowerPatchData.displayName}");
-
-            // Automatically allocate the 3 bees to this flower patch's route
-            for (int i = 0; i < 3; i++)
-            {
-                bool allocated = BeeFleetManager.Instance.AllocateBee(flowerPatchController);
-                if (!allocated)
-                {
-                    Debug.LogWarning($"Failed to auto-allocate bee {i + 1}/3 to new flower patch {flowerPatch.name}");
-                    break;
-                }
-            }
-            Debug.Log($"Auto-allocated 3 bees to new {flowerPatchData.displayName} pollen route");
-        }
-        else
-        {
-            Debug.LogWarning($"BeeFleetManager or FlowerPatchController not found! Bees were not added to pool.");
-        }
-
         // Register with AudioManager for sound events
         if (AudioManager.Instance != null && flowerPatchController != null)
         {

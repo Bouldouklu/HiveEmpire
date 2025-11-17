@@ -5,8 +5,8 @@
 - [ ] Where does the player needs to put attention to? do some action? 
 ---
 ## SYSTEM
-- [ ] WebGl build not working!
-- [ ] Tier system of recipe productions. Over time, the player can increase the tier of the recipe, that will consume more resources, use a little bit less time, and create more value. For example: tier 1 Forest honey: 1 forest pollen create 2€ in 7 sec. Tier 2, 2 forest pollen, creates 5€, in 6.5secs.
+- [ ] prestige system at the end of year, that allows to start the next year with a perk. Which perks is to be defined: bees already unlocked, everything is cheaper, different modifiers, patchs are closer, etc...
+- [ ] New upgrade: time to pick up the pollen when on flowerpatch?
 - [ ] stamina/energy system?
 - [ ] dynamic weather and event system
 - [ ] Analytics to implement
@@ -14,6 +14,9 @@
 - [ ] Fog of war??
 - [ ] Centralized color management??
 ---
+## VISUAL
+- [ ] Bee should turn around or move at flowerpatch with some delays.
+
 ## ASSETS
 - [ ] icon for type of pollen
 - [ ] Ambient Music

@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 489c7e82fe416ad4d900055c6f7eba00, type: 3}
+  m_Name: PremiumReserve
+  m_EditorClassIdentifier: Assembly-CSharp::HoneyRecipe
+  recipeName: Premium Reserve
+  description: Exquisite five-pollen blend. Reserved for connoisseurs.
+  isUnlockedByDefault: 0
+  unlockCost: 1500
+  prerequisiteRecipes: []
+  ingredients:
+  - pollenType: 0
+    quantity: 3
+  - pollenType: 1
+    quantity: 3
+  - pollenType: 2
+    quantity: 3
+  - pollenType: 3
+    quantity: 3
+  - pollenType: 4
+    quantity: 3
+  productionTimeSeconds: 70
+  honeyValue: 200
+  upgradeCosts:
+  - 100
+  - 300
+  - 800
+  - 2000
+  - 5000
+  ingredientReductionPercent:
+  - 0
+  - 10
+  - 20
+  - 30
+  - 40
+  - 50
+  productionTimeReductionPercent:
+  - 0
+  - 15
+  - 25
+  - 35
+  - 50
+  - 60
+  valueIncreasePercent:
+  - 0
+  - 20
+  - 40
+  - 60
+  - 100
+  - 150
+  icon: {fileID: 0}
+  honeyColor: {r: 0.95, g: 0.45, b: 0.15, a: 1}

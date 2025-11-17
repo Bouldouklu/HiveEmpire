@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7911333886616929289}
   - component: {fileID: 2437350566565814784}
   m_Layer: 0
-  m_Name: TundraText
+  m_Name: PatchNameText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -105,7 +105,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Tundra
+  m_text: Agricultural Field
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -245,7 +245,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c6ec11fa43d8fff4fba983741cdb39cd, type: 2}
+  - {fileID: 2100000, guid: 478cb25a50edf7f4597506c1b635aaea, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -318,8 +318,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AirportController
   biomeType: 5
-  maxBeeCapacity: 5
+  flowerPatchData: {fileID: 11400000, guid: 9d98e910fbe782a4b98d50dc3ceb0718, type: 2}
+  baseCapacity: 5
+  capacityBonus: 0
   capacityTier: 0
+  bonusCapacityPerUpgrade: 5
   capacityUpgradeCost: 100
   currentTier: 0
   upgradeCosts:
@@ -367,7 +370,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AirportClickHandler
   flowerPatchController: {fileID: 0}
   upgradePanel: {fileID: 0}
-  hoverMaterial: {fileID: 2100000, guid: f2fe6e77e11fd024aa2785c9bbee251b, type: 2}
+  hoverMaterial: {fileID: 2100000, guid: c7e8ee0ad856b514999bb152851af25d, type: 2}
   flowerPatchRenderer: {fileID: 0}
   hoverTint: {r: 1.2, g: 1.2, b: 1.2, a: 1}
 --- !u!65 &1444884533984530987

@@ -66,7 +66,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8d21841992dae304e85d1333ccb805c3, type: 2}
+  - {fileID: 2100000, guid: 756f8ee0519149a4b87d60661e7c4024, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -139,8 +139,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AirportController
   biomeType: 0
-  maxBeeCapacity: 5
+  flowerPatchData: {fileID: 11400000, guid: 9956b02be1e4aa64c8b03e6778487b8a, type: 2}
+  baseCapacity: 5
+  capacityBonus: 0
   capacityTier: 0
+  bonusCapacityPerUpgrade: 5
   capacityUpgradeCost: 100
   currentTier: 0
   upgradeCosts:
@@ -188,7 +191,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AirportClickHandler
   flowerPatchController: {fileID: 0}
   upgradePanel: {fileID: 0}
-  hoverMaterial: {fileID: 2100000, guid: 0cee3e71a2a51e64ebeb8f635caaeaf9, type: 2}
+  hoverMaterial: {fileID: 2100000, guid: 3427302857993684c979c82ce377e2a8, type: 2}
   flowerPatchRenderer: {fileID: 0}
   hoverTint: {r: 1.2, g: 1.2, b: 1.2, a: 1}
 --- !u!65 &360659856098715226
@@ -224,7 +227,7 @@ GameObject:
   - component: {fileID: 6422331470458467361}
   - component: {fileID: 1175666784609771613}
   m_Layer: 0
-  m_Name: ForestTest
+  m_Name: PatchNameText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -317,7 +320,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Forest
+  m_text: Wild Meadow
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

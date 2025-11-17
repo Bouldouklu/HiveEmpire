@@ -28,14 +28,14 @@ public class FlowerPatchData : ScriptableObject
     public GameObject flowerPatchPrefab;
 
     [Header("Capacity Upgrade Configuration")]
-    [Tooltip("Cost for each capacity upgrade tier (e.g., [100, 250, 500])")]
-    public float[] capacityUpgradeCosts = new float[] { 100f, 250f, 500f };
+    [Tooltip("Cost for each capacity upgrade tier (e.g., [50, 150, 400, 900, 2000])")]
+    public float[] capacityUpgradeCosts = new float[] { 50f, 150f, 400f, 900f, 2000f };
 
     [Tooltip("Bonus capacity added per capacity upgrade tier")]
-    public int bonusCapacityPerUpgrade = 3;
+    public int bonusCapacityPerUpgrade = 5;
 
     [Tooltip("Maximum number of capacity upgrade tiers available")]
-    public int maxCapacityTier = 3;
+    public int maxCapacityTier = 5;
 
     [Header("Base Properties")]
     [Tooltip("Base bee capacity before any upgrades")]
@@ -58,7 +58,7 @@ public class FlowerPatchData : ScriptableObject
         if (capacityUpgradeCosts == null || capacityUpgradeCosts.Length == 0)
         {
             Debug.LogWarning($"[{name}] Capacity upgrade costs array is empty. Resetting to defaults.", this);
-            capacityUpgradeCosts = new float[] { 100f, 250f, 500f };
+            capacityUpgradeCosts = new float[] { 50f, 150f, 400f, 900f, 2000f };
         }
 
         // Ensure all capacity upgrade costs are non-negative
@@ -74,8 +74,8 @@ public class FlowerPatchData : ScriptableObject
         // Ensure bonus capacity is positive
         if (bonusCapacityPerUpgrade < 1)
         {
-            Debug.LogWarning($"[{name}] Bonus capacity per upgrade must be at least 1. Setting to 3.", this);
-            bonusCapacityPerUpgrade = 3;
+            Debug.LogWarning($"[{name}] Bonus capacity per upgrade must be at least 1. Setting to 5.", this);
+            bonusCapacityPerUpgrade = 5;
         }
 
         // Ensure max capacity tier matches array length

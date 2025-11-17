@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BiomeMaterialMapper
   biomeMaterials:
   - biomeType: 0
-    material: {fileID: 2100000, guid: 8d21841992dae304e85d1333ccb805c3, type: 2}
+    material: {fileID: 2100000, guid: 756f8ee0519149a4b87d60661e7c4024, type: 2}
   - biomeType: 1
-    material: {fileID: 2100000, guid: 3a3421b5d5e47254bbc477eec862f88f, type: 2}
+    material: {fileID: 2100000, guid: 34fb5d1151ac66c4a9391bb130bb76bc, type: 2}
   - biomeType: 2
-    material: {fileID: 2100000, guid: 09a4cbdf75f9f5d4a8d738f14ab0323d, type: 2}
+    material: {fileID: 2100000, guid: e31b66f058a8a704f89c6607400b3b1c, type: 2}
   - biomeType: 3
-    material: {fileID: 2100000, guid: 5665f6c7b77267640bdc7782c8d27115, type: 2}
+    material: {fileID: 2100000, guid: bceca181c30bc86499edd6bbd0da9138, type: 2}
   - biomeType: 4
-    material: {fileID: 2100000, guid: d35424b47dd94e0478767fd2d2cc26a3, type: 2}
+    material: {fileID: 2100000, guid: 2cb2c21e3b9e0f446ab99be60f9cfe4e, type: 2}
   - biomeType: 5
-    material: {fileID: 2100000, guid: c6ec11fa43d8fff4fba983741cdb39cd, type: 2}
+    material: {fileID: 2100000, guid: 478cb25a50edf7f4597506c1b635aaea, type: 2}

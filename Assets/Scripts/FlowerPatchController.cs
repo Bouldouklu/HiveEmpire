@@ -23,17 +23,17 @@ public class FlowerPatchController : MonoBehaviour
     [Tooltip("Bonus capacity from capacity upgrades")]
     [SerializeField] private int capacityBonus = 0;
 
-    [Tooltip("Capacity upgrade tier (0-3, each tier adds bonus capacity)")]
+    [Tooltip("Capacity upgrade tier (0-5, each tier adds bonus capacity)")]
     [SerializeField] private int capacityTier = 0;
 
     [Tooltip("Bonus capacity added per capacity upgrade tier")]
-    [SerializeField] private int bonusCapacityPerUpgrade = 3;
+    [SerializeField] private int bonusCapacityPerUpgrade = 5;
 
-    [Tooltip("Cost for each capacity upgrade tier [Tier 1, Tier 2, Tier 3]")]
-    [SerializeField] private float[] capacityUpgradeCosts = new float[] { 100f, 250f, 500f };
+    [Tooltip("Cost for each capacity upgrade tier [Tier 1, Tier 2, Tier 3, Tier 4, Tier 5]")]
+    [SerializeField] private float[] capacityUpgradeCosts = new float[] { 50f, 150f, 400f, 900f, 2000f };
 
     [Tooltip("Maximum number of capacity upgrade tiers available")]
-    [SerializeField] private int maxCapacityTier = 3;
+    [SerializeField] private int maxCapacityTier = 5;
 
     [Header("Events")]
 

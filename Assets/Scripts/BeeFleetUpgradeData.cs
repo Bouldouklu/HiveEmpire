@@ -8,15 +8,15 @@ using UnityEngine;
 public class BeeFleetUpgradeData : ScriptableObject
 {
     [Header("Bee Purchase Tiers")]
-    [Tooltip("Cost for each bee purchase tier (e.g., [50, 100, 200, 400])")]
-    public float[] beePurchaseCosts = new float[] { 50f, 100f, 200f, 400f };
+    [Tooltip("Cost for each bee purchase tier (e.g., [25, 60, 150, ...])")]
+    public float[] beePurchaseCosts = new float[] { 25f, 60f, 150f, 350f, 800f, 1800f, 4000f, 8500f, 18000f, 38000f };
 
     [Tooltip("Number of bees added to global pool per purchase tier")]
-    public int[] beesPerPurchase = new int[] { 2, 3, 5, 8 };
+    public int[] beesPerPurchase = new int[] { 2, 3, 5, 8, 12, 18, 25, 35, 50, 70 };
 
     [Header("Configuration")]
     [Tooltip("Maximum number of bee purchase tiers available")]
-    public int maxPurchaseTier = 4;
+    public int maxPurchaseTier = 10;
 
     /// <summary>
     /// Gets the cost for a specific purchase tier.
@@ -58,13 +58,13 @@ public class BeeFleetUpgradeData : ScriptableObject
         if (beePurchaseCosts == null || beePurchaseCosts.Length == 0)
         {
             Debug.LogWarning($"[{name}] Bee purchase costs array is empty. Resetting to defaults.", this);
-            beePurchaseCosts = new float[] { 50f, 100f, 200f, 400f };
+            beePurchaseCosts = new float[] { 25f, 60f, 150f, 350f, 800f, 1800f, 4000f, 8500f, 18000f, 38000f };
         }
 
         if (beesPerPurchase == null || beesPerPurchase.Length == 0)
         {
             Debug.LogWarning($"[{name}] Bees per purchase array is empty. Resetting to defaults.", this);
-            beesPerPurchase = new int[] { 2, 3, 5, 8 };
+            beesPerPurchase = new int[] { 2, 3, 5, 8, 12, 18, 25, 35, 50, 70 };
         }
 
         // Ensure arrays have matching lengths

@@ -17,11 +17,12 @@ MonoBehaviour:
   description: 
   placementCost: 1
   flowerPatchPrefab: {fileID: 6159468505849121783, guid: a24cbf9edd04a99468fe2b66693f4d22, type: 3}
-  upgradeCosts:
-  - 15
+  capacityUpgradeCosts:
+  - 50
   - 150
   - 400
-  beesPerUpgrade: 2
-  capacityUpgradeCost: 100
+  - 900
+  - 2000
   bonusCapacityPerUpgrade: 5
+  maxCapacityTier: 5
   baseCapacity: 5

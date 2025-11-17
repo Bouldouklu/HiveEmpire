@@ -1,8 +1,8 @@
 # ReadMe - HIVE EMPIRE - Game Concept
 
 **Version:** Prototype v1.0  
-**Target:** 3-4 week prototype for itch.io WebGL play testing 
-**Core Focus:** Incremental optimization with strategic resource management
+**Target:** 3-4 week prototype for itch.io WebGL play testing  
+**Core Focus:** Incremental optimization with strategic resource management  
 **Itch command line** to upload new build: butler push "D:\Unity\Games\HiveEmpire\Build\WebGL\hiveempire.zip" bouldouklu/hiveempire:HTML
 
 ---

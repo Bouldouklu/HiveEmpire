@@ -20,6 +20,10 @@ public class BeeFleetManager : MonoBehaviour
     [Tooltip("Current bee purchase tier (0-based index)")]
     private int currentPurchaseTier = 0;
 
+    [SerializeField]
+    [Tooltip("Starting number of bees for new year/campaign (balanced at 2)")]
+    private int startingBees = 2;
+
     [Header("Configuration")]
     [SerializeField]
     [Tooltip("Bee fleet upgrade data defining purchase costs and bee amounts")]
@@ -343,15 +347,15 @@ public class BeeFleetManager : MonoBehaviour
 
     /// <summary>
     /// Reset bee fleet to initial state for new year playthrough.
-    /// Clears all allocations and resets bee count to zero.
+    /// Clears all allocations and resets bee count to starting bees.
     /// </summary>
     public void ResetToInitialState()
     {
-        totalBeesOwned = 0;
+        totalBeesOwned = startingBees;
         currentPurchaseTier = 0;
         beeAllocations.Clear();
         OnTotalBeesChanged?.Invoke(totalBeesOwned);
 
-        Debug.Log("[BeeFleetManager] Reset to initial state - Total bees: 0, Purchase tier: 0, Allocations cleared");
+        Debug.Log($"[BeeFleetManager] Reset to initial state - Total bees: {startingBees}, Purchase tier: 0, Allocations cleared");
     }
 }

@@ -14,6 +14,10 @@ public class EconomyManager : MonoBehaviour
     [Tooltip("Current player money balance")]
     private float currentMoney = 0f;
 
+    [SerializeField]
+    [Tooltip("Starting money amount for new year/campaign (balanced at $50)")]
+    private float startingMoney = 50f;
+
     [Header("Events")]
     [Tooltip("Fired when money amount changes. Passes new total money amount.")]
     public UnityEvent<float> OnMoneyChanged;
@@ -114,9 +118,9 @@ public class EconomyManager : MonoBehaviour
     /// </summary>
     public void ResetToInitialState()
     {
-        currentMoney = 0f;
+        currentMoney = startingMoney;
         OnMoneyChanged?.Invoke(currentMoney);
 
-        Debug.Log("[EconomyManager] Reset to initial state - Money: $0");
+        Debug.Log($"[EconomyManager] Reset to initial state - Money: ${startingMoney:F2}");
     }
 }

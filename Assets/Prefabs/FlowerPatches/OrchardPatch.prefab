@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2731596381330263713}
   - component: {fileID: 1258401938812675551}
   m_Layer: 0
-  m_Name: PlainsText
+  m_Name: PatchNameText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -105,7 +105,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Plains
+  m_text: O
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -245,7 +245,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3a3421b5d5e47254bbc477eec862f88f, type: 2}
+  - {fileID: 2100000, guid: 34fb5d1151ac66c4a9391bb130bb76bc, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -318,8 +318,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AirportController
   biomeType: 1
-  maxBeeCapacity: 5
+  flowerPatchData: {fileID: 11400000, guid: f1b11219a25a29845ad7ddc1bf17a402, type: 2}
+  baseCapacity: 5
+  capacityBonus: 0
   capacityTier: 0
+  bonusCapacityPerUpgrade: 5
   capacityUpgradeCost: 100
   currentTier: 0
   upgradeCosts:
@@ -367,7 +370,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AirportClickHandler
   flowerPatchController: {fileID: 0}
   upgradePanel: {fileID: 0}
-  hoverMaterial: {fileID: 2100000, guid: b6c12d6780e799943b6c662723290971, type: 2}
+  hoverMaterial: {fileID: 2100000, guid: 2ea92793b5fdbc443a4a26c08264297b, type: 2}
   flowerPatchRenderer: {fileID: 0}
   hoverTint: {r: 1.2, g: 1.2, b: 1.2, a: 1}
 --- !u!65 &6619914244982428794

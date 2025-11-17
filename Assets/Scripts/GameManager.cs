@@ -48,6 +48,28 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         // Game initialization
+
+        // Initialize economy to starting state on first game start
+        if (EconomyManager.Instance != null)
+        {
+            EconomyManager.Instance.ResetToInitialState();
+            Debug.Log("[GameManager] Economy initialized to starting state");
+        }
+        else
+        {
+            Debug.LogWarning("[GameManager] EconomyManager not found during initialization");
+        }
+
+        // Initialize bee fleet to starting state on first game start
+        if (BeeFleetManager.Instance != null)
+        {
+            BeeFleetManager.Instance.ResetToInitialState();
+            Debug.Log("[GameManager] Bee fleet initialized to starting state");
+        }
+        else
+        {
+            Debug.LogWarning("[GameManager] BeeFleetManager not found during initialization");
+        }
     }
 
     private void Update()

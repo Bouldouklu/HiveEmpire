@@ -48,21 +48,21 @@ public class HoneyRecipe : ScriptableObject
     [Min(0.01f)]
     public float honeyValue = 1f;
 
-    [Header("Upgrade System (3 Tiers)")]
-    [Tooltip("Money cost to upgrade to each tier (Tier 1, Tier 2, Tier 3)")]
-    public float[] upgradeCosts = new float[] { 200f, 500f, 1000f };
+    [Header("Upgrade System (5 Tiers)")]
+    [Tooltip("Money cost to upgrade to each tier (Tier 1, Tier 2, Tier 3, Tier 4, Tier 5)")]
+    public float[] upgradeCosts = new float[] { 100f, 300f, 800f, 2000f, 5000f };
 
-    [Tooltip("Ingredient quantity reduction percentage per tier (Tier 0, 1, 2, 3)")]
+    [Tooltip("Ingredient quantity reduction percentage per tier (Tier 0, 1, 2, 3, 4, 5)")]
     [Range(0f, 100f)]
-    public float[] ingredientReductionPercent = new float[] { 0f, 10f, 20f, 30f };
+    public float[] ingredientReductionPercent = new float[] { 0f, 10f, 20f, 30f, 40f, 50f };
 
-    [Tooltip("Production time reduction percentage per tier (Tier 0, 1, 2, 3)")]
+    [Tooltip("Production time reduction percentage per tier (Tier 0, 1, 2, 3, 4, 5)")]
     [Range(0f, 100f)]
-    public float[] productionTimeReductionPercent = new float[] { 0f, 15f, 25f, 35f };
+    public float[] productionTimeReductionPercent = new float[] { 0f, 15f, 25f, 35f, 50f, 60f };
 
-    [Tooltip("Honey value increase percentage per tier (Tier 0, 1, 2, 3)")]
-    [Range(0f, 200f)]
-    public float[] valueIncreasePercent = new float[] { 0f, 20f, 40f, 60f };
+    [Tooltip("Honey value increase percentage per tier (Tier 0, 1, 2, 3, 4, 5)")]
+    [Range(0f, 300f)]
+    public float[] valueIncreasePercent = new float[] { 0f, 20f, 40f, 60f, 100f, 150f };
 
     [Header("Visual (Optional)")]
     [Tooltip("Icon to display in UI")]
@@ -110,10 +110,10 @@ public class HoneyRecipe : ScriptableObject
     /// <summary>
     /// Get production time adjusted for the given upgrade tier.
     /// </summary>
-    /// <param name="tier">Upgrade tier (0-3)</param>
+    /// <param name="tier">Upgrade tier (0-5)</param>
     public float GetProductionTime(int tier)
     {
-        tier = Mathf.Clamp(tier, 0, 3);
+        tier = Mathf.Clamp(tier, 0, 5);
         float reductionPercent = productionTimeReductionPercent[tier];
         return productionTimeSeconds * (1f - reductionPercent / 100f);
     }
@@ -121,10 +121,10 @@ public class HoneyRecipe : ScriptableObject
     /// <summary>
     /// Get honey value adjusted for the given upgrade tier.
     /// </summary>
-    /// <param name="tier">Upgrade tier (0-3)</param>
+    /// <param name="tier">Upgrade tier (0-5)</param>
     public float GetHoneyValue(int tier)
     {
-        tier = Mathf.Clamp(tier, 0, 3);
+        tier = Mathf.Clamp(tier, 0, 5);
         float increasePercent = valueIncreasePercent[tier];
         return honeyValue * (1f + increasePercent / 100f);
     }
@@ -132,10 +132,10 @@ public class HoneyRecipe : ScriptableObject
     /// <summary>
     /// Get ingredients adjusted for the given upgrade tier.
     /// </summary>
-    /// <param name="tier">Upgrade tier (0-3)</param>
+    /// <param name="tier">Upgrade tier (0-5)</param>
     public List<Ingredient> GetIngredients(int tier)
     {
-        tier = Mathf.Clamp(tier, 0, 3);
+        tier = Mathf.Clamp(tier, 0, 5);
         float reductionPercent = ingredientReductionPercent[tier];
         float multiplier = 1f - reductionPercent / 100f;
 
@@ -155,7 +155,7 @@ public class HoneyRecipe : ScriptableObject
     /// <summary>
     /// Get the cost to upgrade from current tier to next tier.
     /// </summary>
-    /// <param name="currentTier">Current upgrade tier (0-2)</param>
+    /// <param name="currentTier">Current upgrade tier (0-4)</param>
     public float GetUpgradeCost(int currentTier)
     {
         if (currentTier < 0 || currentTier >= upgradeCosts.Length)
@@ -168,18 +168,18 @@ public class HoneyRecipe : ScriptableObject
     /// <summary>
     /// Check if recipe can be upgraded from current tier.
     /// </summary>
-    /// <param name="currentTier">Current upgrade tier (0-3)</param>
+    /// <param name="currentTier">Current upgrade tier (0-5)</param>
     public bool CanUpgrade(int currentTier)
     {
-        return currentTier >= 0 && currentTier < 3;
+        return currentTier >= 0 && currentTier < 5;
     }
 
     /// <summary>
-    /// Get maximum upgrade tier (3 tiers total).
+    /// Get maximum upgrade tier (5 tiers total).
     /// </summary>
     public int GetMaxTier()
     {
-        return 3;
+        return 5;
     }
 
     /// <summary>
@@ -215,24 +215,24 @@ public class HoneyRecipe : ScriptableObject
         }
 
         // Validate upgrade arrays have correct lengths
-        if (upgradeCosts.Length != 3)
+        if (upgradeCosts.Length != 5)
         {
-            Debug.LogWarning($"Recipe '{recipeName}': upgradeCosts should have 3 elements (Tier 1, 2, 3 costs)", this);
+            Debug.LogWarning($"Recipe '{recipeName}': upgradeCosts should have 5 elements (Tier 1, 2, 3, 4, 5 costs)", this);
         }
 
-        if (ingredientReductionPercent.Length != 4)
+        if (ingredientReductionPercent.Length != 6)
         {
-            Debug.LogWarning($"Recipe '{recipeName}': ingredientReductionPercent should have 4 elements (Tier 0, 1, 2, 3)", this);
+            Debug.LogWarning($"Recipe '{recipeName}': ingredientReductionPercent should have 6 elements (Tier 0, 1, 2, 3, 4, 5)", this);
         }
 
-        if (productionTimeReductionPercent.Length != 4)
+        if (productionTimeReductionPercent.Length != 6)
         {
-            Debug.LogWarning($"Recipe '{recipeName}': productionTimeReductionPercent should have 4 elements (Tier 0, 1, 2, 3)", this);
+            Debug.LogWarning($"Recipe '{recipeName}': productionTimeReductionPercent should have 6 elements (Tier 0, 1, 2, 3, 4, 5)", this);
         }
 
-        if (valueIncreasePercent.Length != 4)
+        if (valueIncreasePercent.Length != 6)
         {
-            Debug.LogWarning($"Recipe '{recipeName}': valueIncreasePercent should have 4 elements (Tier 0, 1, 2, 3)", this);
+            Debug.LogWarning($"Recipe '{recipeName}': valueIncreasePercent should have 6 elements (Tier 0, 1, 2, 3, 4, 5)", this);
         }
 
         // Check for circular prerequisites
