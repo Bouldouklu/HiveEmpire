@@ -12,11 +12,11 @@ GameObject:
   - component: {fileID: 7183733998728293094}
   - component: {fileID: 8226089875356175294}
   m_Layer: 0
-  m_Name: TundraText
+  m_Name: PatchNameText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!224 &60300446197472072
 RectTransform:
@@ -105,7 +105,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Tundra
+  m_text: Agricultural Field
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -197,7 +197,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &7367169759456299657
 Transform:
@@ -306,7 +306,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AirportPlaceholder
   flowerPatchData: {fileID: 11400000, guid: 9d98e910fbe782a4b98d50dc3ceb0718, type: 2}
   beePrefab: {fileID: 2869447232971713939, guid: a9559939e104bd44c8df21eebf92c5d1, type: 3}
-  affordableMaterial: {fileID: 2100000, guid: a8187dd2453695142b91d4c3baa972d1, type: 2}
-  unaffordableMaterial: {fileID: 2100000, guid: 3ba1e3672ed53b64284f76b62112b8d2, type: 2}
-  defaultMaterial: {fileID: 2100000, guid: 590cf913ed9f8574e9a1e50ad0fe4d05, type: 2}
   flowerPatchSpawnOffset: {x: 0, y: 0, z: 0}

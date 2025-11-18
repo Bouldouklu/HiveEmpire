@@ -14,14 +14,9 @@ public class FlowerPatchClickHandler : MonoBehaviour
     [Tooltip("Reference to the upgrade panel UI")]
     [SerializeField] private FlowerPatchUpgradePanel upgradePanel;
 
-    [Header("Hover Visual Settings")]
-    [SerializeField] private float hoverBrightness = 1.3f;
-    [SerializeField] private Color hoverEmissionColor = new Color(0.2f, 0.2f, 0.1f);
-
     // Internal state
     [SerializeField] private Renderer flowerPatchRenderer;
     private Material originalMaterial;
-    private Material hoverMaterial;
     private bool isHovering = false;
 
     private void Awake()
@@ -76,27 +71,33 @@ public class FlowerPatchClickHandler : MonoBehaviour
     {
         Debug.Log($"[FlowerPatchClickHandler] {gameObject.name}: OnMouseEnter called", this);
 
-        if (flowerPatchRenderer != null && originalMaterial != null)
+        if (flowerPatchRenderer != null && originalMaterial != null && flowerPatchController != null)
         {
             isHovering = true;
 
-            // Create hover material with brighter appearance and emission
-            hoverMaterial = new Material(originalMaterial);
-            hoverMaterial.color = originalMaterial.color * hoverBrightness;
-
-            // Add emission glow if supported
-            if (hoverMaterial.HasProperty("_EmissionColor"))
+            // Get pre-made hover material from FlowerPatchMaterialMapper
+            if (FlowerPatchMaterialMapper.Instance != null)
             {
-                hoverMaterial.EnableKeyword("_EMISSION");
-                hoverMaterial.SetColor("_EmissionColor", hoverEmissionColor);
-            }
+                Material hoverMaterial = FlowerPatchMaterialMapper.Instance.GetHoverMaterial(flowerPatchController.FlowerPatchData.biomeType);
 
-            Debug.Log($"[FlowerPatchClickHandler] {gameObject.name}: Applying hover material", this);
-            flowerPatchRenderer.material = hoverMaterial;
+                if (hoverMaterial != null)
+                {
+                    Debug.Log($"[FlowerPatchClickHandler] {gameObject.name}: Applying hover material", this);
+                    flowerPatchRenderer.material = hoverMaterial;
+                }
+                else
+                {
+                    Debug.LogWarning($"[FlowerPatchClickHandler] {gameObject.name}: No hover material found for biome {flowerPatchController.FlowerPatchData.biomeType}", this);
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"[FlowerPatchClickHandler] {gameObject.name}: FlowerPatchMaterialMapper not available", this);
+            }
         }
         else
         {
-            Debug.LogWarning($"[FlowerPatchClickHandler] {gameObject.name}: Cannot apply hover - renderer={flowerPatchRenderer != null}, originalMaterial={originalMaterial != null}", this);
+            Debug.LogWarning($"[FlowerPatchClickHandler] {gameObject.name}: Cannot apply hover - renderer={flowerPatchRenderer != null}, originalMaterial={originalMaterial != null}, controller={flowerPatchController != null}", this);
         }
     }
 
@@ -109,13 +110,7 @@ public class FlowerPatchClickHandler : MonoBehaviour
             isHovering = false;
             Debug.Log($"[FlowerPatchClickHandler] {gameObject.name}: Restoring original material: {originalMaterial.name}", this);
             flowerPatchRenderer.material = originalMaterial;
-
-            // Clean up hover material to prevent memory leak
-            if (hoverMaterial != null)
-            {
-                Destroy(hoverMaterial);
-                hoverMaterial = null;
-            }
+            // No need to destroy hover material - it's a shared asset from FlowerPatchMaterialMapper
         }
         else
         {
@@ -137,13 +132,6 @@ public class FlowerPatchClickHandler : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
-    {
-        // Clean up any runtime-created materials
-        if (hoverMaterial != null)
-        {
-            Destroy(hoverMaterial);
-            hoverMaterial = null;
-        }
-    }
+    // No OnDestroy needed - we now use shared materials from FlowerPatchMaterialMapper
 }
+

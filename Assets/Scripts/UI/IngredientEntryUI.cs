@@ -33,9 +33,11 @@ public class IngredientEntryUI : MonoBehaviour
             }
             else
             {
-                // Fallback: use pollen color
+                // Fallback: use pollen color derived from FlowerPatchMaterialMapper
                 resourceIcon.sprite = null;
-                resourceIcon.color = pollenType.pollenColor;
+                resourceIcon.color = FlowerPatchMaterialMapper.Instance != null
+                    ? FlowerPatchMaterialMapper.Instance.GetPollenColor(pollenType.biomeType)
+                    : Color.yellow;
             }
         }
     }

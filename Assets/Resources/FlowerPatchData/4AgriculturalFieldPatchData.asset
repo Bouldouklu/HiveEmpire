@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6759fc597750c2e44a2c0e24bc5c6b9f, type: 3}
+  m_Name: 4AgriculturalFieldPatchData
+  m_EditorClassIdentifier: Assembly-CSharp::FlowerPatchData
+  biomeType: 5
+  displayName: Agricultural Field Patch
+  description: 
+  pollenDisplayName: Agricultural Field Pollen
+  pollenIcon: {fileID: 0}
+  pollenColor: {r: 0.95, g: 0.95, b: 0.85, a: 1}
+  pollenMaterial: {fileID: 0}
+  pollenDescription: Pale cream pollen from agricultural crops. Clean and mild.
+  placementCost: 200
+  flowerPatchPrefab: {fileID: 6159468505849121783, guid: 42280dd1e794d754ea574214f837dcef, type: 3}
+  capacityUpgradeCosts:
+  - 50
+  - 150
+  - 400
+  - 900
+  - 2000
+  bonusCapacityPerUpgrade: 5
+  maxCapacityTier: 5
+  baseCapacity: 5
+  gatheringDuration: 1.8

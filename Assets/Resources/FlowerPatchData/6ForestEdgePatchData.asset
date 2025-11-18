@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6759fc597750c2e44a2c0e24bc5c6b9f, type: 3}
+  m_Name: 6ForestEdgePatchData
+  m_EditorClassIdentifier: Assembly-CSharp::FlowerPatchData
+  biomeType: 4
+  displayName: Forest Edge Patch
+  description: 
+  pollenDisplayName: Forest Edge Pollen
+  pollenIcon: {fileID: 0}
+  pollenColor: {r: 1, g: 0.5, b: 0.2, a: 1}
+  pollenMaterial: {fileID: 0}
+  pollenDescription: Warm orange pollen from forest edge wildflowers. Earthy and
+    robust.
+  placementCost: 1200
+  flowerPatchPrefab: {fileID: 6159468505849121783, guid: c69a46ee174616b49921433a90db4fd9, type: 3}
+  capacityUpgradeCosts:
+  - 50
+  - 150
+  - 400
+  - 900
+  - 2000
+  bonusCapacityPerUpgrade: 5
+  maxCapacityTier: 5
+  baseCapacity: 5
+  gatheringDuration: 2.8

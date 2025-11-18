@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8db600f185a864e46a31101f1efa8df9, type: 3}
+  m_Name: FlowerPatchMaterialMapper
+  m_EditorClassIdentifier: Assembly-CSharp::FlowerPatchMaterialMapper
+  flowerPatchMaterials:
+  - biomeType: 0
+    material: {fileID: 2100000, guid: 756f8ee0519149a4b87d60661e7c4024, type: 2}
+  - biomeType: 1
+    material: {fileID: 2100000, guid: 34fb5d1151ac66c4a9391bb130bb76bc, type: 2}
+  - biomeType: 2
+    material: {fileID: 2100000, guid: e31b66f058a8a704f89c6607400b3b1c, type: 2}
+  - biomeType: 3
+    material: {fileID: 2100000, guid: bceca181c30bc86499edd6bbd0da9138, type: 2}
+  - biomeType: 4
+    material: {fileID: 2100000, guid: 2cb2c21e3b9e0f446ab99be60f9cfe4e, type: 2}
+  - biomeType: 5
+    material: {fileID: 2100000, guid: 478cb25a50edf7f4597506c1b635aaea, type: 2}
+  hoverMaterials:
+  - biomeType: 0
+    material: {fileID: 2100000, guid: 3427302857993684c979c82ce377e2a8, type: 2}
+  - biomeType: 1
+    material: {fileID: 2100000, guid: 2ea92793b5fdbc443a4a26c08264297b, type: 2}
+  - biomeType: 2
+    material: {fileID: 2100000, guid: 573c2008f789b444e99b3e7f2178cf83, type: 2}
+  - biomeType: 3
+    material: {fileID: 2100000, guid: a2c4675d96a78424393603cab65a9e6e, type: 2}
+  - biomeType: 4
+    material: {fileID: 2100000, guid: 3a67554cf710762418eaf91a2e3d7fc1, type: 2}
+  - biomeType: 5
+    material: {fileID: 2100000, guid: c7e8ee0ad856b514999bb152851af25d, type: 2}
+  hiveHoverMaterial: {fileID: 2100000, guid: b3866094b7362e64782e7076035ed508, type: 2}
+  affordablePlaceholderMaterial: {fileID: 2100000, guid: a8187dd2453695142b91d4c3baa972d1, type: 2}
+  unaffordablePlaceholderMaterial: {fileID: 2100000, guid: 3ba1e3672ed53b64284f76b62112b8d2, type: 2}
+  defaultPlaceholderMaterial: {fileID: 2100000, guid: 590cf913ed9f8574e9a1e50ad0fe4d05, type: 2}

@@ -528,20 +528,29 @@ public class BeeController : MonoBehaviour
         {
             pollenObject.SetActive(true);
 
-            // Use pollenMaterial if available, otherwise use pollenColor
+            // Use pollenMaterial if available, otherwise use derived color
             if (patchData.pollenMaterial != null)
             {
                 pollenRenderer.material = patchData.pollenMaterial;
             }
+            else if (FlowerPatchMaterialMapper.Instance != null)
+            {
+                // Use color derived from FlowerPatchMaterialMapper
+                pollenRenderer.material.color = FlowerPatchMaterialMapper.Instance.GetPollenColor(patchData.biomeType);
+            }
             else
             {
-                // Create a simple colored material if no material is assigned
-                pollenRenderer.material.color = patchData.pollenColor;
+                // Ultimate fallback if mapper not available
+                Debug.LogWarning("FlowerPatchMaterialMapper not available, using yellow as fallback");
+                pollenRenderer.material.color = Color.yellow;
             }
         }
 
-        // Update trail color to match pollen color
-        UpdateTrailColor(patchData.pollenColor);
+        // Update trail color to match pollen color (derived from material)
+        Color pollenColor = FlowerPatchMaterialMapper.Instance != null
+            ? FlowerPatchMaterialMapper.Instance.GetPollenColor(patchData.biomeType)
+            : Color.yellow;
+        UpdateTrailColor(pollenColor);
     }
 
     /// <summary>

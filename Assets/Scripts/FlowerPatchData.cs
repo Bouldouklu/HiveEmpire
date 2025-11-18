@@ -26,10 +26,7 @@ public class FlowerPatchData : ScriptableObject
     [Tooltip("Icon sprite for UI display of this pollen type")]
     public Sprite pollenIcon;
 
-    [Tooltip("Primary color for this pollen type (used for bee trails and cubes)")]
-    public Color pollenColor = Color.yellow;
-
-    [Tooltip("Optional material for pollen visual representation (overrides color if set)")]
+    [Tooltip("Optional material for pollen visual representation. Color is derived from FlowerPatchMaterialMapper using biomeType.")]
     public Material pollenMaterial;
 
     [TextArea(2, 3)]

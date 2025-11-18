@@ -10,13 +10,8 @@ public class HiveClickHandler : MonoBehaviour
     [Header("References")]
     [SerializeField] private RecipeDisplayPanel recipePanel;
 
-    [Header("Hover Visual Settings")]
-    [SerializeField] private float hoverBrightness = 1.3f;
-    [SerializeField] private Color hoverEmissionColor = new Color(0.2f, 0.2f, 0.1f);
-
     private Renderer hiveRenderer;
     private Material originalMaterial;
-    private Material hoverMaterial;
     private bool isHovering = false;
 
     private void Awake()
@@ -79,19 +74,25 @@ public class HiveClickHandler : MonoBehaviour
         {
             isHovering = true;
 
-            // Create hover material with brighter appearance and emission
-            hoverMaterial = new Material(originalMaterial);
-            hoverMaterial.color = originalMaterial.color * hoverBrightness;
-
-            // Add emission glow if supported
-            if (hoverMaterial.HasProperty("_EmissionColor"))
+            // Get pre-made hover material from FlowerPatchMaterialMapper
+            if (FlowerPatchMaterialMapper.Instance != null)
             {
-                hoverMaterial.EnableKeyword("_EMISSION");
-                hoverMaterial.SetColor("_EmissionColor", hoverEmissionColor);
-            }
+                Material hoverMaterial = FlowerPatchMaterialMapper.Instance.GetHiveHoverMaterial();
 
-            Debug.Log($"[HiveClickHandler] {gameObject.name}: Applying hover material", this);
-            hiveRenderer.material = hoverMaterial;
+                if (hoverMaterial != null)
+                {
+                    Debug.Log($"[HiveClickHandler] {gameObject.name}: Applying hover material", this);
+                    hiveRenderer.material = hoverMaterial;
+                }
+                else
+                {
+                    Debug.LogWarning($"[HiveClickHandler] {gameObject.name}: No hive hover material found", this);
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"[HiveClickHandler] {gameObject.name}: FlowerPatchMaterialMapper not available", this);
+            }
         }
         else
         {
@@ -108,13 +109,7 @@ public class HiveClickHandler : MonoBehaviour
             isHovering = false;
             Debug.Log($"[HiveClickHandler] {gameObject.name}: Restoring original material: {originalMaterial.name}", this);
             hiveRenderer.material = originalMaterial;
-
-            // Clean up hover material to prevent memory leak
-            if (hoverMaterial != null)
-            {
-                Destroy(hoverMaterial);
-                hoverMaterial = null;
-            }
+            // No need to destroy hover material - it's a shared asset from FlowerPatchMaterialMapper
         }
         else
         {
@@ -122,13 +117,6 @@ public class HiveClickHandler : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
-    {
-        // Clean up any runtime-created materials
-        if (hoverMaterial != null)
-        {
-            Destroy(hoverMaterial);
-            hoverMaterial = null;
-        }
-    }
+    // No OnDestroy needed - we now use shared materials from FlowerPatchMaterialMapper
 }
+

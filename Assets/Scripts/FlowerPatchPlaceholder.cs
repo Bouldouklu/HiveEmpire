@@ -15,16 +15,6 @@ public class FlowerPatchPlaceholder : MonoBehaviour
     [Tooltip("Bee prefab for the spawned flower patch's pollen route")]
     [SerializeField] private GameObject beePrefab;
 
-    [Header("Visual Feedback Materials")]
-    [Tooltip("Material when player can afford to build")]
-    [SerializeField] private Material affordableMaterial;
-
-    [Tooltip("Material when player cannot afford to build")]
-    [SerializeField] private Material unaffordableMaterial;
-
-    [Tooltip("Default material when not hovering")]
-    [SerializeField] private Material defaultMaterial;
-
     [Header("Settings")]
     [Tooltip("Offset for spawned flower patch position (optional)")]
     [SerializeField] private Vector3 flowerPatchSpawnOffset = Vector3.zero;
@@ -61,10 +51,23 @@ public class FlowerPatchPlaceholder : MonoBehaviour
             Debug.LogError($"FlowerPatchPlaceholder on {gameObject.name}: EconomyManager not found in scene!", this);
         }
 
-        // Set default material
-        if (meshRenderer != null && defaultMaterial != null)
+        // Set material to match the flower patch's biome type
+        if (meshRenderer != null && FlowerPatchMaterialMapper.Instance != null && flowerPatchData != null)
         {
-            meshRenderer.material = defaultMaterial;
+            Material biomeMat = FlowerPatchMaterialMapper.Instance.GetFlowerPatchMaterial(flowerPatchData.biomeType);
+            if (biomeMat != null)
+            {
+                meshRenderer.material = biomeMat;
+            }
+            else
+            {
+                Debug.LogWarning($"FlowerPatchPlaceholder on {gameObject.name}: No material found for biome {flowerPatchData.biomeType}, using default placeholder material", this);
+                Material defaultMat = FlowerPatchMaterialMapper.Instance.GetDefaultPlaceholderMaterial();
+                if (defaultMat != null)
+                {
+                    meshRenderer.material = defaultMat;
+                }
+            }
         }
     }
 
@@ -86,9 +89,14 @@ public class FlowerPatchPlaceholder : MonoBehaviour
     {
         isHovering = false;
 
-        if (meshRenderer != null && defaultMaterial != null)
+        // Reset to biome-specific material
+        if (meshRenderer != null && FlowerPatchMaterialMapper.Instance != null && flowerPatchData != null)
         {
-            meshRenderer.material = defaultMaterial;
+            Material biomeMat = FlowerPatchMaterialMapper.Instance.GetFlowerPatchMaterial(flowerPatchData.biomeType);
+            if (biomeMat != null)
+            {
+                meshRenderer.material = biomeMat;
+            }
         }
     }
 
@@ -107,17 +115,26 @@ public class FlowerPatchPlaceholder : MonoBehaviour
     private void UpdateVisualFeedback()
     {
         if (meshRenderer == null || economyManager == null || flowerPatchData == null) return;
+        if (FlowerPatchMaterialMapper.Instance == null) return;
 
         float cost = flowerPatchData.placementCost;
         bool canAfford = economyManager.CanAfford(cost);
 
-        if (canAfford && affordableMaterial != null)
+        if (canAfford)
         {
-            meshRenderer.material = affordableMaterial;
+            Material affordableMat = FlowerPatchMaterialMapper.Instance.GetAffordablePlaceholderMaterial();
+            if (affordableMat != null)
+            {
+                meshRenderer.material = affordableMat;
+            }
         }
-        else if (!canAfford && unaffordableMaterial != null)
+        else
         {
-            meshRenderer.material = unaffordableMaterial;
+            Material unaffordableMat = FlowerPatchMaterialMapper.Instance.GetUnaffordablePlaceholderMaterial();
+            if (unaffordableMat != null)
+            {
+                meshRenderer.material = unaffordableMat;
+            }
         }
     }
 

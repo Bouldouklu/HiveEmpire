@@ -173,7 +173,10 @@ MonoBehaviour:
   currentState: 0
   pollenCapacity: 1
   showFlightPathGizmos: 0
-  currentPollen: 
+  currentPollen: []
+  gatheringRadius: 3
+  gatheringSpeed: 0.5
+  gatheringLerpSpeed: 2
 --- !u!1 &2975168251230277284
 GameObject:
   m_ObjectHideFlags: 0
