@@ -11,6 +11,9 @@ using TMPro;
 public class FleetManagementPanel : MonoBehaviour
 {
     [Header("UI References - Panel")]
+    [Tooltip("Background blocker for click-outside-to-close functionality (on Canvas)")]
+    [SerializeField] private GameObject panelBlocker;
+
     [Tooltip("Root panel GameObject to show/hide")]
     [SerializeField] private GameObject panelRoot;
 
@@ -70,6 +73,24 @@ public class FleetManagementPanel : MonoBehaviour
             buyBeesButton.onClick.AddListener(OnBuyBeesButtonClicked);
         }
 
+        // Subscribe to panel blocker for click-outside-to-close
+        if (panelBlocker != null)
+        {
+            PanelBlocker blocker = panelBlocker.GetComponent<PanelBlocker>();
+            if (blocker != null)
+            {
+                blocker.OnClickedOutside.AddListener(HidePanel);
+            }
+            else
+            {
+                Debug.LogWarning("FleetManagementPanel: Panel blocker does not have a PanelBlocker component!");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("FleetManagementPanel: Panel blocker not assigned!");
+        }
+
         // Hide panel by default
         HidePanel();
 
@@ -100,6 +121,15 @@ public class FleetManagementPanel : MonoBehaviour
             buyBeesButton.onClick.RemoveListener(OnBuyBeesButtonClicked);
         }
 
+        if (panelBlocker != null)
+        {
+            PanelBlocker blocker = panelBlocker.GetComponent<PanelBlocker>();
+            if (blocker != null)
+            {
+                blocker.OnClickedOutside.RemoveListener(HidePanel);
+            }
+        }
+
         if (BeeFleetManager.Instance != null)
         {
             BeeFleetManager.Instance.OnBeeAllocationChanged.RemoveListener(OnBeeAllocationChanged);
@@ -117,6 +147,10 @@ public class FleetManagementPanel : MonoBehaviour
     /// </summary>
     public void ShowPanel()
     {
+        if (panelBlocker != null)
+        {
+            panelBlocker.SetActive(true);
+        }
         if (panelRoot != null)
         {
             panelRoot.SetActive(true);
@@ -131,6 +165,10 @@ public class FleetManagementPanel : MonoBehaviour
     /// </summary>
     public void HidePanel()
     {
+        if (panelBlocker != null)
+        {
+            panelBlocker.SetActive(false);
+        }
         if (panelRoot != null)
         {
             panelRoot.SetActive(false);

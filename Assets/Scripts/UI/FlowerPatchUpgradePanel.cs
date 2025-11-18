@@ -10,6 +10,9 @@ using TMPro;
 public class FlowerPatchUpgradePanel : MonoBehaviour
 {
     [Header("UI References")]
+    [Tooltip("Background blocker for click-outside-to-close functionality (on Canvas)")]
+    [SerializeField] private GameObject panelBlocker;
+
     [Tooltip("Root panel GameObject to show/hide")]
     [SerializeField] private GameObject panelRoot;
 
@@ -65,6 +68,24 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
             closeButton.onClick.AddListener(OnCloseButtonClicked);
         }
 
+        // Subscribe to panel blocker for click-outside-to-close
+        if (panelBlocker != null)
+        {
+            PanelBlocker blocker = panelBlocker.GetComponent<PanelBlocker>();
+            if (blocker != null)
+            {
+                blocker.OnClickedOutside.AddListener(HidePanel);
+            }
+            else
+            {
+                Debug.LogWarning("FlowerPatchUpgradePanel: Panel blocker does not have a PanelBlocker component!");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("FlowerPatchUpgradePanel: Panel blocker not assigned!");
+        }
+
         // Hide panel by default
         HidePanel();
 
@@ -88,6 +109,15 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
             closeButton.onClick.RemoveListener(OnCloseButtonClicked);
         }
 
+        if (panelBlocker != null)
+        {
+            PanelBlocker blocker = panelBlocker.GetComponent<PanelBlocker>();
+            if (blocker != null)
+            {
+                blocker.OnClickedOutside.RemoveListener(HidePanel);
+            }
+        }
+
         if (EconomyManager.Instance != null)
         {
             EconomyManager.Instance.OnMoneyChanged.RemoveListener(OnMoneyChanged);
@@ -108,6 +138,10 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
         currentFlowerPatch = flowerPatch;
 
         // Show panel
+        if (panelBlocker != null)
+        {
+            panelBlocker.SetActive(true);
+        }
         if (panelRoot != null)
         {
             panelRoot.SetActive(true);
@@ -122,6 +156,10 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
     /// </summary>
     public void HidePanel()
     {
+        if (panelBlocker != null)
+        {
+            panelBlocker.SetActive(false);
+        }
         if (panelRoot != null)
         {
             panelRoot.SetActive(false);

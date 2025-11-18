@@ -22,11 +22,12 @@
 ### Bugs
 - [ ] we should show float instead of int for the hojey value, and money
 - [ ] production UI inventory not updated when panel is open. Can't see the inventory going up if player stays with panel open for a few seconds
+- [ ] for the flowerpatch, they spawn being default color and after hovering once, they turn to the color they should be in game. 
 
 ### IMPLEMENTATION
 - [ ] Visual feedback if not all recipes are being produced in the hive
 - [ ] rate of inventory on HUD to see the bottlenecked pollens
 - [ ] Block panel to do on other UI panel
-- [ ] UI to show airport price before purchasing as tooltip or bubble.
-- [ ] UI panel above each airport showing the current rate and type of resource.
+- [ ] UI to show flower patch price before purchasing as tooltip or bubble.
+- [ ] UI panel above each flower patch showing the current rate and type of resource.
 ---
