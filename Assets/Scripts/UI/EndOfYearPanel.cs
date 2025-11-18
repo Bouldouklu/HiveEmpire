@@ -420,7 +420,7 @@ public class EndOfYearPanel : MonoBehaviour
     /// <summary>
     /// Calculate total resources from dictionary.
     /// </summary>
-    private int GetTotalResourceCount(Dictionary<ResourceType, int> resources)
+    private int GetTotalResourceCount(Dictionary<FlowerPatchData, int> resources)
     {
         int total = 0;
         foreach (var kvp in resources)

@@ -14,9 +14,6 @@
 - [ ] Fog of war??
 - [ ] Centralized color management??
 ---
-## VISUAL
-- [ ] Bee should turn around or move at flowerpatch with some delays.
-
 ## ASSETS
 - [ ] icon for type of pollen
 - [ ] Ambient Music

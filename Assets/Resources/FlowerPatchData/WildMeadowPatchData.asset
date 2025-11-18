@@ -14,7 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FlowerPatchData
   biomeType: 0
   displayName: Wild Meadow Patch
-  description: 
+  description:
+  pollenDisplayName: Wild Meadow Pollen
+  pollenIcon: {fileID: 0}
+  pollenColor: {r: 1, g: 0.92, b: 0.016, a: 1}
+  pollenMaterial: {fileID: 0}
+  pollenDescription: Bright golden pollen from wild meadow flowers. Light and sweet.
   placementCost: 1
   flowerPatchPrefab: {fileID: 6159468505849121783, guid: a24cbf9edd04a99468fe2b66693f4d22, type: 3}
   capacityUpgradeCosts:

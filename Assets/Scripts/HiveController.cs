@@ -1,6 +1,27 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
+
+/// <summary>
+/// Serializable class for storing pollen inventory data.
+/// Uses FlowerPatchData ScriptableObject references as keys.
+/// </summary>
+[System.Serializable]
+public class PollenInventorySlot
+{
+    [Tooltip("The flower patch data that defines this pollen type")]
+    public FlowerPatchData pollenType;
+
+    [Tooltip("Amount of this pollen type in inventory")]
+    public int quantity;
+
+    public PollenInventorySlot(FlowerPatchData pollenType, int quantity)
+    {
+        this.pollenType = pollenType;
+        this.quantity = quantity;
+    }
+}
 
 /// <summary>
 /// Controls the central hive where bees deliver pollen.
@@ -16,8 +37,8 @@ public class HiveController : MonoBehaviour
     [SerializeField] private Vector3 landingOffset = new Vector3(0f, 0.5f, 0f);
 
     [Header("Resource Tracking")]
-    [Tooltip("Current resource inventory (for debugging)")]
-    [SerializeField] private Dictionary<ResourceType, int> resourceInventory = new Dictionary<ResourceType, int>();
+    [Tooltip("Current pollen inventory slots (serializable)")]
+    [SerializeField] private List<PollenInventorySlot> pollenInventory = new List<PollenInventorySlot>();
 
     [Header("Storage Settings")]
     [Tooltip("Base storage capacity per pollen type (before seasonal modifiers)")]
@@ -26,7 +47,7 @@ public class HiveController : MonoBehaviour
     [Tooltip("Current default storage capacity (base * seasonal modifier)")]
     [SerializeField] private int defaultStorageCapacity = 100;
 
-    private Dictionary<ResourceType, int> storageCapacities = new Dictionary<ResourceType, int>();
+    private List<PollenInventorySlot> storageCapacities = new List<PollenInventorySlot>();
 
     /// <summary>
     /// Event fired when resources are delivered to the hive
@@ -34,9 +55,9 @@ public class HiveController : MonoBehaviour
     public UnityEvent OnResourcesChanged = new UnityEvent();
 
     /// <summary>
-    /// Event fired when pollen is discarded due to full storage (passes resource type and amount discarded)
+    /// Event fired when pollen is discarded due to full storage (passes flower patch data and amount discarded)
     /// </summary>
-    public UnityEvent<ResourceType, int> OnPollenDiscarded = new UnityEvent<ResourceType, int>();
+    public UnityEvent<FlowerPatchData, int> OnPollenDiscarded = new UnityEvent<FlowerPatchData, int>();
 
     /// <summary>
     /// The position where bees should aim to arrive
@@ -47,7 +68,7 @@ public class HiveController : MonoBehaviour
     /// Receives pollen delivered by a bee.
     /// Adds to inventory up to storage capacity. Overflow is discarded.
     /// </summary>
-    public void ReceiveResources(List<ResourceType> resources)
+    public void ReceiveResources(List<FlowerPatchData> resources)
     {
         if (resources == null || resources.Count == 0)
         {
@@ -58,35 +79,42 @@ public class HiveController : MonoBehaviour
         int totalDiscarded = 0;
 
         // Add each resource to inventory, respecting storage caps
-        foreach (ResourceType resource in resources)
+        foreach (FlowerPatchData patchData in resources)
         {
-            // Initialize inventory and capacity if needed
-            if (!resourceInventory.ContainsKey(resource))
+            if (patchData == null)
             {
-                resourceInventory[resource] = 0;
+                Debug.LogWarning("Received null FlowerPatchData in ReceiveResources - skipping");
+                continue;
             }
 
-            int currentAmount = resourceInventory[resource];
-            int capacity = GetStorageCapacity(resource);
+            // Find or create inventory slot
+            PollenInventorySlot slot = pollenInventory.FirstOrDefault(s => s.pollenType == patchData);
+            if (slot == null)
+            {
+                slot = new PollenInventorySlot(patchData, 0);
+                pollenInventory.Add(slot);
+            }
+
+            int currentAmount = slot.quantity;
+            int capacity = GetStorageCapacity(patchData);
 
             // Check if we can add this pollen
             if (currentAmount < capacity)
             {
-                resourceInventory[resource]++;
+                slot.quantity++;
                 totalReceived++;
             }
             else
             {
                 // Storage full - discard overflow
                 totalDiscarded++;
-                OnPollenDiscarded?.Invoke(resource, 1);
-                Debug.LogWarning($"Storage full for {resource}! Discarded 1 pollen. Current: {currentAmount}/{capacity}");
+                OnPollenDiscarded?.Invoke(patchData, 1);
+                Debug.LogWarning($"Storage full for {patchData.pollenDisplayName}! Discarded 1 pollen. Current: {currentAmount}/{capacity}");
             }
         }
 
         if (totalReceived > 0)
         {
-            // Debug.Log($"Hive received {totalReceived} pollen ({totalDiscarded} discarded). New totals: " + GetResourceSummary());
             // Fire event to notify UI
             OnResourcesChanged?.Invoke();
 
@@ -122,6 +150,12 @@ public class HiveController : MonoBehaviour
         // Check if we have enough of each ingredient
         foreach (var ingredient in ingredients)
         {
+            if (ingredient.pollenType == null)
+            {
+                Debug.LogWarning("Ingredient has null pollenType - cannot consume");
+                return false;
+            }
+
             if (GetResourceCount(ingredient.pollenType) < ingredient.quantity)
             {
                 return false;
@@ -131,7 +165,11 @@ public class HiveController : MonoBehaviour
         // Consume the resources
         foreach (var ingredient in ingredients)
         {
-            resourceInventory[ingredient.pollenType] -= ingredient.quantity;
+            PollenInventorySlot slot = pollenInventory.FirstOrDefault(s => s.pollenType == ingredient.pollenType);
+            if (slot != null)
+            {
+                slot.quantity -= ingredient.quantity;
+            }
         }
 
         Debug.Log($"Consumed resources from hive inventory");
@@ -140,24 +178,38 @@ public class HiveController : MonoBehaviour
     }
 
     /// <summary>
-    /// Get a copy of the current pollen inventory.
-    /// Used by RecipeProductionManager for allocation checks.
+    /// Get a read-only copy of the current pollen inventory.
+    /// Used by RecipeProductionManager and UI systems.
     /// </summary>
-    public Dictionary<ResourceType, int> GetPollenInventory()
+    public List<PollenInventorySlot> GetPollenInventory()
     {
-        return new Dictionary<ResourceType, int>(resourceInventory);
+        // Return a shallow copy (slots are reference types, so changes to quantity will reflect)
+        return new List<PollenInventorySlot>(pollenInventory);
     }
 
     /// <summary>
-    /// Get the storage capacity for a specific resource type.
+    /// Get a dictionary representation of pollen inventory for easier lookup.
+    /// Maps FlowerPatchData to quantity.
+    /// </summary>
+    public Dictionary<FlowerPatchData, int> GetPollenInventoryDictionary()
+    {
+        return pollenInventory.ToDictionary(slot => slot.pollenType, slot => slot.quantity);
+    }
+
+    /// <summary>
+    /// Get the storage capacity for a specific pollen type (FlowerPatchData).
     /// Can be upgraded in the future.
     /// </summary>
-    public int GetStorageCapacity(ResourceType resourceType)
+    public int GetStorageCapacity(FlowerPatchData pollenType)
     {
-        // Check if this resource has a custom capacity
-        if (storageCapacities.ContainsKey(resourceType))
+        if (pollenType == null)
+            return defaultStorageCapacity;
+
+        // Check if this pollen type has a custom capacity
+        PollenInventorySlot capacitySlot = storageCapacities.FirstOrDefault(s => s.pollenType == pollenType);
+        if (capacitySlot != null)
         {
-            return storageCapacities[resourceType];
+            return capacitySlot.quantity;
         }
 
         // Return default capacity
@@ -165,30 +217,47 @@ public class HiveController : MonoBehaviour
     }
 
     /// <summary>
-    /// Set the storage capacity for a specific resource type.
+    /// Set the storage capacity for a specific pollen type.
     /// Used for upgrades.
     /// </summary>
-    public void SetStorageCapacity(ResourceType resourceType, int capacity)
+    public void SetStorageCapacity(FlowerPatchData pollenType, int capacity)
     {
-        storageCapacities[resourceType] = Mathf.Max(1, capacity);
-        Debug.Log($"Updated storage capacity for {resourceType}: {capacity}");
+        if (pollenType == null)
+        {
+            Debug.LogWarning("Cannot set storage capacity for null pollenType");
+            return;
+        }
+
+        PollenInventorySlot capacitySlot = storageCapacities.FirstOrDefault(s => s.pollenType == pollenType);
+        if (capacitySlot == null)
+        {
+            capacitySlot = new PollenInventorySlot(pollenType, 0);
+            storageCapacities.Add(capacitySlot);
+        }
+
+        capacitySlot.quantity = Mathf.Max(1, capacity);
+        Debug.Log($"Updated storage capacity for {pollenType.pollenDisplayName}: {capacity}");
     }
 
     /// <summary>
-    /// Upgrade storage capacity for a resource type by a specific amount.
+    /// Upgrade storage capacity for a pollen type by a specific amount.
     /// </summary>
-    public void UpgradeStorageCapacity(ResourceType resourceType, int additionalCapacity)
+    public void UpgradeStorageCapacity(FlowerPatchData pollenType, int additionalCapacity)
     {
-        int currentCapacity = GetStorageCapacity(resourceType);
-        SetStorageCapacity(resourceType, currentCapacity + additionalCapacity);
+        int currentCapacity = GetStorageCapacity(pollenType);
+        SetStorageCapacity(pollenType, currentCapacity + additionalCapacity);
     }
 
     /// <summary>
-    /// Gets the count of a specific resource type in inventory.
+    /// Gets the count of a specific pollen type in inventory.
     /// </summary>
-    public int GetResourceCount(ResourceType resourceType)
+    public int GetResourceCount(FlowerPatchData pollenType)
     {
-        return resourceInventory.ContainsKey(resourceType) ? resourceInventory[resourceType] : 0;
+        if (pollenType == null)
+            return 0;
+
+        PollenInventorySlot slot = pollenInventory.FirstOrDefault(s => s.pollenType == pollenType);
+        return slot != null ? slot.quantity : 0;
     }
 
     /// <summary>
@@ -197,9 +266,12 @@ public class HiveController : MonoBehaviour
     private string GetResourceSummary()
     {
         string summary = "";
-        foreach (var kvp in resourceInventory)
+        foreach (var slot in pollenInventory)
         {
-            summary += $"{kvp.Key}: {kvp.Value}, ";
+            if (slot.pollenType != null)
+            {
+                summary += $"{slot.pollenType.pollenDisplayName}: {slot.quantity}, ";
+            }
         }
         return summary.TrimEnd(',', ' ');
     }
@@ -278,7 +350,7 @@ public class HiveController : MonoBehaviour
     /// </summary>
     public void ResetInventory()
     {
-        resourceInventory.Clear();
+        pollenInventory.Clear();
         storageCapacities.Clear();
         defaultStorageCapacity = baseStorageCapacity;
 

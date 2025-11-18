@@ -11,23 +11,32 @@ public class IngredientEntryUI : MonoBehaviour
     [SerializeField] private Image resourceIcon;
     [SerializeField] private TextMeshProUGUI quantityText;
 
-    public ResourceType ResourceType { get; private set; }
+    public FlowerPatchData PollenType { get; private set; }
     public int RequiredQuantity { get; private set; }
 
     /// <summary>
-    /// Initializes the ingredient entry with resource type and required quantity.
+    /// Initializes the ingredient entry with pollen type and required quantity.
     /// </summary>
-    public void Initialize(ResourceType type, int required)
+    public void Initialize(FlowerPatchData pollenType, int required)
     {
-        ResourceType = type;
+        PollenType = pollenType;
         RequiredQuantity = required;
 
-        // Set resource icon (you may need to implement icon mapping)
-        if (resourceIcon != null)
+        // Set resource icon and color from FlowerPatchData
+        if (resourceIcon != null && pollenType != null)
         {
-            // TODO: Map ResourceType to sprite
-            // For now, color-code by resource type
-            resourceIcon.color = GetResourceColor(type);
+            // Use pollenIcon if available, otherwise color-code
+            if (pollenType.pollenIcon != null)
+            {
+                resourceIcon.sprite = pollenType.pollenIcon;
+                resourceIcon.color = Color.white; // Reset color to show icon properly
+            }
+            else
+            {
+                // Fallback: use pollen color
+                resourceIcon.sprite = null;
+                resourceIcon.color = pollenType.pollenColor;
+            }
         }
     }
 
@@ -40,31 +49,6 @@ public class IngredientEntryUI : MonoBehaviour
         {
             quantityText.text = $"{available}/{RequiredQuantity}";
             quantityText.color = textColor;
-        }
-    }
-
-    /// <summary>
-    /// Gets a color representation for each resource type.
-    /// </summary>
-    private Color GetResourceColor(ResourceType type)
-    {
-        // Temporary color mapping - replace with actual icon sprites later
-        switch (type)
-        {
-            case ResourceType.WildMeadowPollen:
-                return new Color(0.6f, 0.4f, 0.2f); // Brown (Wood)
-            case ResourceType.OrchardPollen:
-                return new Color(0.8f, 0.8f, 0.2f); // Yellow (Food)
-            case ResourceType.CultivatedGardenPollen:
-                return new Color(0.5f, 0.5f, 0.5f); // Gray (Stone)
-            case ResourceType.MarshPollen:
-                return new Color(0.2f, 0.2f, 0.2f); // Black (Oil)
-            case ResourceType.ForestEdgePollen:
-                return new Color(0.2f, 0.5f, 0.8f); // Blue (Fish)
-            case ResourceType.AgriculturalFieldPollen:
-                return new Color(0.8f, 0.9f, 1.0f); // Light blue (Minerals)
-            default:
-                return Color.white;
         }
     }
 }

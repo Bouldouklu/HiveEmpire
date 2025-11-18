@@ -320,7 +320,8 @@ public class RecipeEntryUI : MonoBehaviour
             return;
         }
 
-        Dictionary<ResourceType, int> inventory = HiveController.Instance.GetPollenInventory();
+        // Get inventory as dictionary for easier lookups
+        Dictionary<FlowerPatchData, int> inventory = HiveController.Instance.GetPollenInventoryDictionary();
 
         // Get tier-adjusted ingredients
         List<HoneyRecipe.Ingredient> tierAdjustedIngredients = recipe.GetIngredients(currentTier);
@@ -331,7 +332,7 @@ public class RecipeEntryUI : MonoBehaviour
             IngredientEntryUI entry = ingredientEntries[i];
             HoneyRecipe.Ingredient tierIngredient = tierAdjustedIngredients[i];
 
-            if (entry != null)
+            if (entry != null && tierIngredient.pollenType != null)
             {
                 int available = inventory.ContainsKey(tierIngredient.pollenType) ? inventory[tierIngredient.pollenType] : 0;
                 bool isSufficient = available >= tierIngredient.quantity;

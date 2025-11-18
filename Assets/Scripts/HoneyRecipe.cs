@@ -11,8 +11,11 @@ public class HoneyRecipe : ScriptableObject
     [System.Serializable]
     public class Ingredient
     {
-        public ResourceType pollenType;
+        [Tooltip("The flower patch data that defines the pollen type required")]
+        public FlowerPatchData pollenType;
+
         [Min(1)]
+        [Tooltip("Quantity of this pollen type required")]
         public int quantity = 1;
     }
 
@@ -73,11 +76,18 @@ public class HoneyRecipe : ScriptableObject
 
     /// <summary>
     /// Check if the hive has enough pollen in inventory to start this recipe.
+    /// Works with Dictionary<FlowerPatchData, int> inventory.
     /// </summary>
-    public bool CanProduce(Dictionary<ResourceType, int> inventory)
+    public bool CanProduce(Dictionary<FlowerPatchData, int> inventory)
     {
         foreach (var ingredient in ingredients)
         {
+            if (ingredient.pollenType == null)
+            {
+                Debug.LogWarning($"Recipe '{recipeName}' has ingredient with null pollenType");
+                return false;
+            }
+
             if (!inventory.ContainsKey(ingredient.pollenType) ||
                 inventory[ingredient.pollenType] < ingredient.quantity)
             {
@@ -88,13 +98,40 @@ public class HoneyRecipe : ScriptableObject
     }
 
     /// <summary>
-    /// Get total ingredient cost for display purposes.
+    /// Check if the hive has enough pollen in inventory to start this recipe.
+    /// Works with List<PollenInventorySlot> inventory.
     /// </summary>
-    public Dictionary<ResourceType, int> GetTotalIngredients()
+    public bool CanProduce(List<PollenInventorySlot> inventory)
     {
-        Dictionary<ResourceType, int> totals = new Dictionary<ResourceType, int>();
         foreach (var ingredient in ingredients)
         {
+            if (ingredient.pollenType == null)
+            {
+                Debug.LogWarning($"Recipe '{recipeName}' has ingredient with null pollenType");
+                return false;
+            }
+
+            PollenInventorySlot slot = inventory.Find(s => s.pollenType == ingredient.pollenType);
+            if (slot == null || slot.quantity < ingredient.quantity)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Get total ingredient cost for display purposes.
+    /// Returns Dictionary<FlowerPatchData, int>.
+    /// </summary>
+    public Dictionary<FlowerPatchData, int> GetTotalIngredients()
+    {
+        Dictionary<FlowerPatchData, int> totals = new Dictionary<FlowerPatchData, int>();
+        foreach (var ingredient in ingredients)
+        {
+            if (ingredient.pollenType == null)
+                continue;
+
             if (totals.ContainsKey(ingredient.pollenType))
             {
                 totals[ingredient.pollenType] += ingredient.quantity;
@@ -184,14 +221,39 @@ public class HoneyRecipe : ScriptableObject
 
     /// <summary>
     /// Check if the hive has enough pollen in inventory to start this recipe at given tier.
+    /// Works with Dictionary<FlowerPatchData, int> inventory.
     /// </summary>
-    public bool CanProduce(Dictionary<ResourceType, int> inventory, int tier)
+    public bool CanProduce(Dictionary<FlowerPatchData, int> inventory, int tier)
     {
         List<Ingredient> adjustedIngredients = GetIngredients(tier);
         foreach (var ingredient in adjustedIngredients)
         {
+            if (ingredient.pollenType == null)
+                return false;
+
             if (!inventory.ContainsKey(ingredient.pollenType) ||
                 inventory[ingredient.pollenType] < ingredient.quantity)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Check if the hive has enough pollen in inventory to start this recipe at given tier.
+    /// Works with List<PollenInventorySlot> inventory.
+    /// </summary>
+    public bool CanProduce(List<PollenInventorySlot> inventory, int tier)
+    {
+        List<Ingredient> adjustedIngredients = GetIngredients(tier);
+        foreach (var ingredient in adjustedIngredients)
+        {
+            if (ingredient.pollenType == null)
+                return false;
+
+            PollenInventorySlot slot = inventory.Find(s => s.pollenType == ingredient.pollenType);
+            if (slot == null || slot.quantity < ingredient.quantity)
             {
                 return false;
             }

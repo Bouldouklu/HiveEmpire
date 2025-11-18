@@ -14,7 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FlowerPatchData
   biomeType: 2
   displayName: Cultivated Garden Patch
-  description: 
+  description:
+  pollenDisplayName: Cultivated Garden Pollen
+  pollenIcon: {fileID: 0}
+  pollenColor: {r: 0.6, g: 0.4, b: 0.8, a: 1}
+  pollenMaterial: {fileID: 0}
+  pollenDescription: Rich purple pollen from cultivated garden flowers. Complex and aromatic.
   placementCost: 75
   flowerPatchPrefab: {fileID: 6159468505849121783, guid: 6331e05cf757eb54da6bddd7b19ae416, type: 3}
   capacityUpgradeCosts:

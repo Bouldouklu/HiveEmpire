@@ -18,9 +18,9 @@ MonoBehaviour:
   unlockCost: 0
   prerequisiteRecipes: []
   ingredients:
-  - pollenType: 0
+  - pollenType: {fileID: 11400000, guid: 9d98e910fbe782a4b98d50dc3ceb0718, type: 2}
     quantity: 5
-  - pollenType: 3
+  - pollenType: {fileID: 11400000, guid: f1e51398b404a5648b873a8fd71b653b, type: 2}
     quantity: 3
   productionTimeSeconds: 25
   honeyValue: 25
@@ -51,5 +51,5 @@ MonoBehaviour:
   - 60
   - 100
   - 150
-  icon: {fileID: -521504964, guid: 89d87a64dbdce564386c14feac5219bd, type: 3}
+  icon: {fileID: 0}
   honeyColor: {r: 1, g: 0.75, b: 0.2, a: 1}

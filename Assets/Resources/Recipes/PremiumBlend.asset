@@ -12,23 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 489c7e82fe416ad4d900055c6f7eba00, type: 3}
   m_Name: PremiumBlend
   m_EditorClassIdentifier: Assembly-CSharp::HoneyRecipe
-  recipeName: Honey Blend
+  recipeName: Premium Blend
   description: 
   isUnlockedByDefault: 0
   unlockCost: 4000
   prerequisiteRecipes: []
   ingredients:
-  - pollenType: 0
+  - pollenType: {fileID: 11400000, guid: 0c6d017653fbc0048b93b93c30902392, type: 2}
     quantity: 2
-  - pollenType: 1
+  - pollenType: {fileID: 11400000, guid: f1b11219a25a29845ad7ddc1bf17a402, type: 2}
     quantity: 2
-  - pollenType: 2
+  - pollenType: {fileID: 11400000, guid: 9956b02be1e4aa64c8b03e6778487b8a, type: 2}
     quantity: 2
-  - pollenType: 3
+  - pollenType: {fileID: 11400000, guid: 9d98e910fbe782a4b98d50dc3ceb0718, type: 2}
     quantity: 2
-  - pollenType: 4
+  - pollenType: {fileID: 11400000, guid: f1e51398b404a5648b873a8fd71b653b, type: 2}
     quantity: 2
-  - pollenType: 5
+  - pollenType: {fileID: 11400000, guid: 0c6d017653fbc0048b93b93c30902392, type: 2}
     quantity: 2
   productionTimeSeconds: 45
   honeyValue: 80
@@ -59,5 +59,5 @@ MonoBehaviour:
   - 60
   - 100
   - 150
-  icon: {fileID: -1681535153, guid: 89d87a64dbdce564386c14feac5219bd, type: 3}
+  icon: {fileID: 0}
   honeyColor: {r: 1, g: 0.75, b: 0.2, a: 1}

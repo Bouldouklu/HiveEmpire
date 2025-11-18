@@ -14,7 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FlowerPatchData
   biomeType: 4
   displayName: Forest Edge Patch
-  description: 
+  description:
+  pollenDisplayName: Forest Edge Pollen
+  pollenIcon: {fileID: 0}
+  pollenColor: {r: 1, g: 0.5, b: 0.2, a: 1}
+  pollenMaterial: {fileID: 0}
+  pollenDescription: Warm orange pollen from forest edge wildflowers. Earthy and robust.
   placementCost: 500
   flowerPatchPrefab: {fileID: 6159468505849121783, guid: c69a46ee174616b49921433a90db4fd9, type: 3}
   capacityUpgradeCosts:

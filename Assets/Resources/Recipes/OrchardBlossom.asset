@@ -18,7 +18,7 @@ MonoBehaviour:
   unlockCost: 25
   prerequisiteRecipes: []
   ingredients:
-  - pollenType: 1
+  - pollenType: {fileID: 11400000, guid: f1b11219a25a29845ad7ddc1bf17a402, type: 2}
     quantity: 2
   productionTimeSeconds: 8
   honeyValue: 5

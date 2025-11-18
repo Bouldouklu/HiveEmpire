@@ -20,7 +20,7 @@ public class YearStatsTracker : MonoBehaviour
     // Production Statistics
     private int totalRecipesCompleted;
     private Dictionary<string, int> recipesByName = new Dictionary<string, int>();
-    private Dictionary<ResourceType, int> totalResourcesCollected = new Dictionary<ResourceType, int>();
+    private Dictionary<FlowerPatchData, int> totalResourcesCollected = new Dictionary<FlowerPatchData, int>();
 
     // Empire Building Stats
     private int flowerPatchesPlaced;
@@ -34,7 +34,7 @@ public class YearStatsTracker : MonoBehaviour
     {
         public float moneyEarned;
         public int recipesCompleted;
-        public Dictionary<ResourceType, int> resourcesCollected = new Dictionary<ResourceType, int>();
+        public Dictionary<FlowerPatchData, int> resourcesCollected = new Dictionary<FlowerPatchData, int>();
     }
 
     private Dictionary<Season, SeasonStats> seasonalStats = new Dictionary<Season, SeasonStats>();
@@ -279,13 +279,16 @@ public class YearStatsTracker : MonoBehaviour
     /// <summary>
     /// Manually track resources collected (call this when bees deliver pollen).
     /// </summary>
-    public void RecordResourcesCollected(List<ResourceType> resources)
+    public void RecordResourcesCollected(List<FlowerPatchData> resources)
     {
         if (resources == null || resources.Count == 0)
             return;
 
-        foreach (ResourceType resource in resources)
+        foreach (FlowerPatchData resource in resources)
         {
+            if (resource == null)
+                continue;
+
             // Track total
             if (!totalResourcesCollected.ContainsKey(resource))
             {
@@ -324,7 +327,7 @@ public class YearStatsTracker : MonoBehaviour
             // Production stats
             totalRecipesCompleted = this.totalRecipesCompleted,
             recipesByName = new Dictionary<string, int>(this.recipesByName),
-            totalResourcesCollected = new Dictionary<ResourceType, int>(this.totalResourcesCollected),
+            totalResourcesCollected = new Dictionary<FlowerPatchData, int>(this.totalResourcesCollected),
 
             // Empire stats
             flowerPatchesPlaced = this.flowerPatchesPlaced,
@@ -349,7 +352,7 @@ public class YearStatsTracker : MonoBehaviour
                 seasonName = season.ToString(),
                 moneyEarned = 0f,
                 recipesCompleted = 0,
-                resourcesCollected = new Dictionary<ResourceType, int>()
+                resourcesCollected = new Dictionary<FlowerPatchData, int>()
             };
         }
 
@@ -359,7 +362,7 @@ public class YearStatsTracker : MonoBehaviour
             seasonName = season.ToString(),
             moneyEarned = stats.moneyEarned,
             recipesCompleted = stats.recipesCompleted,
-            resourcesCollected = new Dictionary<ResourceType, int>(stats.resourcesCollected)
+            resourcesCollected = new Dictionary<FlowerPatchData, int>(stats.resourcesCollected)
         };
     }
 
@@ -399,7 +402,7 @@ public class YearSummary
     // Production
     public int totalRecipesCompleted;
     public Dictionary<string, int> recipesByName;
-    public Dictionary<ResourceType, int> totalResourcesCollected;
+    public Dictionary<FlowerPatchData, int> totalResourcesCollected;
 
     // Empire Building
     public int flowerPatchesPlaced;
@@ -419,7 +422,7 @@ public class SeasonStatsSummary
     public string seasonName;
     public float moneyEarned;
     public int recipesCompleted;
-    public Dictionary<ResourceType, int> resourcesCollected;
+    public Dictionary<FlowerPatchData, int> resourcesCollected;
 }
 
 #endregion

@@ -14,7 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FlowerPatchData
   biomeType: 1
   displayName: Orchard Patch
-  description: 
+  description:
+  pollenDisplayName: Orchard Pollen
+  pollenIcon: {fileID: 0}
+  pollenColor: {r: 1, g: 0.75, b: 0.8, a: 1}
+  pollenMaterial: {fileID: 0}
+  pollenDescription: Delicate pink pollen from fruit tree blossoms. Fragrant and fine.
   placementCost: 20
   flowerPatchPrefab: {fileID: 6159468505849121783, guid: e0339b1ccc8c37e49b61fb5b10155338, type: 3}
   capacityUpgradeCosts:

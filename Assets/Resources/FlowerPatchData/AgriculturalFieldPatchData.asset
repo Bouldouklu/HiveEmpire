@@ -14,7 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FlowerPatchData
   biomeType: 5
   displayName: Agricultural Field Patch
-  description: 
+  description:
+  pollenDisplayName: Agricultural Field Pollen
+  pollenIcon: {fileID: 0}
+  pollenColor: {r: 0.95, g: 0.95, b: 0.85, a: 1}
+  pollenMaterial: {fileID: 0}
+  pollenDescription: Pale cream pollen from agricultural crops. Clean and mild.
   placementCost: 1200
   flowerPatchPrefab: {fileID: 6159468505849121783, guid: 42280dd1e794d754ea574214f837dcef, type: 3}
   capacityUpgradeCosts:

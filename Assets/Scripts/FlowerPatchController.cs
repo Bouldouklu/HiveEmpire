@@ -67,10 +67,20 @@ public class FlowerPatchController : MonoBehaviour
     }
 
     /// <summary>
-    /// Instantly provides pollen based on the flower patch's biome type.
+    /// Gets the FlowerPatchData ScriptableObject that defines this flower patch's pollen properties.
     /// Called by bees when they need to pick up pollen.
     /// </summary>
-    /// <returns>The resource type this flower patch produces</returns>
+    /// <returns>The FlowerPatchData defining this patch's pollen type and properties</returns>
+    public FlowerPatchData GetFlowerPatchData()
+    {
+        return flowerPatchData;
+    }
+
+    /// <summary>
+    /// [OBSOLETE] Use GetFlowerPatchData() instead. This method is kept for backwards compatibility.
+    /// Instantly provides pollen based on the flower patch's biome type.
+    /// </summary>
+    [System.Obsolete("Use GetFlowerPatchData() instead - transitioning away from enum-based pollen system")]
     public ResourceType GetResource()
     {
         // Map biome type to resource type
@@ -87,8 +97,10 @@ public class FlowerPatchController : MonoBehaviour
     }
 
     /// <summary>
+    /// [OBSOLETE] Use GetFlowerPatchData() instead. This method is kept for backwards compatibility.
     /// Gets the biome type of this flower patch (for external queries)
     /// </summary>
+    [System.Obsolete("Use GetFlowerPatchData() instead - transitioning away from enum-based pollen system")]
     public BiomeType GetBiomeType()
     {
         return biomeType;

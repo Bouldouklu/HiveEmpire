@@ -44,7 +44,7 @@ public class BeeController : MonoBehaviour
 
     [Header("Debug Info")]
     [Tooltip("Current pollen being carried (for debugging)")]
-    [SerializeField] private List<ResourceType> currentPollen = new List<ResourceType>();
+    [SerializeField] private List<FlowerPatchData> currentPollen = new List<FlowerPatchData>();
 
     // References
     private Transform homeFlowerPatch;
@@ -507,38 +507,41 @@ public class BeeController : MonoBehaviour
         // Clear any existing pollen
         currentPollen.Clear();
 
+        // Get the flower patch data
+        FlowerPatchData patchData = homeFlowerPatchController.GetFlowerPatchData();
+        if (patchData == null)
+        {
+            Debug.LogWarning($"Bee {name}: FlowerPatchController has no FlowerPatchData!");
+            return;
+        }
+
         // Fill pollen sacs to capacity
         for (int i = 0; i < pollenCapacity; i++)
         {
-            ResourceType resource = homeFlowerPatchController.GetResource();
-            currentPollen.Add(resource);
+            currentPollen.Add(patchData);
         }
 
-        Debug.Log($"Bee {name}: Picked up {currentPollen.Count} {homeFlowerPatchController.GetBiomeType()} pollen");
+        Debug.Log($"Bee {name}: Picked up {currentPollen.Count} {patchData.pollenDisplayName}");
 
-        // Show pollen and apply biome material
-        BiomeType biomeType = homeFlowerPatchController.GetBiomeType();
-
+        // Show pollen and apply pollen color/material
         if (pollenObject != null && pollenRenderer != null)
         {
             pollenObject.SetActive(true);
 
-            // Get biome material from mapper
-            Material biomeMaterial = BiomeMaterialMapper.Instance?.GetBiomeMaterial(biomeType);
-
-            if (biomeMaterial != null)
+            // Use pollenMaterial if available, otherwise use pollenColor
+            if (patchData.pollenMaterial != null)
             {
-                pollenRenderer.material = biomeMaterial;
+                pollenRenderer.material = patchData.pollenMaterial;
             }
             else
             {
-                Debug.LogWarning($"Bee {name}: Could not get material for biome {biomeType}");
+                // Create a simple colored material if no material is assigned
+                pollenRenderer.material.color = patchData.pollenColor;
             }
         }
 
-        // Update trail color to match biome
-        Color biomeColor = BiomeMaterialMapper.Instance?.GetBiomeColor(biomeType) ?? Color.white;
-        UpdateTrailColor(biomeColor);
+        // Update trail color to match pollen color
+        UpdateTrailColor(patchData.pollenColor);
     }
 
     /// <summary>

@@ -193,7 +193,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    private void OnPollenDiscarded(ResourceType resourceType, int amount)
+    private void OnPollenDiscarded(FlowerPatchData pollenType, int amount)
     {
         if (pollenDiscardedClip != null)
         {

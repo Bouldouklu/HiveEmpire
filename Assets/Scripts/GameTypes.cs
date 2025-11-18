@@ -1,7 +1,9 @@
 /// <summary>
-/// Defines the types of resources that can be produced and transported.
-/// Supports 6 resource types from different biomes.
+/// [OBSOLETE] Defines the types of resources that can be produced and transported.
+/// Use FlowerPatchData ScriptableObjects instead - pollen types are now defined in FlowerPatchData assets.
+/// This enum is kept for backwards compatibility during migration.
 /// </summary>
+[System.Obsolete("Use FlowerPatchData ScriptableObjects instead. Pollen properties (name, color, icon) are now defined in FlowerPatchData assets.", false)]
 public enum ResourceType
 {
     WildMeadowPollen,           // Wild Meadow biome
@@ -13,9 +15,11 @@ public enum ResourceType
 }
 
 /// <summary>
-/// Defines the biome types for flower patches, which determine what resource they produce.
-/// Generation rates: Fast (Wild Meadow, Orchard), Medium (Cultivated Garden, Forest Edge, Agricultural Field), Slow (Marsh)
+/// [OBSOLETE] Defines the biome types for flower patches, which determine what resource they produce.
+/// Use FlowerPatchData ScriptableObjects instead - biome types are now defined within FlowerPatchData assets.
+/// This enum is kept for backwards compatibility during migration.
 /// </summary>
+[System.Obsolete("Use FlowerPatchData ScriptableObjects instead. Biome type is now a property within FlowerPatchData assets.", false)]
 public enum BiomeType
 {
     WildMeadow,         // Produces WildMeadowPollen (fast: 1 per 2s)

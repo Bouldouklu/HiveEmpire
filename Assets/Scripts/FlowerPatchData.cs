@@ -19,6 +19,23 @@ public class FlowerPatchData : ScriptableObject
     [Tooltip("Optional description for tooltips")]
     public string description = "";
 
+    [Header("Pollen Properties")]
+    [Tooltip("Display name for the pollen produced by this patch (e.g., 'Wild Meadow Pollen')")]
+    public string pollenDisplayName = "Pollen";
+
+    [Tooltip("Icon sprite for UI display of this pollen type")]
+    public Sprite pollenIcon;
+
+    [Tooltip("Primary color for this pollen type (used for bee trails and cubes)")]
+    public Color pollenColor = Color.yellow;
+
+    [Tooltip("Optional material for pollen visual representation (overrides color if set)")]
+    public Material pollenMaterial;
+
+    [TextArea(2, 3)]
+    [Tooltip("Description of this pollen type for tooltips")]
+    public string pollenDescription = "";
+
     [Header("Placement Cost")]
     [Tooltip("Fixed cost to place this flower patch (no scaling)")]
     public float placementCost = 10f;
@@ -128,6 +145,18 @@ public class FlowerPatchData : ScriptableObject
         if (string.IsNullOrWhiteSpace(displayName))
         {
             displayName = $"{biomeType} Flower Patch";
+        }
+
+        // Auto-generate pollen display name if empty
+        if (string.IsNullOrWhiteSpace(pollenDisplayName))
+        {
+            pollenDisplayName = $"{biomeType} Pollen";
+        }
+
+        // Warn if pollen icon is missing
+        if (pollenIcon == null)
+        {
+            Debug.LogWarning($"[{name}] Pollen icon is not assigned. UI may not display properly.", this);
         }
     }
 }
