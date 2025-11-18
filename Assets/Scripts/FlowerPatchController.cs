@@ -35,10 +35,17 @@ public class FlowerPatchController : MonoBehaviour
     [Tooltip("Maximum number of capacity upgrade tiers available")]
     [SerializeField] private int maxCapacityTier = 5;
 
+    [Header("Unlock System")]
+    [Tooltip("Is this flower patch locked (not yet purchased)?")]
+    [SerializeField] private bool isLocked = true;
+
     [Header("Events")]
 
     [Tooltip("Fired when capacity is upgraded")]
     public UnityEvent OnCapacityUpgraded = new UnityEvent();
+
+    [Tooltip("Fired when flower patch is unlocked")]
+    public UnityEvent OnUnlocked = new UnityEvent();
 
     // Public properties
     /// <summary>
@@ -50,6 +57,17 @@ public class FlowerPatchController : MonoBehaviour
     /// Public accessor for the FlowerPatchData ScriptableObject
     /// </summary>
     public FlowerPatchData FlowerPatchData => flowerPatchData;
+
+    /// <summary>
+    /// Returns whether this flower patch is locked (not yet purchased)
+    /// </summary>
+    public bool IsLocked => isLocked;
+
+    private void Start()
+    {
+        // Apply locked/unlocked visual on startup
+        UpdateLockedVisual();
+    }
 
     private void OnDestroy()
     {
@@ -144,6 +162,9 @@ public class FlowerPatchController : MonoBehaviour
         System.Array.Copy(data.capacityUpgradeCosts, capacityUpgradeCosts, data.capacityUpgradeCosts.Length);
 
         Debug.Log($"FlowerPatchController initialized from {data.name}: Biome={biomeType}, BaseCapacity={baseCapacity}, CapacityUpgradeCosts=[{string.Join(", ", capacityUpgradeCosts)}]");
+
+        // Apply locked/unlocked visual after initialization
+        UpdateLockedVisual();
     }
 
     // ============================================
@@ -249,5 +270,118 @@ public class FlowerPatchController : MonoBehaviour
     public int GetMaxCapacityTier()
     {
         return maxCapacityTier;
+    }
+
+    // ============================================
+    // UNLOCK SYSTEM
+    // ============================================
+
+    /// <summary>
+    /// Gets the cost to unlock this flower patch
+    /// </summary>
+    /// <returns>Unlock cost from FlowerPatchData, or 0 if data is missing</returns>
+    public float GetUnlockCost()
+    {
+        return flowerPatchData != null ? flowerPatchData.placementCost : 0f;
+    }
+
+    /// <summary>
+    /// Attempts to unlock this flower patch by purchasing it
+    /// </summary>
+    /// <returns>True if unlock succeeded, false otherwise</returns>
+    public bool UnlockPatch()
+    {
+        // Check if already unlocked
+        if (!isLocked)
+        {
+            Debug.LogWarning($"Flower patch {gameObject.name} is already unlocked");
+            return false;
+        }
+
+        // Get unlock cost
+        float unlockCost = GetUnlockCost();
+        if (unlockCost < 0f)
+        {
+            Debug.LogError($"Invalid unlock cost for {gameObject.name}");
+            return false;
+        }
+
+        // Check if player can afford it
+        if (EconomyManager.Instance == null)
+        {
+            Debug.LogError($"EconomyManager not found when trying to unlock {gameObject.name}");
+            return false;
+        }
+
+        if (!EconomyManager.Instance.CanAfford(unlockCost))
+        {
+            Debug.Log($"Cannot afford to unlock {gameObject.name}. Cost: ${unlockCost}");
+            return false;
+        }
+
+        // Spend money
+        if (!EconomyManager.Instance.SpendMoney(unlockCost))
+        {
+            Debug.LogError($"Failed to spend money for unlocking {gameObject.name}");
+            return false;
+        }
+
+        // Unlock the patch
+        isLocked = false;
+        Debug.Log($"Unlocked {gameObject.name} (BiomeType: {biomeType}) for ${unlockCost}");
+
+        // Note: No need to register with BeeFleetManager - registration happens automatically
+        // when player manually allocates bees via Fleet Management Panel
+
+        // Apply visual update (unlock material)
+        UpdateLockedVisual();
+
+        // Play unlock sound
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayFlowerPatchUnlockSound();
+        }
+
+        // Fire event for other systems to respond
+        OnUnlocked?.Invoke();
+
+        return true;
+    }
+
+    /// <summary>
+    /// Updates the visual appearance based on locked state
+    /// </summary>
+    private void UpdateLockedVisual()
+    {
+        if (FlowerPatchMaterialMapper.Instance == null || flowerPatchData == null) return;
+
+        Renderer renderer = GetComponent<Renderer>();
+        if (renderer == null)
+        {
+            renderer = GetComponentInChildren<Renderer>();
+        }
+
+        if (renderer == null)
+        {
+            Debug.LogWarning($"No renderer found on {gameObject.name} to update locked visual");
+            return;
+        }
+
+        Material targetMaterial;
+        if (isLocked)
+        {
+            // Apply locked material
+            targetMaterial = FlowerPatchMaterialMapper.Instance.GetLockedMaterial(flowerPatchData.biomeType);
+        }
+        else
+        {
+            // Apply normal biome material
+            targetMaterial = FlowerPatchMaterialMapper.Instance.GetFlowerPatchMaterial(flowerPatchData.biomeType);
+        }
+
+        if (targetMaterial != null)
+        {
+            renderer.material = targetMaterial;
+        }
     }
 }

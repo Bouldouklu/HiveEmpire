@@ -371,3 +371,4 @@ This project uses **UnityMCP** for Claude Code integration. Key workflows:
 - Use `manage_editor` action "play" to enter Play Mode
 - Wait for compilation to finish before entering Play Mode
 - Monitor `editor_state.isCompiling` to avoid domain reload issues
+- always take the material or color from the @Assets\Resources\FlowerPatchMaterialMapper.asset to keep color and material management centralized

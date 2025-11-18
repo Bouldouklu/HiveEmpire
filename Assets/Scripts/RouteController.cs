@@ -48,6 +48,7 @@ public class RouteController : MonoBehaviour
         if (flowerPatchController != null)
         {
             flowerPatchController.OnCapacityUpgraded.AddListener(OnCapacityUpgraded);
+            flowerPatchController.OnUnlocked.AddListener(OnFlowerPatchUnlocked);
         }
 
         // Subscribe to fleet manager bee allocation events
@@ -75,6 +76,7 @@ public class RouteController : MonoBehaviour
         if (flowerPatchController != null)
         {
             flowerPatchController.OnCapacityUpgraded.RemoveListener(OnCapacityUpgraded);
+            flowerPatchController.OnUnlocked.RemoveListener(OnFlowerPatchUnlocked);
         }
 
         if (BeeFleetManager.Instance != null)
@@ -92,15 +94,45 @@ public class RouteController : MonoBehaviour
             return;
         }
 
+        // Check if flower patch is locked
+        if (flowerPatchController != null && flowerPatchController.IsLocked)
+        {
+            // Disable route until patch is unlocked
+            Debug.Log($"RouteController on {gameObject.name}: Flower patch is locked, disabling route until unlocked");
+            enabled = false;
+            return;
+        }
+
+        // Initialize route for unlocked patches
+        InitializeRoute();
+    }
+
+    /// <summary>
+    /// Initializes the route for bee spawning.
+    /// Called automatically for unlocked patches, or via OnFlowerPatchUnlocked event.
+    /// </summary>
+    private void InitializeRoute()
+    {
+        Debug.Log($"RouteController on {gameObject.name}: Initializing route");
+
         // Calculate spawn interval based on distance and max bees
         CalculateSpawnInterval();
 
         // Schedule first spawn immediately
         nextSpawnTime = Time.time;
+
+        // Enable route updates
+        enabled = true;
     }
 
     private void Update()
     {
+        // Don't spawn bees if flower patch is locked
+        if (flowerPatchController != null && flowerPatchController.IsLocked)
+        {
+            return;
+        }
+
         int allocatedBees = GetAllocatedBees();
 
         // Only spawn if we haven't reached allocated count
@@ -316,6 +348,16 @@ public class RouteController : MonoBehaviour
 
         // Recalculate spawn interval (capahive changed, may affect allocation)
         CalculateSpawnInterval();
+    }
+
+    /// <summary>
+    /// Called when the flower patch is unlocked.
+    /// Activates the route and begins bee spawning.
+    /// </summary>
+    private void OnFlowerPatchUnlocked()
+    {
+        Debug.Log($"RouteController on {gameObject.name}: Flower patch unlocked, activating route");
+        InitializeRoute();
     }
 
     /// <summary>

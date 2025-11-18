@@ -5,7 +5,6 @@
 - [ ] Where does the player needs to put attention to? do some action? 
 ---
 ## SYSTEM
-- [ ] palcehodler system is too complcated. It should be the flwoerpatch already in the scene, and the first iunlcok "activates" it somehow. 
 - [ ] prestige system at the end of year, that allows to start the next year with a perk. Which perks is to be defined: bees already unlocked, everything is cheaper, different modifiers, patchs are closer, etc...
 - [ ] New upgrade: time to pick up the pollen when on flowerpatch?
 - [ ] stamina/energy system?

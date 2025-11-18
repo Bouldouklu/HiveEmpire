@@ -16,7 +16,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!224 &8769411864044235525
 RectTransform:
@@ -195,7 +195,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &6079799790558530323
 Transform:
@@ -286,7 +286,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &3600861342060797419
 Transform:
@@ -296,7 +296,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6159468505849121783}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
@@ -330,7 +330,11 @@ MonoBehaviour:
   - 900
   - 2000
   maxCapacityTier: 5
+  isLocked: 1
   OnCapacityUpgraded:
+    m_PersistentCalls:
+      m_Calls: []
+  OnUnlocked:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &8704675189862050304
@@ -346,7 +350,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RouteController
   flowerPatchController: {fileID: 0}
-  beePrefab: {fileID: 0}
+  beePrefab: {fileID: 2869447232971713939, guid: a9559939e104bd44c8df21eebf92c5d1, type: 3}
   homeFlowerPatch: {fileID: 0}
   hiveDestination: {fileID: 0}
   currentBeeCount: 0
@@ -366,6 +370,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AirportClickHandler
   flowerPatchController: {fileID: 0}
   upgradePanel: {fileID: 0}
+  unlockPanel: {fileID: 0}
   flowerPatchRenderer: {fileID: 5901799413720046256}
 --- !u!65 &2531185985645392170
 BoxCollider:

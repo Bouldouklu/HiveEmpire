@@ -11,8 +11,11 @@ public class FlowerPatchClickHandler : MonoBehaviour
     [Tooltip("Reference to the FlowerPatchController (automatically set if on same GameObject)")]
     [SerializeField] private FlowerPatchController flowerPatchController;
 
-    [Tooltip("Reference to the upgrade panel UI")]
+    [Tooltip("Reference to the upgrade panel UI (for unlocked patches)")]
     [SerializeField] private FlowerPatchUpgradePanel upgradePanel;
+
+    [Tooltip("Reference to the unlock panel UI (for locked patches)")]
+    [SerializeField] private FlowerPatchUnlockPanel unlockPanel;
 
     // Internal state
     [SerializeField] private Renderer flowerPatchRenderer;
@@ -63,6 +66,16 @@ public class FlowerPatchClickHandler : MonoBehaviour
             if (upgradePanel == null)
             {
                 Debug.LogWarning($"FlowerPatchClickHandler on {gameObject.name}: No FlowerPatchUpgradePanel found in scene. Create one in the UI Canvas.", this);
+            }
+        }
+
+        // Find unlock panel in scene if not set
+        if (unlockPanel == null)
+        {
+            unlockPanel = FindFirstObjectByType<FlowerPatchUnlockPanel>();
+            if (unlockPanel == null)
+            {
+                Debug.LogWarning($"FlowerPatchClickHandler on {gameObject.name}: No FlowerPatchUnlockPanel found in scene. Create one in the UI Canvas.", this);
             }
         }
     }
@@ -120,15 +133,38 @@ public class FlowerPatchClickHandler : MonoBehaviour
 
     private void OnMouseDown()
     {
-        // Open upgrade panel when clicked
-        if (flowerPatchController != null && upgradePanel != null)
+        if (flowerPatchController == null)
         {
-            Debug.Log($"Flower patch {gameObject.name} clicked - opening upgrade panel");
-            upgradePanel.ShowPanel(flowerPatchController);
+            Debug.LogWarning($"Cannot open panel for {gameObject.name}: No FlowerPatchController");
+            return;
+        }
+
+        // Check if flower patch is locked
+        if (flowerPatchController.IsLocked)
+        {
+            // Show unlock panel for locked patches
+            if (unlockPanel != null)
+            {
+                Debug.Log($"Locked flower patch {gameObject.name} clicked - opening unlock panel");
+                unlockPanel.ShowPanel(flowerPatchController);
+            }
+            else
+            {
+                Debug.LogWarning($"Cannot open unlock panel for {gameObject.name}: Missing unlock panel reference");
+            }
         }
         else
         {
-            Debug.LogWarning($"Cannot open upgrade panel for {gameObject.name}: Missing references");
+            // Show upgrade panel for unlocked patches
+            if (upgradePanel != null)
+            {
+                Debug.Log($"Unlocked flower patch {gameObject.name} clicked - opening upgrade panel");
+                upgradePanel.ShowPanel(flowerPatchController);
+            }
+            else
+            {
+                Debug.LogWarning($"Cannot open upgrade panel for {gameObject.name}: Missing upgrade panel reference");
+            }
         }
     }
 

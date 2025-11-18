@@ -25,6 +25,11 @@ public class FlowerPatchMaterialMapper : ScriptableObject
     [SerializeField]
     private FlowerPatchMaterialMapping[] hoverMaterials = new FlowerPatchMaterialMapping[6];
 
+    [Header("Locked State Materials")]
+    [Tooltip("Locked materials for each flower patch biome type (grayscale/dimmed variants)")]
+    [SerializeField]
+    private FlowerPatchMaterialMapping[] lockedMaterials = new FlowerPatchMaterialMapping[6];
+
     [Header("Hive Materials")]
     [Tooltip("Hover material for the hive (brighter variant)")]
     [SerializeField]
@@ -96,6 +101,24 @@ public class FlowerPatchMaterialMapper : ScriptableObject
         }
 
         Debug.LogWarning($"No hover material found for biome type: {biomeType}");
+        return null;
+    }
+
+    /// <summary>
+    /// Gets the locked material associated with the specified biome type
+    /// Used for flower patches that haven't been purchased yet
+    /// </summary>
+    public Material GetLockedMaterial(BiomeType biomeType)
+    {
+        foreach (var mapping in lockedMaterials)
+        {
+            if (mapping.biomeType == biomeType)
+            {
+                return mapping.material;
+            }
+        }
+
+        Debug.LogWarning($"No locked material found for biome type: {biomeType}");
         return null;
     }
 
@@ -180,6 +203,62 @@ public class FlowerPatchMaterialMapper : ScriptableObject
     }
 
     /// <summary>
+    /// Gets the color from the affordable placeholder material (green).
+    /// Used for UI feedback when player can afford something.
+    /// </summary>
+    public Color GetAffordableColor()
+    {
+        Material material = GetAffordablePlaceholderMaterial();
+        if (material == null)
+        {
+            return Color.green; // Fallback
+        }
+
+        // Try URP _BaseColor property first (Unity 6 standard)
+        if (material.HasProperty("_BaseColor"))
+        {
+            return material.GetColor("_BaseColor");
+        }
+
+        // Fallback to legacy _Color property
+        if (material.HasProperty("_Color"))
+        {
+            return material.GetColor("_Color");
+        }
+
+        // Final fallback to material.color
+        return material.color;
+    }
+
+    /// <summary>
+    /// Gets the color from the unaffordable placeholder material (red).
+    /// Used for UI feedback when player cannot afford something.
+    /// </summary>
+    public Color GetUnaffordableColor()
+    {
+        Material material = GetUnaffordablePlaceholderMaterial();
+        if (material == null)
+        {
+            return Color.red; // Fallback
+        }
+
+        // Try URP _BaseColor property first (Unity 6 standard)
+        if (material.HasProperty("_BaseColor"))
+        {
+            return material.GetColor("_BaseColor");
+        }
+
+        // Fallback to legacy _Color property
+        if (material.HasProperty("_Color"))
+        {
+            return material.GetColor("_Color");
+        }
+
+        // Final fallback to material.color
+        return material.color;
+    }
+
+    /// <summary>
     /// Validates that all biome types have assigned materials (Editor only)
     /// </summary>
     private void OnValidate()
@@ -196,6 +275,11 @@ public class FlowerPatchMaterialMapper : ScriptableObject
         if (hoverMaterials == null || hoverMaterials.Length != biomeTypeCount)
         {
             System.Array.Resize(ref hoverMaterials, biomeTypeCount);
+        }
+
+        if (lockedMaterials == null || lockedMaterials.Length != biomeTypeCount)
+        {
+            System.Array.Resize(ref lockedMaterials, biomeTypeCount);
         }
 
         // Auto-assign biome types if not set
@@ -216,6 +300,13 @@ public class FlowerPatchMaterialMapper : ScriptableObject
                 hoverMaterials[i] = new FlowerPatchMaterialMapping();
             }
             hoverMaterials[i].biomeType = allBiomes[i];
+
+            // Initialize locked materials
+            if (lockedMaterials[i] == null)
+            {
+                lockedMaterials[i] = new FlowerPatchMaterialMapping();
+            }
+            lockedMaterials[i].biomeType = allBiomes[i];
         }
 
         // Validate hive materials

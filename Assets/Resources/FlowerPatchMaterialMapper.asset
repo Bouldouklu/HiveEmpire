@@ -38,6 +38,19 @@ MonoBehaviour:
     material: {fileID: 2100000, guid: 3a67554cf710762418eaf91a2e3d7fc1, type: 2}
   - biomeType: 5
     material: {fileID: 2100000, guid: c7e8ee0ad856b514999bb152851af25d, type: 2}
+  lockedMaterials:
+  - biomeType: 0
+    material: {fileID: 2100000, guid: 590cf913ed9f8574e9a1e50ad0fe4d05, type: 2}
+  - biomeType: 1
+    material: {fileID: 2100000, guid: 590cf913ed9f8574e9a1e50ad0fe4d05, type: 2}
+  - biomeType: 2
+    material: {fileID: 2100000, guid: 590cf913ed9f8574e9a1e50ad0fe4d05, type: 2}
+  - biomeType: 3
+    material: {fileID: 2100000, guid: 590cf913ed9f8574e9a1e50ad0fe4d05, type: 2}
+  - biomeType: 4
+    material: {fileID: 2100000, guid: 590cf913ed9f8574e9a1e50ad0fe4d05, type: 2}
+  - biomeType: 5
+    material: {fileID: 2100000, guid: 590cf913ed9f8574e9a1e50ad0fe4d05, type: 2}
   hiveHoverMaterial: {fileID: 2100000, guid: b3866094b7362e64782e7076035ed508, type: 2}
   affordablePlaceholderMaterial: {fileID: 2100000, guid: a8187dd2453695142b91d4c3baa972d1, type: 2}
   unaffordablePlaceholderMaterial: {fileID: 2100000, guid: 3ba1e3672ed53b64284f76b62112b8d2, type: 2}
