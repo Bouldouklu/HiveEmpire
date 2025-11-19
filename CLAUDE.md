@@ -31,6 +31,12 @@ File → Build Settings → WebGL → Build
 ```
 Target 60 FPS with 100+ bees, 50+ FPS with 200+ bees. Use object pooling if needed.
 
+### Deploying to itch.io
+```bash
+butler push "D:\Unity\Games\HiveEmpire\Build\WebGL\hiveempire.zip" bouldouklu/hiveempire:HTML
+```
+Requires butler CLI tool and compressed WebGL build output.
+
 ### Version Control
 - `.meta` files ARE tracked - never exclude them
 - Unity Library folder is gitignored
@@ -107,8 +113,10 @@ The game uses a **manager-driven architecture** with singleton managers orchestr
 - Seasonal modifiers (income, bee speed, production time, storage)
 - Applied globally by SeasonManager
 
-**BiomeMaterialMapper** (`Assets/Resources/BiomeMaterialMapper.asset`)
-- Maps BiomeType enum to Unity Materials for visual consistency
+**FlowerPatchMaterialMapper** (`Assets/Resources/FlowerPatchMaterialMapper.asset`)
+- Maps BiomeType enum to Unity Materials and Colors for visual consistency
+- Centralized source of truth for biome colors and materials
+- Always reference this asset when assigning biome visuals
 
 ### Game Entities
 
@@ -211,7 +219,7 @@ The game uses a **manager-driven architecture** with singleton managers orchestr
 3. Create material in `Assets/Material/` for visual consistency
 4. Create ScriptableObject: Right-click → `Game/Flower Patch Data`
    - Set biome type, costs, prefab reference
-5. Add to `BiomeMaterialMapper` asset for automatic material assignment
+5. Add to `FlowerPatchMaterialMapper` asset for automatic material assignment
 6. Create recipe(s) using the new pollen type
 7. Test placement, resource generation, and recipe production
 
@@ -326,6 +334,27 @@ The game uses a **manager-driven architecture** with singleton managers orchestr
 - Seasonal variety changes optimal strategies
 - No single "correct" build path
 
+## Architecture Health Status
+
+**Last Review:** 2025-01-18
+
+### Architecture Recommendations
+
+**Data-Oriented Design (DOTS/ECS):** Not recommended for this project
+- Current scope: 100-200 bees, incremental strategy game
+- MonoBehaviour architecture is appropriate and performs excellently
+- ECS is overkill for this entity count and would slow development velocity
+- WebGL deployment works better with traditional MonoBehaviour patterns
+
+**Object Pooling:** Consider if bee count exceeds 200+
+- Current performance target: 60 FPS @ 100+ bees (achieved)
+- Instantiate/Destroy pattern works well at current scale
+- Can add pooling as performance optimization if needed
+
+**Centralized Configuration:** Low priority
+- Magic numbers (week duration: 60s, starting money: $50) could move to GameConfig SO
+- Current approach is maintainable for this project size
+
 ## Known Issues & Todo
 
 See `Assets/Resources/ToDo.md` for current development priorities and bug tracking.
@@ -371,4 +400,8 @@ This project uses **UnityMCP** for Claude Code integration. Key workflows:
 - Use `manage_editor` action "play" to enter Play Mode
 - Wait for compilation to finish before entering Play Mode
 - Monitor `editor_state.isCompiling` to avoid domain reload issues
-- always take the material or color from the @Assets\Resources\FlowerPatchMaterialMapper.asset to keep color and material management centralized
+
+### Material Management
+- Always reference `FlowerPatchMaterialMapper.asset` for biome colors and materials
+- Never hardcode colors or create duplicate material assignments
+- Centralized mapping ensures visual consistency across all biomes

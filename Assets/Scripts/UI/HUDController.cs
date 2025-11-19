@@ -31,7 +31,11 @@ public class HUDController : MonoBehaviour
     [SerializeField] private FleetManagementPanel fleetManagementPanel;
 
     [Tooltip("Reference to the Settings Controller")]
-    [SerializeField] private SettingsController settingsController;
+    
+
+    // Cached values to avoid unnecessary updates
+    private int cachedBeeCount = 0;
+[SerializeField] private SettingsController settingsController;
 
     private void Start()
     {
@@ -64,7 +68,20 @@ public class HUDController : MonoBehaviour
         // Validate Settings Controller reference
         if (settingsController == null)
         {
-            Debug.LogWarning("HUDController: Settings Controller not assigned in Inspector!");
+            
+
+        // Subscribe to bee count changes
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnBeeCountChanged.AddListener(OnBeeCountChanged);
+            // Initialize cached bee count
+            cachedBeeCount = GameManager.Instance.TotalBeeCount;
+        }
+        else
+        {
+            Debug.LogWarning("HUDController: GameManager not found in scene!");
+        }
+Debug.LogWarning("HUDController: Settings Controller not assigned in Inspector!");
         }
 
         // Subscribe to hive resource changes
@@ -92,19 +109,28 @@ public class HUDController : MonoBehaviour
         UpdateMoneyDisplay(0f);
     }
 
-    private void Update()
+private void Update()
     {
-        // Update display each frame to show real-time bee count and timer
-        // (could be optimized with events if needed)
-        UpdateDisplay();
+        // Only update timer display each frame (needs smooth updates)
+        // Resource and bee count displays are now event-driven
         UpdateTimerDisplay();
     }
 
     /// <summary>
     /// Updates the HUD text with current resource counts and bee count.
-    /// Dynamically displays all resource types defined in ResourceType enum.
+    /// Dynamically displays all pollen types currently in hive inventory.
     /// </summary>
-    private void UpdateDisplay()
+    
+    /// <summary>
+    /// Called when the bee count changes.
+    /// </summary>
+    /// <param name="newBeeCount">New total bee count</param>
+    private void OnBeeCountChanged(int newBeeCount)
+    {
+        cachedBeeCount = newBeeCount;
+        UpdateDisplay();
+    }
+private void UpdateDisplay()
     {
         if (hudText == null)
         {
@@ -112,12 +138,8 @@ public class HUDController : MonoBehaviour
             return;
         }
 
-        // Get bee count from game manager
-        int beeCount = 0;
-        if (GameManager.Instance != null)
-        {
-            beeCount = GameManager.Instance.TotalBeeCount;
-        }
+        // Use cached bee count (updated via events)
+        int beeCount = cachedBeeCount;
 
         // Build resource display dynamically for all pollen types in inventory
         string resourceText = "";
@@ -251,7 +273,13 @@ public class HUDController : MonoBehaviour
 
         if (EconomyManager.Instance != null)
         {
-            EconomyManager.Instance.OnMoneyChanged.RemoveListener(UpdateMoneyDisplay);
+            
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnBeeCountChanged.RemoveListener(OnBeeCountChanged);
+        }
+EconomyManager.Instance.OnMoneyChanged.RemoveListener(UpdateMoneyDisplay);
         }
     }
 }

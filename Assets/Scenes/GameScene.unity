@@ -12561,6 +12561,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   totalBeeCount: 0
   elapsedTime: 0
+  OnBeeCountChanged:
+    m_PersistentCalls:
+      m_Calls: []
   currentGameSpeed: 1
 --- !u!1001 &809955906
 PrefabInstance:

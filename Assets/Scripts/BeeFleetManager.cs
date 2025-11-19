@@ -358,4 +358,12 @@ public class BeeFleetManager : MonoBehaviour
 
         Debug.Log($"[BeeFleetManager] Reset to initial state - Total bees: {startingBees}, Purchase tier: 0, Allocations cleared");
     }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
+    }
 }

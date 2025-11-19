@@ -123,4 +123,12 @@ public class EconomyManager : MonoBehaviour
 
         Debug.Log($"[EconomyManager] Reset to initial state - Money: ${startingMoney:F2}");
     }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
+    }
 }

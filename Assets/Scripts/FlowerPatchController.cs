@@ -94,25 +94,6 @@ public class FlowerPatchController : MonoBehaviour
         return flowerPatchData;
     }
 
-    /// <summary>
-    /// [OBSOLETE] Use GetFlowerPatchData() instead. This method is kept for backwards compatibility.
-    /// Instantly provides pollen based on the flower patch's biome type.
-    /// </summary>
-    [System.Obsolete("Use GetFlowerPatchData() instead - transitioning away from enum-based pollen system")]
-    public ResourceType GetResource()
-    {
-        // Map biome type to resource type
-        return biomeType switch
-        {
-            BiomeType.WildMeadow => ResourceType.WildMeadowPollen,
-            BiomeType.Orchard => ResourceType.OrchardPollen,
-            BiomeType.CultivatedGarden => ResourceType.CultivatedGardenPollen,
-            BiomeType.Marsh => ResourceType.MarshPollen,
-            BiomeType.ForestEdge => ResourceType.ForestEdgePollen,
-            BiomeType.AgriculturalField => ResourceType.AgriculturalFieldPollen,
-            _ => ResourceType.WildMeadowPollen // Default fallback
-        };
-    }
 
     /// <summary>
     /// [OBSOLETE] Use GetFlowerPatchData() instead. This method is kept for backwards compatibility.

@@ -1,3 +1,5 @@
+
+using UnityEngine.Events;
 using UnityEngine;
 
 /// <summary>
@@ -14,6 +16,10 @@ public class GameManager : MonoBehaviour
 
     [Tooltip("Elapsed game time in seconds")]
     [SerializeField] private float elapsedTime = 0f;
+
+    [Header("Events")]
+    [Tooltip("Fired when total bee count changes. Passes new total bee count.")]
+    public UnityEvent<int> OnBeeCountChanged;
 
     [Header("Time Control")]
     [Tooltip("Current game speed multiplier (1x = normal, 2x = double speed, 5x = fast testing)")]
@@ -95,13 +101,20 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Registers a newly spawned bee. Call this when an bee is created.
     /// </summary>
+/// <summary>
+    /// Registers a newly spawned bee. Call this when an bee is created.
+    /// </summary>
     public void RegisterBee()
     {
         totalBeeCount++;
+        OnBeeCountChanged?.Invoke(totalBeeCount);
         Debug.Log($"Bee registered. Total count: {totalBeeCount}");
     }
 
     /// <summary>
+    /// Unregisters an bee that has been destroyed. Call this when an bee is destroyed.
+    /// </summary>
+/// <summary>
     /// Unregisters an bee that has been destroyed. Call this when an bee is destroyed.
     /// </summary>
     public void UnregisterBee()
@@ -112,6 +125,7 @@ public class GameManager : MonoBehaviour
             Debug.LogWarning("Bee count went negative! Resetting to 0.");
             totalBeeCount = 0;
         }
+        OnBeeCountChanged?.Invoke(totalBeeCount);
         Debug.Log($"Bee unregistered. Total count: {totalBeeCount}");
     }
 

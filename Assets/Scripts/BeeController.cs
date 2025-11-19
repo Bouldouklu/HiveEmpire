@@ -9,13 +9,13 @@ public class BeeController : MonoBehaviour
 {
     [Header("Movement Settings")]
     [Tooltip("Base speed of the bee (units per second) - modified by seasonal effects")]
-    [SerializeField] private float baseSpeed = 10f;
+    [SerializeField] private float baseSpeed = 6f;
 
     [Tooltip("Current effective speed (base * seasonal modifier)")]
-    [SerializeField] private float speed = 10f;
+    [SerializeField] private float speed = 6f;
 
     [Tooltip("Maximum height of the flight arc")]
-    [SerializeField] private float flightAltitude = 12f;
+    [SerializeField] private float flightAltitude = 2f;
 
     /// <summary>
     /// Public accessor for flight altitude (used by RouteController for spawn interval calculations)
@@ -28,7 +28,7 @@ public class BeeController : MonoBehaviour
     public float BaseSpeed => baseSpeed;
 
     [Tooltip("How smoothly the bee rotates to face movement direction")]
-    [SerializeField] private float rotationSpeed = 5f;
+    [SerializeField] private float rotationSpeed = 10f;
 
     [Header("State")]
     [Tooltip("Current movement state (for debugging)")]
