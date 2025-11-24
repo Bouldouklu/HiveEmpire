@@ -55,6 +55,9 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
     // Current flowerPatch being upgraded
     private FlowerPatchController currentFlowerPatch;
 
+    // Current biome region being upgraded (new region-based system)
+    private BiomeRegion currentBiomeRegion;
+
     private void Awake()
     {
         // Setup button listeners
@@ -136,6 +139,7 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
         }
 
         currentFlowerPatch = flowerPatch;
+        currentBiomeRegion = null; // Clear region reference
 
         // Show panel
         if (panelBlocker != null)
@@ -149,6 +153,34 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
 
         // Update UI with flowerPatch information
         UpdateUI();
+    }
+
+    /// <summary>
+    /// Shows the upgrade panel for a specific biome region (new region-based system)
+    /// </summary>
+    public void ShowPanelForRegion(BiomeRegion biomeRegion)
+    {
+        if (biomeRegion == null)
+        {
+            Debug.LogError("FlowerPatchUpgradePanel: Cannot show panel for null biome region");
+            return;
+        }
+
+        currentBiomeRegion = biomeRegion;
+        currentFlowerPatch = null; // Clear flower patch reference
+
+        // Show panel
+        if (panelBlocker != null)
+        {
+            panelBlocker.SetActive(true);
+        }
+        if (panelRoot != null)
+        {
+            panelRoot.SetActive(true);
+        }
+
+        // Update UI with biome region information
+        UpdateUIForRegion();
     }
 
     /// <summary>
@@ -166,6 +198,7 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
         }
 
         currentFlowerPatch = null;
+        currentBiomeRegion = null;
     }
 
     /// <summary>
@@ -188,13 +221,55 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
         // Bee allocation display
         if (beeAllocationText != null && BeeFleetManager.Instance != null)
         {
-            int allocatedBees = BeeFleetManager.Instance.GetAllocatedBees(currentFlowerPatch);
-            int capacity = currentFlowerPatch.MaxBeeCapacity;
-            beeAllocationText.text = $"Bees: {allocatedBees} / {capacity}";
+            // Get the BiomeRegion from the FlowerPatchController
+            BiomeRegion biomeRegion = currentFlowerPatch.GetBiomeRegion();
+            if (biomeRegion != null)
+            {
+                int allocatedBees = BeeFleetManager.Instance.GetAllocatedBees(biomeRegion);
+                int capacity = currentFlowerPatch.MaxBeeCapacity;
+                beeAllocationText.text = $"Bees: {allocatedBees} / {capacity}";
+            }
         }
 
         // Capacity upgrade section
         UpdateCapacityUpgradeUI();
+    }
+
+    /// <summary>
+    /// Updates all UI elements with current biome region information (new region-based system)
+    /// </summary>
+    private void UpdateUIForRegion()
+    {
+        if (currentBiomeRegion == null)
+        {
+            return;
+        }
+
+        // Region name/biome
+        if (flowerPatchNameText != null)
+        {
+            BiomeRegionData data = currentBiomeRegion.RegionData;
+            if (data != null)
+            {
+                flowerPatchNameText.text = $"{data.displayName} Region";
+            }
+            else
+            {
+                string biomeName = currentBiomeRegion.BiomeType.ToString();
+                flowerPatchNameText.text = $"{biomeName} Region";
+            }
+        }
+
+        // Bee allocation display (region-wide)
+        if (beeAllocationText != null && BeeFleetManager.Instance != null)
+        {
+            int allocatedBees = BeeFleetManager.Instance.GetAllocatedBees(currentBiomeRegion);
+            int capacity = currentBiomeRegion.MaxBeeCapacity;
+            beeAllocationText.text = $"Bees: {allocatedBees} / {capacity} (across {currentBiomeRegion.HexTileCount} tiles)";
+        }
+
+        // Capacity upgrade section
+        UpdateCapacityUpgradeUIForRegion();
     }
 
     /// <summary>
@@ -211,9 +286,16 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
     private void OnMoneyChanged(float newAmount)
     {
         // Only update if panel is visible
-        if (panelRoot != null && panelRoot.activeSelf && currentFlowerPatch != null)
+        if (panelRoot != null && panelRoot.activeSelf)
         {
-            UpdateUI();
+            if (currentFlowerPatch != null)
+            {
+                UpdateUI();
+            }
+            else if (currentBiomeRegion != null)
+            {
+                UpdateUIForRegion();
+            }
         }
     }
 
@@ -309,20 +391,132 @@ public class FlowerPatchUpgradePanel : MonoBehaviour
     }
 
     /// <summary>
+    /// Updates capacity upgrade UI elements for regions (new region-based system)
+    /// </summary>
+    private void UpdateCapacityUpgradeUIForRegion()
+    {
+        if (currentBiomeRegion == null) return;
+
+        // Current capacity display with breakdown
+        if (currentCapacityText != null)
+        {
+            int capacity = currentBiomeRegion.MaxBeeCapacity;
+            int capacityTier = currentBiomeRegion.CapacityTier;
+
+            // Show breakdown for region
+            string breakdown = $"Region Capacity: {capacity} bees";
+            if (capacityTier > 0 && currentBiomeRegion.RegionData != null)
+            {
+                int baseCapacity = currentBiomeRegion.RegionData.BaseCapacity;
+                int bonusCapacity = capacity - baseCapacity;
+                breakdown += $" ({baseCapacity} base + {bonusCapacity} from upgrades)";
+            }
+
+            currentCapacityText.text = breakdown;
+        }
+
+        // Capacity upgrade section
+        bool canUpgradeCapacity = currentBiomeRegion.CanUpgradeCapacity();
+        float capacityCost = currentBiomeRegion.GetCapacityUpgradeCost();
+        int nextCapacity = currentBiomeRegion.GetNextCapacity();
+        bool canAffordCapacity = EconomyManager.Instance != null && EconomyManager.Instance.CanAfford(capacityCost);
+
+        if (canUpgradeCapacity)
+        {
+            // Calculate capacity bonus that will be added
+            int capacityBonus = nextCapacity - currentBiomeRegion.MaxBeeCapacity;
+            int currentCapacityTier = currentBiomeRegion.CapacityTier;
+
+            // Upgrade effect - shows tier and capacity that will be added
+            if (capacityUpgradeEffectText != null)
+            {
+                capacityUpgradeEffectText.text = $"Tier {currentCapacityTier + 1}: +{capacityBonus} region capacity";
+                capacityUpgradeEffectText.color = affordableColor;
+            }
+
+            // Upgrade cost
+            if (capacityUpgradeCostText != null)
+            {
+                capacityUpgradeCostText.text = $"Cost: ${capacityCost}";
+                capacityUpgradeCostText.color = canAffordCapacity ? affordableColor : unaffordableColor;
+            }
+
+            // Upgrade button
+            if (capacityUpgradeButton != null)
+            {
+                capacityUpgradeButton.interactable = canAffordCapacity;
+            }
+
+            if (capacityUpgradeButtonText != null && currentBiomeRegion.RegionData != null)
+            {
+                int maxCapacityTier = currentBiomeRegion.RegionData.MaxCapacityTier;
+                capacityUpgradeButtonText.text = $"Upgrade ({currentCapacityTier + 1}/{maxCapacityTier})";
+            }
+        }
+        else
+        {
+            // Max capacity reached
+            if (capacityUpgradeEffectText != null)
+            {
+                capacityUpgradeEffectText.text = "MAX CAPACITY";
+                capacityUpgradeEffectText.color = maxTierColor;
+            }
+
+            // Clear cost text when maxed
+            if (capacityUpgradeCostText != null)
+            {
+                capacityUpgradeCostText.text = "";
+            }
+
+            // Disable button
+            if (capacityUpgradeButton != null)
+            {
+                capacityUpgradeButton.interactable = false;
+            }
+
+            if (capacityUpgradeButtonText != null)
+            {
+                capacityUpgradeButtonText.text = "Max Capacity";
+            }
+        }
+    }
+
+    /// <summary>
     /// Called when the capacity upgrade button is clicked
     /// </summary>
     private void OnCapacityUpgradeButtonClicked()
     {
+        // Handle region-based system
+        if (currentBiomeRegion != null)
+        {
+            // Attempt to upgrade capacity
+            bool success = currentBiomeRegion.UpgradeCapacity();
+
+            if (success)
+            {
+                Debug.Log($"Successfully upgraded capacity for {currentBiomeRegion.name} to {currentBiomeRegion.MaxBeeCapacity}");
+
+                // Update UI to reflect new capacity
+                UpdateUIForRegion();
+            }
+            else
+            {
+                Debug.LogWarning($"Failed to upgrade capacity for {currentBiomeRegion.name}");
+            }
+            return;
+        }
+
+        // Handle legacy flower patch system
         if (currentFlowerPatch == null)
         {
-            Debug.LogError("FlowerPatchUpgradePanel: No flowerPatch selected for capacity upgrade");
+            Debug.LogError("FlowerPatchUpgradePanel: No flowerPatch or region selected for capacity upgrade");
             return;
         }
 
         // Attempt to upgrade capacity
-        bool success = currentFlowerPatch.UpgradeCapacity();
+        bool patchSuccess = currentFlowerPatch.UpgradeCapacity();
 
-        if (success)
+        if (patchSuccess)
         {
             Debug.Log($"Successfully upgraded capacity for {currentFlowerPatch.gameObject.name} to {currentFlowerPatch.MaxBeeCapacity}");
 

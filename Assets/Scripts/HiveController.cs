@@ -13,10 +13,10 @@ public class PollenInventorySlot
     [Tooltip("The flower patch data that defines this pollen type")]
     public FlowerPatchData pollenType;
 
-    [Tooltip("Amount of this pollen type in inventory")]
-    public int quantity;
+    [Tooltip("Amount of this pollen type in inventory (supports decimals for early game)")]
+    public float quantity;
 
-    public PollenInventorySlot(FlowerPatchData pollenType, int quantity)
+    public PollenInventorySlot(FlowerPatchData pollenType, float quantity)
     {
         this.pollenType = pollenType;
         this.quantity = quantity;
@@ -163,7 +163,7 @@ public class HiveController : MonoBehaviour
     /// Get a dictionary representation of pollen inventory for easier lookup.
     /// Maps FlowerPatchData to quantity.
     /// </summary>
-    public Dictionary<FlowerPatchData, int> GetPollenInventoryDictionary()
+    public Dictionary<FlowerPatchData, float> GetPollenInventoryDictionary()
     {
         return pollenInventory.ToDictionary(slot => slot.pollenType, slot => slot.quantity);
     }
@@ -172,13 +172,13 @@ public class HiveController : MonoBehaviour
     /// <summary>
     /// Gets the count of a specific pollen type in inventory.
     /// </summary>
-    public int GetResourceCount(FlowerPatchData pollenType)
+    public float GetResourceCount(FlowerPatchData pollenType)
     {
         if (pollenType == null)
-            return 0;
+            return 0f;
 
         PollenInventorySlot slot = pollenInventory.FirstOrDefault(s => s.pollenType == pollenType);
-        return slot != null ? slot.quantity : 0;
+        return slot != null ? slot.quantity : 0f;
     }
 
     /// <summary>

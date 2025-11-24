@@ -30,8 +30,8 @@ MonoBehaviour:
     quantity: 2
   - pollenType: {fileID: 11400000, guid: 0c6d017653fbc0048b93b93c30902392, type: 2}
     quantity: 2
-  productionTimeSeconds: 45
-  honeyValue: 450
+  productionTimeSeconds: 50
+  honeyValue: 2800
   upgradeCosts:
   - 1500
   - 4500
@@ -58,6 +58,6 @@ MonoBehaviour:
   - 80
   - 150
   - 300
-  - 300
+  - 500
   icon: {fileID: 0}
   honeyColor: {r: 1, g: 0.75, b: 0.2, a: 1}

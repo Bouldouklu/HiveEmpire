@@ -129,7 +129,7 @@ public class RecipeExport
 public class IngredientExport
 {
     public string pollenTypeName;
-    public int quantity;
+    public float quantity;
 }
 
 [System.Serializable]

@@ -1,91 +1,46 @@
 using UnityEngine;
-using UnityEngine.Events;
 
 /// <summary>
-/// Controls a flower patch that instantly provides pollen based on its biome type.
-/// Flower patches act as infinite pollen dispensers - bees are the limiting factor.
-/// Bee spawning is now handled by RouteController component.
-/// Supports Nectar Flow upgrades that increase bee count per route.
+/// Minimal data holder for pollen properties in the region-based system.
+/// Stores FlowerPatchData reference for pollen type, icon, and material.
+/// All unlock/capacity logic is handled by BiomeRegion component.
+/// This component is attached to BiomeRegion GameObjects.
 /// </summary>
 public class FlowerPatchController : MonoBehaviour
 {
-    [Header("Flower Patch Settings")]
-    [Tooltip("Biome type determines what pollen this flower patch produces")]
-    [SerializeField] private BiomeType biomeType = BiomeType.Marsh;
-
-    [Tooltip("FlowerPatchData used to initialize this flower patch (for reference)")]
+    [Header("Pollen Data")]
+    [Tooltip("FlowerPatchData defining pollen type and properties for this region")]
     [SerializeField] private FlowerPatchData flowerPatchData;
 
-    [Header("Bee Capacity System")]
-    [Tooltip("Base bee capacity (before tier and bonus upgrades)")]
-    [SerializeField] private int baseCapacity = 5;
+    [Header("References")]
+    [Tooltip("Parent BiomeRegion this controller belongs to")]
+    [SerializeField] private BiomeRegion parentBiomeRegion;
 
-    [Tooltip("Bonus capacity from capacity upgrades")]
-    [SerializeField] private int capacityBonus = 0;
+    private void Awake()
+    {
+        // Auto-find parent BiomeRegion if not assigned
+        if (parentBiomeRegion == null)
+        {
+            parentBiomeRegion = GetComponent<BiomeRegion>();
+            if (parentBiomeRegion == null)
+            {
+                parentBiomeRegion = GetComponentInParent<BiomeRegion>();
+            }
+        }
 
-    [Tooltip("Capacity upgrade tier (0-5, each tier adds bonus capacity)")]
-    [SerializeField] private int capacityTier = 0;
-
-    [Tooltip("Bonus capacity added per capacity upgrade tier")]
-    [SerializeField] private int bonusCapacityPerUpgrade = 5;
-
-    [Tooltip("Cost for each capacity upgrade tier [Tier 1, Tier 2, Tier 3, Tier 4, Tier 5]")]
-    [SerializeField] private float[] capacityUpgradeCosts = new float[] { 50f, 150f, 400f, 900f, 2000f };
-
-    [Tooltip("Maximum number of capacity upgrade tiers available")]
-    [SerializeField] private int maxCapacityTier = 5;
-
-    [Header("Unlock System")]
-    [Tooltip("Is this flower patch locked (not yet purchased)?")]
-    [SerializeField] private bool isLocked = true;
-
-    [Header("Events")]
-
-    [Tooltip("Fired when capacity is upgraded")]
-    public UnityEvent OnCapacityUpgraded = new UnityEvent();
-
-    [Tooltip("Fired when flower patch is unlocked")]
-    public UnityEvent OnUnlocked = new UnityEvent();
-
-    // Public properties
-    /// <summary>
-    /// Calculates maximum bee capacity: base capacity + capacity bonus from upgrades
-    /// </summary>
-    public int MaxBeeCapacity => baseCapacity + capacityBonus;
+        if (parentBiomeRegion == null)
+        {
+            Debug.LogWarning($"FlowerPatchController on '{name}' has no parent BiomeRegion. This is expected for legacy single-patch mode.", this);
+        }
+    }
 
     /// <summary>
-    /// Public accessor for the FlowerPatchData ScriptableObject
+    /// Public property to access FlowerPatchData.
     /// </summary>
     public FlowerPatchData FlowerPatchData => flowerPatchData;
 
     /// <summary>
-    /// Returns whether this flower patch is locked (not yet purchased)
-    /// </summary>
-    public bool IsLocked => isLocked;
-
-    private void Start()
-    {
-        // Apply locked/unlocked visual on startup
-        UpdateLockedVisual();
-    }
-
-    private void OnDestroy()
-    {
-        // Unregister from fleet manager when destroyed
-        if (BeeFleetManager.Instance != null)
-        {
-            BeeFleetManager.Instance.UnregisterFlowerPatch(this);
-        }
-
-        // Unregister from audio manager when destroyed
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.UnregisterFlowerPatch(this);
-        }
-    }
-
-    /// <summary>
-    /// Gets the FlowerPatchData ScriptableObject that defines this flower patch's pollen properties.
+    /// Gets the FlowerPatchData ScriptableObject that defines this patch's pollen properties.
     /// Called by bees when they need to pick up pollen.
     /// </summary>
     /// <returns>The FlowerPatchData defining this patch's pollen type and properties</returns>
@@ -94,31 +49,27 @@ public class FlowerPatchController : MonoBehaviour
         return flowerPatchData;
     }
 
+    /// <summary>
+    /// Gets the parent BiomeRegion this controller belongs to
+    /// </summary>
+    public BiomeRegion GetBiomeRegion()
+    {
+        return parentBiomeRegion;
+    }
 
     /// <summary>
-    /// [OBSOLETE] Use GetFlowerPatchData() instead. This method is kept for backwards compatibility.
-    /// Gets the biome type of this flower patch (for external queries)
+    /// Gets the biome type from the FlowerPatchData
     /// </summary>
-    [System.Obsolete("Use GetFlowerPatchData() instead - transitioning away from enum-based pollen system")]
     public BiomeType GetBiomeType()
     {
-        return biomeType;
+        return flowerPatchData != null ? flowerPatchData.biomeType : BiomeType.WildMeadow;
     }
 
     /// <summary>
-    /// Sets the biome type of this flower patch (for runtime configuration)
+    /// Initializes this controller from FlowerPatchData ScriptableObject.
+    /// Called during region setup.
     /// </summary>
-    /// <param name="newBiomeType">The biome type to set</param>
-    public void SetBiomeType(BiomeType newBiomeType)
-    {
-        biomeType = newBiomeType;
-    }
-
-    /// <summary>
-    /// Initializes this flower patch from FlowerPatchData ScriptableObject.
-    /// Called by FlowerPatchPlaceholder when spawning a new flower patch.
-    /// </summary>
-    /// <param name="data">The FlowerPatchData containing configuration</param>
+    /// <param name="data">The FlowerPatchData containing pollen configuration</param>
     public void InitializeFromData(FlowerPatchData data)
     {
         if (data == null)
@@ -127,242 +78,186 @@ public class FlowerPatchController : MonoBehaviour
             return;
         }
 
-        // Store reference to data
         flowerPatchData = data;
+        Debug.Log($"FlowerPatchController initialized with {data.name}: Biome={data.biomeType}, Pollen={data.pollenDisplayName}");
+    }
 
-        // Set biome type
-        biomeType = data.biomeType;
-
-        // Initialize capacity settings from data
-        baseCapacity = data.baseCapacity;
-        bonusCapacityPerUpgrade = data.bonusCapacityPerUpgrade;
-        maxCapacityTier = data.maxCapacityTier;
-
-        // Initialize capacity upgrade costs array from data
-        capacityUpgradeCosts = new float[data.capacityUpgradeCosts.Length];
-        System.Array.Copy(data.capacityUpgradeCosts, capacityUpgradeCosts, data.capacityUpgradeCosts.Length);
-
-        Debug.Log($"FlowerPatchController initialized from {data.name}: Biome={biomeType}, BaseCapacity={baseCapacity}, CapacityUpgradeCosts=[{string.Join(", ", capacityUpgradeCosts)}]");
-
-        // Apply locked/unlocked visual after initialization
-        UpdateLockedVisual();
+    /// <summary>
+    /// Sets the parent BiomeRegion reference
+    /// </summary>
+    public void SetBiomeRegion(BiomeRegion region)
+    {
+        parentBiomeRegion = region;
     }
 
     // ============================================
-    // CAPACITY UPGRADE SYSTEM
+    // LEGACY COMPATIBILITY METHODS
+    // These methods provide compatibility with existing systems
+    // that expect the old FlowerPatchController interface
     // ============================================
 
     /// <summary>
-    /// Checks if this flower patch's capacity can be upgraded
+    /// [LEGACY] Gets whether this flower patch is locked.
+    /// Delegates to parent BiomeRegion if available.
     /// </summary>
-    public bool CanUpgradeCapacity()
+    public bool IsLocked
     {
-        return capacityTier < maxCapacityTier;
+        get
+        {
+            if (parentBiomeRegion != null)
+            {
+                return parentBiomeRegion.IsLocked;
+            }
+            return false; // Default to unlocked if no region
+        }
     }
 
     /// <summary>
-    /// Gets the cost to upgrade capacity for the current tier
+    /// [LEGACY] Gets the maximum bee capacity.
+    /// Delegates to parent BiomeRegion if available.
     /// </summary>
-    /// <returns>Capacity upgrade cost, or -1 if already at max capacity</returns>
-    public float GetCapacityUpgradeCost()
+    public int MaxBeeCapacity
     {
-        if (!CanUpgradeCapacity())
+        get
         {
-            return -1f; // Already at max capacity
+            if (parentBiomeRegion != null)
+            {
+                return parentBiomeRegion.MaxBeeCapacity;
+            }
+            return 0; // Default to 0 if no region
         }
-
-        // Validate tier index
-        if (capacityTier < 0 || capacityTier >= capacityUpgradeCosts.Length)
-        {
-            Debug.LogError($"Invalid capacity tier {capacityTier} for {gameObject.name}");
-            return -1f;
-        }
-
-        return capacityUpgradeCosts[capacityTier];
     }
 
     /// <summary>
-    /// Gets the capacity value after the next capacity upgrade
+    /// [LEGACY] Gets the unlock cost.
+    /// Delegates to parent BiomeRegion if available.
     /// </summary>
-    /// <returns>New capacity value after adding bonus, or -1 if already at max</returns>
-    public int GetNextCapacity()
-    {
-        if (!CanUpgradeCapacity())
-        {
-            return -1;
-        }
-        // Calculate what capacity will be after adding the bonus
-        return baseCapacity + capacityBonus + bonusCapacityPerUpgrade;
-    }
-
-    /// <summary>
-    /// Attempts to upgrade this flower patch's bee capacity by adding bonus capacity
-    /// </summary>
-    /// <returns>True if upgrade succeeded, false otherwise</returns>
-    public bool UpgradeCapacity()
-    {
-        // Check if upgrade is possible
-        if (!CanUpgradeCapacity())
-        {
-            Debug.LogWarning($"Flower patch {gameObject.name} is already at max capacity tier ({maxCapacityTier})");
-            return false;
-        }
-
-        // Get upgrade cost for current tier
-        float upgradeCost = GetCapacityUpgradeCost();
-        if (upgradeCost < 0f)
-        {
-            Debug.LogError($"Invalid capacity upgrade cost for {gameObject.name}");
-            return false;
-        }
-
-        // Check if player can afford it
-        if (!EconomyManager.Instance.CanAfford(upgradeCost))
-        {
-            Debug.Log($"Cannot afford capacity upgrade for {gameObject.name}. Cost: ${upgradeCost}");
-            return false;
-        }
-
-        // Spend money
-        EconomyManager.Instance.SpendMoney(upgradeCost);
-
-        // Upgrade capacity by incrementing tier and adding bonus
-        capacityTier++;
-        capacityBonus += bonusCapacityPerUpgrade;
-        Debug.Log($"Flower patch {gameObject.name} capacity upgraded to tier {capacityTier}/{maxCapacityTier}! Added +{bonusCapacityPerUpgrade} bonus capacity. New total capacity: {MaxBeeCapacity} bees");
-
-        // Fire event
-        OnCapacityUpgraded?.Invoke();
-
-        return true;
-    }
-
-    /// <summary>
-    /// Gets the current capacity tier
-    /// </summary>
-    public int GetCapacityTier()
-    {
-        return capacityTier;
-    }
-
-    /// <summary>
-    /// Gets the maximum capacity tier available for this flower patch
-    /// </summary>
-    public int GetMaxCapacityTier()
-    {
-        return maxCapacityTier;
-    }
-
-    // ============================================
-    // UNLOCK SYSTEM
-    // ============================================
-
-    /// <summary>
-    /// Gets the cost to unlock this flower patch
-    /// </summary>
-    /// <returns>Unlock cost from FlowerPatchData, or 0 if data is missing</returns>
     public float GetUnlockCost()
     {
+        if (parentBiomeRegion != null)
+        {
+            return parentBiomeRegion.GetUnlockCost();
+        }
         return flowerPatchData != null ? flowerPatchData.placementCost : 0f;
     }
 
     /// <summary>
-    /// Attempts to unlock this flower patch by purchasing it
+    /// [LEGACY] Checks if capacity can be upgraded.
+    /// Delegates to parent BiomeRegion if available.
     /// </summary>
-    /// <returns>True if unlock succeeded, false otherwise</returns>
-    public bool UnlockPatch()
+    public bool CanUpgradeCapacity()
     {
-        // Check if already unlocked
-        if (!isLocked)
+        if (parentBiomeRegion != null)
         {
-            Debug.LogWarning($"Flower patch {gameObject.name} is already unlocked");
-            return false;
+            return parentBiomeRegion.CanUpgradeCapacity();
         }
-
-        // Get unlock cost
-        float unlockCost = GetUnlockCost();
-        if (unlockCost < 0f)
-        {
-            Debug.LogError($"Invalid unlock cost for {gameObject.name}");
-            return false;
-        }
-
-        // Check if player can afford it
-        if (EconomyManager.Instance == null)
-        {
-            Debug.LogError($"EconomyManager not found when trying to unlock {gameObject.name}");
-            return false;
-        }
-
-        if (!EconomyManager.Instance.CanAfford(unlockCost))
-        {
-            Debug.Log($"Cannot afford to unlock {gameObject.name}. Cost: ${unlockCost}");
-            return false;
-        }
-
-        // Spend money
-        if (!EconomyManager.Instance.SpendMoney(unlockCost))
-        {
-            Debug.LogError($"Failed to spend money for unlocking {gameObject.name}");
-            return false;
-        }
-
-        // Unlock the patch
-        isLocked = false;
-        Debug.Log($"Unlocked {gameObject.name} (BiomeType: {biomeType}) for ${unlockCost}");
-
-        // Note: No need to register with BeeFleetManager - registration happens automatically
-        // when player manually allocates bees via Fleet Management Panel
-
-        // Apply visual update (unlock material)
-        UpdateLockedVisual();
-
-        // Play unlock sound
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.PlayFlowerPatchUnlockSound();
-        }
-
-        // Fire event for other systems to respond
-        OnUnlocked?.Invoke();
-
-        return true;
+        return false;
     }
 
     /// <summary>
-    /// Updates the visual appearance based on locked state
+    /// [LEGACY] Gets the capacity upgrade cost.
+    /// Delegates to parent BiomeRegion if available.
     /// </summary>
-    private void UpdateLockedVisual()
+    public float GetCapacityUpgradeCost()
     {
-        if (FlowerPatchMaterialMapper.Instance == null || flowerPatchData == null) return;
-
-        Renderer renderer = GetComponent<Renderer>();
-        if (renderer == null)
+        if (parentBiomeRegion != null)
         {
-            renderer = GetComponentInChildren<Renderer>();
+            return parentBiomeRegion.GetCapacityUpgradeCost();
         }
+        return 0f;
+    }
 
-        if (renderer == null)
+    /// <summary>
+    /// [LEGACY] Gets the next capacity after upgrade.
+    /// Delegates to parent BiomeRegion if available.
+    /// </summary>
+    public int GetNextCapacity()
+    {
+        if (parentBiomeRegion != null)
         {
-            Debug.LogWarning($"No renderer found on {gameObject.name} to update locked visual");
-            return;
+            return parentBiomeRegion.GetNextCapacity();
         }
+        return 0;
+    }
 
-        Material targetMaterial;
-        if (isLocked)
+    /// <summary>
+    /// [LEGACY] Gets the current capacity tier.
+    /// Delegates to parent BiomeRegion if available.
+    /// </summary>
+    public int GetCapacityTier()
+    {
+        if (parentBiomeRegion != null)
         {
-            // Apply locked material
-            targetMaterial = FlowerPatchMaterialMapper.Instance.GetLockedMaterial(flowerPatchData.biomeType);
+            return parentBiomeRegion.CapacityTier;
         }
-        else
-        {
-            // Apply normal biome material
-            targetMaterial = FlowerPatchMaterialMapper.Instance.GetFlowerPatchMaterial(flowerPatchData.biomeType);
-        }
+        return 0;
+    }
 
-        if (targetMaterial != null)
+    /// <summary>
+    /// [LEGACY] Gets the maximum capacity tier.
+    /// Delegates to parent BiomeRegion if available.
+    /// </summary>
+    public int GetMaxCapacityTier()
+    {
+        if (parentBiomeRegion != null && parentBiomeRegion.RegionData != null)
         {
-            renderer.material = targetMaterial;
+            return parentBiomeRegion.RegionData.MaxCapacityTier;
+        }
+        return 0;
+    }
+
+    /// <summary>
+    /// [LEGACY] Attempts to unlock this flower patch.
+    /// Delegates to parent BiomeRegion if available.
+    /// </summary>
+    public bool UnlockPatch()
+    {
+        if (parentBiomeRegion != null)
+        {
+            return parentBiomeRegion.UnlockRegion();
+        }
+        Debug.LogWarning($"FlowerPatchController on '{name}': Cannot unlock without parent BiomeRegion");
+        return false;
+    }
+
+    /// <summary>
+    /// [LEGACY] Attempts to upgrade capacity.
+    /// Delegates to parent BiomeRegion if available.
+    /// </summary>
+    public bool UpgradeCapacity()
+    {
+        if (parentBiomeRegion != null)
+        {
+            return parentBiomeRegion.UpgradeCapacity();
+        }
+        Debug.LogWarning($"FlowerPatchController on '{name}': Cannot upgrade capacity without parent BiomeRegion");
+        return false;
+    }
+
+    /// <summary>
+    /// [LEGACY] UnityEvents for backward compatibility with UI panels.
+    /// These delegate to the parent BiomeRegion's events.
+    /// </summary>
+    public UnityEngine.Events.UnityEvent OnCapacityUpgraded
+    {
+        get { return parentBiomeRegion != null ? parentBiomeRegion.OnCapacityUpgraded : new UnityEngine.Events.UnityEvent(); }
+    }
+
+    public UnityEngine.Events.UnityEvent OnUnlocked
+    {
+        get { return parentBiomeRegion != null ? parentBiomeRegion.OnRegionUnlocked : new UnityEngine.Events.UnityEvent(); }
+    }
+
+    private void OnValidate()
+    {
+        // Auto-find parent BiomeRegion in editor
+        if (parentBiomeRegion == null)
+        {
+            parentBiomeRegion = GetComponent<BiomeRegion>();
+            if (parentBiomeRegion == null)
+            {
+                parentBiomeRegion = GetComponentInParent<BiomeRegion>();
+            }
         }
     }
 }

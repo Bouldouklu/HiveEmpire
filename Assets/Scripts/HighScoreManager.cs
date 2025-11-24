@@ -65,7 +65,7 @@ public class HighScoreManager : MonoBehaviour
         comparison.isNewBeeFleetRecord = CheckAndSave(KEY_BEST_BEE_FLEET, summary.peakBeeFleetSize);
 
         // Calculate total resources
-        int totalResources = 0;
+        float totalResources = 0f;
         foreach (var kvp in summary.totalResourcesCollected)
         {
             totalResources += kvp.Value;

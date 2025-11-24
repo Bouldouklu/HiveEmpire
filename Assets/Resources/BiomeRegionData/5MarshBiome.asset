@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 062f1b8a44734364095c8bfe7d60cc84, type: 3}
+  m_Name: 5MarshBiome
+  m_EditorClassIdentifier: Assembly-CSharp::BiomeRegionData
+  biomeType: 3
+  displayName: Marsh
+  description: 
+  hexTileCount: 7
+  regionPrefab: {fileID: 0}
+  flowerPatchData: {fileID: 11400000, guid: 494ded3b3a9aee744b3de956decb18c2, type: 2}
+  pollenDisplayName: Marsh Pollen
+  pollenIcon: {fileID: 0}
+  pollenMaterial: {fileID: 0}
+  pollenDescription: 
+  unlockCost: 800
+  baseCapacity: 5
+  capacityUpgradeCosts:
+  - 400
+  - 1000
+  - 2500
+  - 6000
+  - 15000
+  bonusCapacityPerUpgrade: 5
+  maxCapacityTier: 5
+  gatheringDuration: 3

@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 062f1b8a44734364095c8bfe7d60cc84, type: 3}
+  m_Name: 4AgriculturalFieldBiome
+  m_EditorClassIdentifier: Assembly-CSharp::BiomeRegionData
+  biomeType: 5
+  displayName: Agricultural Field
+  description: 
+  hexTileCount: 7
+  regionPrefab: {fileID: 0}
+  flowerPatchData: {fileID: 11400000, guid: 9d98e910fbe782a4b98d50dc3ceb0718, type: 2}
+  pollenDisplayName: Agricultural Field Pollen
+  pollenIcon: {fileID: 0}
+  pollenMaterial: {fileID: 0}
+  pollenDescription: 
+  unlockCost: 350
+  baseCapacity: 5
+  capacityUpgradeCosts:
+  - 150
+  - 450
+  - 1200
+  - 3000
+  - 7500
+  bonusCapacityPerUpgrade: 5
+  maxCapacityTier: 5
+  gatheringDuration: 1.8

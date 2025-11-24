@@ -2,21 +2,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Manages a route between an flowerPatch and the hive, controlling bee spawning
-/// with distance-based spacing. The number of bees on the route is dynamically
-/// determined by the flowerPatch's upgrade tier.
+/// Manages a route between a flower patch/region and the hive, controlling bee spawning
+/// with distance-based spacing. Supports both legacy single-patch and new multi-tile region systems.
 /// </summary>
 public class RouteController : MonoBehaviour
 {
     [Header("Route Configuration")]
-    [Tooltip("Reference to the FlowerPatchController (automatically set in Awake if on same GameObject)")]
-    [SerializeField] private FlowerPatchController flowerPatchController;
+    [Tooltip("Reference to the BiomeRegion (required for region-based system)")]
+    [SerializeField] private BiomeRegion biomeRegion;
 
     [Tooltip("Bee prefab to spawn on this route")]
     [SerializeField] private GameObject beePrefab;
 
     [Header("References")]
-    [Tooltip("The home flowerPatch transform (usually this GameObject's transform)")]
+    [Tooltip("The home flowerPatch transform (usually this GameObject's transform, fallback for legacy mode)")]
     [SerializeField] private Transform homeFlowerPatch;
 
     [Tooltip("The hive destination transform")]
@@ -34,21 +33,21 @@ public class RouteController : MonoBehaviour
 
     private void Awake()
     {
-        // Get FlowerPatchController reference if not set
-        if (flowerPatchController == null)
+        // Get BiomeRegion reference if not set
+        if (biomeRegion == null)
         {
-            flowerPatchController = GetComponent<FlowerPatchController>();
-            if (flowerPatchController == null)
+            biomeRegion = GetComponent<BiomeRegion>();
+            if (biomeRegion == null)
             {
-                Debug.LogError($"RouteController on {gameObject.name}: No FlowerPatchController found! RouteController requires FlowerPatchController on same GameObject.", this);
+                Debug.LogError($"RouteController on {gameObject.name}: No BiomeRegion found! RouteController requires BiomeRegion component.", this);
             }
         }
 
-        // Subscribe to flowerPatch events (for capahive upgrades that may affect spacing)
-        if (flowerPatchController != null)
+        // Subscribe to biome region events (for capacity upgrades that may affect spacing)
+        if (biomeRegion != null)
         {
-            flowerPatchController.OnCapacityUpgraded.AddListener(OnCapacityUpgraded);
-            flowerPatchController.OnUnlocked.AddListener(OnFlowerPatchUnlocked);
+            biomeRegion.OnCapacityUpgraded.AddListener(OnCapacityUpgraded);
+            biomeRegion.OnRegionUnlocked.AddListener(OnFlowerPatchUnlocked);
         }
 
         // Subscribe to fleet manager bee allocation events
@@ -73,10 +72,10 @@ public class RouteController : MonoBehaviour
     private void OnDestroy()
     {
         // Unsubscribe from events
-        if (flowerPatchController != null)
+        if (biomeRegion != null)
         {
-            flowerPatchController.OnCapacityUpgraded.RemoveListener(OnCapacityUpgraded);
-            flowerPatchController.OnUnlocked.RemoveListener(OnFlowerPatchUnlocked);
+            biomeRegion.OnCapacityUpgraded.RemoveListener(OnCapacityUpgraded);
+            biomeRegion.OnRegionUnlocked.RemoveListener(OnFlowerPatchUnlocked);
         }
 
         if (BeeFleetManager.Instance != null)
@@ -94,22 +93,24 @@ public class RouteController : MonoBehaviour
             return;
         }
 
-        // Check if flower patch is locked
-        if (flowerPatchController != null && flowerPatchController.IsLocked)
+        // Check if region is locked
+        bool isLocked = biomeRegion != null && biomeRegion.IsLocked;
+
+        if (isLocked)
         {
-            // Disable route until patch is unlocked
-            Debug.Log($"RouteController on {gameObject.name}: Flower patch is locked, disabling route until unlocked");
+            // Disable route until unlocked
+            Debug.Log($"RouteController on {gameObject.name}: Region is locked, disabling route until unlocked");
             enabled = false;
             return;
         }
 
-        // Initialize route for unlocked patches
+        // Initialize route for unlocked regions
         InitializeRoute();
     }
 
     /// <summary>
     /// Initializes the route for bee spawning.
-    /// Called automatically for unlocked patches, or via OnFlowerPatchUnlocked event.
+    /// Called automatically for unlocked patches/regions, or via OnFlowerPatchUnlocked event.
     /// </summary>
     private void InitializeRoute()
     {
@@ -127,8 +128,10 @@ public class RouteController : MonoBehaviour
 
     private void Update()
     {
-        // Don't spawn bees if flower patch is locked
-        if (flowerPatchController != null && flowerPatchController.IsLocked)
+        // Don't spawn bees if region is locked
+        bool isLocked = biomeRegion != null && biomeRegion.IsLocked;
+
+        if (isLocked)
         {
             return;
         }
@@ -154,9 +157,9 @@ public class RouteController : MonoBehaviour
     /// </summary>
     private int GetAllocatedBees()
     {
-        if (flowerPatchController == null)
+        if (biomeRegion == null)
         {
-            Debug.LogWarning($"RouteController on {gameObject.name}: flowerPatchController is null, defaulting to 0 bees");
+            Debug.LogWarning($"RouteController on {gameObject.name}: biomeRegion is null, defaulting to 0 bees");
             return 0;
         }
 
@@ -166,7 +169,7 @@ public class RouteController : MonoBehaviour
             return 0;
         }
 
-        return BeeFleetManager.Instance.GetAllocatedBees(flowerPatchController);
+        return BeeFleetManager.Instance.GetAllocatedBees(biomeRegion);
     }
 
     /// <summary>
@@ -180,21 +183,15 @@ public class RouteController : MonoBehaviour
             return false;
         }
 
-        if (homeFlowerPatch == null)
-        {
-            Debug.LogError($"RouteController on {gameObject.name}: homeFlowerPatch is not assigned!", this);
-            return false;
-        }
-
         if (hiveDestination == null)
         {
             Debug.LogError($"RouteController on {gameObject.name}: hiveDestination is not assigned! Make sure HiveController exists in scene.", this);
             return false;
         }
 
-        if (flowerPatchController == null)
+        if (biomeRegion == null)
         {
-            Debug.LogError($"RouteController on {gameObject.name}: flowerPatchController is not assigned!", this);
+            Debug.LogError($"RouteController on {gameObject.name}: biomeRegion is not assigned!", this);
             return false;
         }
 
@@ -208,8 +205,17 @@ public class RouteController : MonoBehaviour
     /// </summary>
     private void CalculateSpawnInterval()
     {
-        // Get flowerPatch and hive landing positions
-        Vector3 flowerPatchPosition = homeFlowerPatch.position + new Vector3(0f, 0.5f, 0f);
+        // Get flower patch/region position (use region center if available, else homeFlowerPatch)
+        Vector3 flowerPatchPosition;
+        if (biomeRegion != null)
+        {
+            flowerPatchPosition = biomeRegion.GetRegionCenter() + new Vector3(0f, 0.5f, 0f);
+        }
+        else
+        {
+            flowerPatchPosition = homeFlowerPatch.position + new Vector3(0f, 0.5f, 0f);
+        }
+
         Vector3 hiveLanding = hiveDestination.position;
         if (HiveController.Instance != null)
         {
@@ -261,12 +267,38 @@ public class RouteController : MonoBehaviour
     }
 
     /// <summary>
-    /// Spawns a new bee and initializes it with route information
+    /// Spawns a new bee and initializes it with route information.
+    /// For regions, distributes bees across different hex tiles.
     /// </summary>
     private void SpawnBee()
     {
-        // Calculate spawn position (flowerPatch position with slight vertical offset)
-        Vector3 spawnPosition = homeFlowerPatch.position + new Vector3(0f, 0.5f, 0f);
+        // Determine spawn position and home transform
+        Vector3 spawnPosition;
+        Transform homeTransform;
+
+        if (biomeRegion != null && biomeRegion.HexTileCount > 0)
+        {
+            // Region-based spawning: distribute across hex tiles
+            HexTile hexTile = biomeRegion.GetNextBeeSpawnTile();
+            if (hexTile != null)
+            {
+                spawnPosition = hexTile.BeeGatherPosition;
+                homeTransform = hexTile.transform;
+            }
+            else
+            {
+                // Fallback to region center if no hex tiles
+                Debug.LogWarning($"RouteController on {gameObject.name}: BiomeRegion has no hex tiles, using region center");
+                spawnPosition = biomeRegion.GetRegionCenter() + new Vector3(0f, 0.5f, 0f);
+                homeTransform = biomeRegion.transform;
+            }
+        }
+        else
+        {
+            // Legacy single-patch spawning
+            spawnPosition = homeFlowerPatch.position + new Vector3(0f, 0.5f, 0f);
+            homeTransform = homeFlowerPatch;
+        }
 
         // Instantiate bee
         GameObject beeObject = Instantiate(beePrefab, spawnPosition, Quaternion.identity);
@@ -282,7 +314,7 @@ public class RouteController : MonoBehaviour
         }
 
         // Initialize bee with route information
-        bee.Initialize(homeFlowerPatch, hiveDestination);
+        bee.Initialize(homeTransform, hiveDestination);
 
         // Track this bee
         spawnedBees.Add(beeObject);
@@ -292,7 +324,7 @@ public class RouteController : MonoBehaviour
     }
 
     /// <summary>
-    /// Unregisters an bee from this route (called if bee is destroyed)
+    /// Unregisters a bee from this route (called if bee is destroyed)
     /// </summary>
     public void UnregisterBee(GameObject bee)
     {
@@ -340,36 +372,36 @@ public class RouteController : MonoBehaviour
     }
 
     /// <summary>
-    /// Called when flowerPatch capahive is upgraded. Recalculates spacing.
+    /// Called when flower patch capacity is upgraded. Recalculates spacing.
     /// </summary>
     private void OnCapacityUpgraded()
     {
-        Debug.Log($"RouteController on {gameObject.name}: FlowerPatch capahive upgraded");
+        Debug.Log($"RouteController on {gameObject.name}: Capacity upgraded");
 
-        // Recalculate spawn interval (capahive changed, may affect allocation)
+        // Recalculate spawn interval (capacity changed, may affect allocation)
         CalculateSpawnInterval();
     }
 
     /// <summary>
-    /// Called when the flower patch is unlocked.
+    /// Called when the flower patch/region is unlocked.
     /// Activates the route and begins bee spawning.
     /// </summary>
     private void OnFlowerPatchUnlocked()
     {
-        Debug.Log($"RouteController on {gameObject.name}: Flower patch unlocked, activating route");
+        Debug.Log($"RouteController on {gameObject.name}: Unlocked, activating route");
         InitializeRoute();
     }
 
     /// <summary>
-    /// Called when bee allocation changes for this flowerPatch.
+    /// Called when bee allocation changes for this region.
     /// Handles spawning or despawning bees based on new allocation.
     /// </summary>
-    /// <param name="flowerPatch">The flowerPatch whose allocation changed</param>
+    /// <param name="region">The region whose allocation changed</param>
     /// <param name="newAllocation">The new bee allocation count</param>
-    private void OnBeeAllocationChanged(FlowerPatchController flowerPatch, int newAllocation)
+    private void OnBeeAllocationChanged(BiomeRegion region, int newAllocation)
     {
-        // Only respond if this is our flowerPatch
-        if (flowerPatch != flowerPatchController)
+        // Only respond if this is our region
+        if (region != biomeRegion)
         {
             return;
         }
@@ -388,21 +420,4 @@ public class RouteController : MonoBehaviour
 
         // If allocation decreased, excess bees will be destroyed in LateUpdate()
     }
-
-    // private void OnDrawGizmos()
-    // {
-    //     // Visualize route in Scene view
-    //     if (homeFlowerPatch != null && hiveDestination != null)
-    //     {
-    //         Gizmos.color = new Color(255f/255f, 187f/255f, 0f/255f, 0.3f); // #ffbb00 semi-transparent
-    //
-    //         Vector3 hiveLanding = hiveDestination.position;
-    //         if (HiveController.Instance != null)
-    //         {
-    //             hiveLanding = HiveController.Instance.LandingPosition;
-    //         }
-    //
-    //         Gizmos.DrawLine(homeFlowerPatch.position + Vector3.up * 0.5f, hiveLanding);
-    //     }
-    // }
 }

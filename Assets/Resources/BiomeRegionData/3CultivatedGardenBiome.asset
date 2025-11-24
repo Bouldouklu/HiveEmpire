@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 062f1b8a44734364095c8bfe7d60cc84, type: 3}
+  m_Name: 3CultivatedGardenBiome
+  m_EditorClassIdentifier: Assembly-CSharp::BiomeRegionData
+  biomeType: 2
+  displayName: Cultivated Garden
+  description: 
+  hexTileCount: 7
+  regionPrefab: {fileID: 0}
+  flowerPatchData: {fileID: 11400000, guid: f1e51398b404a5648b873a8fd71b653b, type: 2}
+  pollenDisplayName: Garden Pollen
+  pollenIcon: {fileID: 0}
+  pollenMaterial: {fileID: 0}
+  pollenDescription: 
+  unlockCost: 180
+  baseCapacity: 5
+  capacityUpgradeCosts:
+  - 100
+  - 300
+  - 800
+  - 2000
+  - 5000
+  bonusCapacityPerUpgrade: 5
+  maxCapacityTier: 5
+  gatheringDuration: 2

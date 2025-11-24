@@ -175,7 +175,7 @@ public class RecipeProductionManager : MonoBehaviour
         var inventory = HiveController.Instance.GetPollenInventory();
 
         // Create a working copy for allocation simulation (convert to dictionary for easier lookups)
-        Dictionary<FlowerPatchData, int> availableResources = HiveController.Instance.GetPollenInventoryDictionary();
+        Dictionary<FlowerPatchData, float> availableResources = HiveController.Instance.GetPollenInventoryDictionary();
 
         // Process recipes in priority order (top of list = highest priority)
         foreach (var recipe in activeRecipes)
@@ -222,7 +222,7 @@ public class RecipeProductionManager : MonoBehaviour
     /// <summary>
     /// Check if recipe can be produced with given resource pool (tier-adjusted).
     /// </summary>
-    private bool CanProduceWithResources(HoneyRecipe recipe, int tier, Dictionary<FlowerPatchData, int> resources)
+    private bool CanProduceWithResources(HoneyRecipe recipe, int tier, Dictionary<FlowerPatchData, float> resources)
     {
         List<HoneyRecipe.Ingredient> adjustedIngredients = recipe.GetIngredients(tier);
         foreach (var ingredient in adjustedIngredients)
@@ -245,7 +245,7 @@ public class RecipeProductionManager : MonoBehaviour
     /// <summary>
     /// Consume resources from a resource pool (for allocation simulation, tier-adjusted).
     /// </summary>
-    private void ConsumeResourcesFromPool(HoneyRecipe recipe, int tier, Dictionary<FlowerPatchData, int> resources)
+    private void ConsumeResourcesFromPool(HoneyRecipe recipe, int tier, Dictionary<FlowerPatchData, float> resources)
     {
         List<HoneyRecipe.Ingredient> adjustedIngredients = recipe.GetIngredients(tier);
         foreach (var ingredient in adjustedIngredients)

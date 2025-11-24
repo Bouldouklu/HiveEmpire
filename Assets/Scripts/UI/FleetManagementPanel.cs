@@ -296,8 +296,11 @@ public class FleetManagementPanel : MonoBehaviour
             return;
         }
 
-        // Find all flowerPatchs in the scene
+        // Find all flowerPatchs in the scene (FlowerPatchController acts as bridge to BiomeRegion)
         FlowerPatchController[] allFlowerPatchs = FindObjectsByType<FlowerPatchController>(FindObjectsSortMode.None);
+
+        // Filter to only unlocked regions
+        allFlowerPatchs = System.Array.FindAll(allFlowerPatchs, fp => !fp.IsLocked);
 
         // Sort by distance from hive (closest first)
         if (HiveController.Instance != null)
@@ -385,7 +388,13 @@ public class FleetManagementPanel : MonoBehaviour
     {
         if (entryObject == null || flowerPatch == null) return;
 
-        int allocatedBees = BeeFleetManager.Instance != null ? BeeFleetManager.Instance.GetAllocatedBees(flowerPatch) : 0;
+        // Get the BiomeRegion from the FlowerPatchController
+        BiomeRegion biomeRegion = flowerPatch.GetBiomeRegion();
+        int allocatedBees = 0;
+        if (BeeFleetManager.Instance != null && biomeRegion != null)
+        {
+            allocatedBees = BeeFleetManager.Instance.GetAllocatedBees(biomeRegion);
+        }
         int capacity = flowerPatch.MaxBeeCapacity;
         int availableBees = BeeFleetManager.Instance != null ? BeeFleetManager.Instance.GetAvailableBees() : 0;
 
@@ -444,7 +453,15 @@ public class FleetManagementPanel : MonoBehaviour
     {
         if (flowerPatch == null || BeeFleetManager.Instance == null) return;
 
-        bool success = BeeFleetManager.Instance.AllocateBee(flowerPatch);
+        // Get the BiomeRegion from the FlowerPatchController
+        BiomeRegion biomeRegion = flowerPatch.GetBiomeRegion();
+        if (biomeRegion == null)
+        {
+            Debug.LogWarning($"FlowerPatchController {flowerPatch.name} has no BiomeRegion!");
+            return;
+        }
+
+        bool success = BeeFleetManager.Instance.AllocateBee(biomeRegion);
 
         if (!success)
         {
@@ -462,7 +479,15 @@ public class FleetManagementPanel : MonoBehaviour
     {
         if (flowerPatch == null || BeeFleetManager.Instance == null) return;
 
-        bool success = BeeFleetManager.Instance.DeallocateBee(flowerPatch);
+        // Get the BiomeRegion from the FlowerPatchController
+        BiomeRegion biomeRegion = flowerPatch.GetBiomeRegion();
+        if (biomeRegion == null)
+        {
+            Debug.LogWarning($"FlowerPatchController {flowerPatch.name} has no BiomeRegion!");
+            return;
+        }
+
+        bool success = BeeFleetManager.Instance.DeallocateBee(biomeRegion);
 
         if (!success)
         {
@@ -476,7 +501,7 @@ public class FleetManagementPanel : MonoBehaviour
     /// <summary>
     /// Called when bee allocation changes
     /// </summary>
-    private void OnBeeAllocationChanged(FlowerPatchController flowerPatch, int newAllocation)
+    private void OnBeeAllocationChanged(BiomeRegion biomeRegion, int newAllocation)
     {
         // Only update if panel is visible
         if (panelRoot != null && panelRoot.activeSelf)

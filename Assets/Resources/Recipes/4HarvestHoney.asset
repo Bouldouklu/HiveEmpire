@@ -19,9 +19,9 @@ MonoBehaviour:
   prerequisiteRecipes: []
   ingredients:
   - pollenType: {fileID: 11400000, guid: 9d98e910fbe782a4b98d50dc3ceb0718, type: 2}
-    quantity: 3
+    quantity: 4
   productionTimeSeconds: 10
-  honeyValue: 10.4
+  honeyValue: 60
   upgradeCosts:
   - 40
   - 120
@@ -48,6 +48,6 @@ MonoBehaviour:
   - 50
   - 100
   - 200
-  - 300
+  - 350
   icon: {fileID: 0}
   honeyColor: {r: 1, g: 0.75, b: 0.2, a: 1}

@@ -49,7 +49,8 @@ public class BeeController : MonoBehaviour
     // References
     private Transform homeFlowerPatch;
     private Transform hiveDestination;
-    private FlowerPatchController homeFlowerPatchController;
+    private BiomeRegion homeBiomeRegion;
+    private Vector3 homePosition; // Cached home position with proper offset
     private GameObject pollenObject;
     private MeshRenderer pollenRenderer;
     private TrailRenderer trailRenderer;
@@ -98,11 +99,28 @@ public class BeeController : MonoBehaviour
         homeFlowerPatch = flowerPatch;
         hiveDestination = hive;
 
-        // Get reference to flower patch controller
-        homeFlowerPatchController = flowerPatch.GetComponent<FlowerPatchController>();
-        if (homeFlowerPatchController == null)
+        // Get reference to biome region (check parent if not on same GameObject)
+        homeBiomeRegion = flowerPatch.GetComponent<BiomeRegion>();
+        if (homeBiomeRegion == null)
         {
-            Debug.LogError($"Bee {name}: Home flower patch {flowerPatch.name} does not have FlowerPatchController component!");
+            homeBiomeRegion = flowerPatch.GetComponentInParent<BiomeRegion>();
+        }
+
+        if (homeBiomeRegion == null)
+        {
+            Debug.LogError($"Bee {name}: Home flower patch {flowerPatch.name} does not have BiomeRegion component!");
+        }
+
+        // Cache home position with proper offset (use HexTile position if available)
+        HexTile hexTile = flowerPatch.GetComponent<HexTile>();
+        if (hexTile != null)
+        {
+            homePosition = hexTile.BeeGatherPosition;
+        }
+        else
+        {
+            // Fallback for non-HexTile spawns
+            homePosition = flowerPatch.position + new Vector3(0f, 2f, 0f);
         }
 
         // Cache pollen GameObject references
@@ -153,10 +171,10 @@ public class BeeController : MonoBehaviour
             ApplySeasonalSpeedModifier();
         }
 
-        // Cache gathering duration from FlowerPatchData
-        if (homeFlowerPatchController != null && homeFlowerPatchController.FlowerPatchData != null)
+        // Cache gathering duration from BiomeRegionData
+        if (homeBiomeRegion != null && homeBiomeRegion.RegionData != null)
         {
-            gatheringDuration = homeFlowerPatchController.FlowerPatchData.gatheringDuration;
+            gatheringDuration = homeBiomeRegion.RegionData.GatheringDuration;
         }
         else
         {
@@ -259,7 +277,7 @@ public class BeeController : MonoBehaviour
         }
 
         startPosition = transform.position;
-        endPosition = homeFlowerPatch.position + new Vector3(0f, 0.5f, 0f);
+        endPosition = homePosition; // Use cached home position with proper offset
 
         SetupFlightPath();
         currentState = FlightState.ToFlowerPatch;
@@ -279,7 +297,8 @@ public class BeeController : MonoBehaviour
         // Transition to gathering state
         currentState = FlightState.Gathering;
 
-        Debug.Log($"Bee {name}: Started gathering at {homeFlowerPatchController.GetBiomeType()} patch for {gatheringDuration} seconds");
+        BiomeType biomeType = homeBiomeRegion != null ? homeBiomeRegion.BiomeType : BiomeType.WildMeadow;
+        Debug.Log($"Bee {name}: Started gathering at {biomeType} region for {gatheringDuration} seconds");
     }
 
     /// <summary>
@@ -494,26 +513,34 @@ public class BeeController : MonoBehaviour
     }
 
     /// <summary>
-    /// Picks up pollen from the home flower patch. Instantly fills pollen sacs to capacity.
+    /// Picks up pollen from the home biome region. Instantly fills pollen sacs to capacity.
     /// </summary>
     private void PickupPollen()
     {
-        if (homeFlowerPatchController == null)
+        if (homeBiomeRegion == null)
         {
-            Debug.LogWarning($"Bee {name}: Cannot pick up pollen - no flower patch controller reference!");
+            Debug.LogWarning($"Bee {name}: Cannot pick up pollen - no biome region reference!");
+            return;
+        }
+
+        if (homeBiomeRegion.RegionData == null)
+        {
+            Debug.LogWarning($"Bee {name}: BiomeRegion has no BiomeRegionData!");
+            return;
+        }
+
+        BiomeRegionData regionData = homeBiomeRegion.RegionData;
+
+        // Get FlowerPatchData from region
+        FlowerPatchData patchData = regionData.flowerPatchData;
+        if (patchData == null)
+        {
+            Debug.LogWarning($"Bee {name}: BiomeRegionData has no FlowerPatchData assigned!");
             return;
         }
 
         // Clear any existing pollen
         currentPollen.Clear();
-
-        // Get the flower patch data
-        FlowerPatchData patchData = homeFlowerPatchController.GetFlowerPatchData();
-        if (patchData == null)
-        {
-            Debug.LogWarning($"Bee {name}: FlowerPatchController has no FlowerPatchData!");
-            return;
-        }
 
         // Fill pollen sacs to capacity
         for (int i = 0; i < pollenCapacity; i++)

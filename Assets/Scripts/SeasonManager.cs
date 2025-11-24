@@ -30,7 +30,7 @@ public class SeasonManager : MonoBehaviour
     [Tooltip("Current season of the year")]
     [SerializeField] private Season currentSeason = Season.Spring;
 
-    [Tooltip("Current week number (1-24)")]
+    [Tooltip("Current week number (1-21)")]
     [SerializeField] private int currentWeek = 1;
 
     [Tooltip("Time accumulated toward next week (in real seconds)")]
@@ -43,17 +43,17 @@ public class SeasonManager : MonoBehaviour
     /// <summary>Gets the current season</summary>
     public Season CurrentSeason => currentSeason;
 
-    /// <summary>Gets the current week (1-24)</summary>
+    /// <summary>Gets the current week (1-21)</summary>
     public int CurrentWeek => currentWeek;
 
     /// <summary>Gets progress through current week (0-1)</summary>
     public float WeekProgress => Mathf.Clamp01(weekTimer / realSecondsPerGameWeek);
 
     /// <summary>Gets progress through entire year (0-1)</summary>
-    public float YearProgress => Mathf.Clamp01((currentWeek - 1) / 24f);
+    public float YearProgress => Mathf.Clamp01((currentWeek - 1) / 21f);
 
     /// <summary>Gets the total number of weeks in the entire year</summary>
-    public const int TOTAL_WEEKS_IN_YEAR = 24;
+    public const int TOTAL_WEEKS_IN_YEAR = 21;
 
     // Events
     [Header("Events")]
@@ -138,7 +138,7 @@ public class SeasonManager : MonoBehaviour
 
         Debug.Log($"[SeasonManager] Week advanced to {currentWeek}");
 
-        // Check if year has ended (Week 25 = Winter = Game Over)
+        // Check if year has ended (Week 22 = Winter = Game Over)
         if (currentWeek > TOTAL_WEEKS_IN_YEAR)
         {
             EndYear();
@@ -179,11 +179,11 @@ public class SeasonManager : MonoBehaviour
     /// </summary>
     private Season GetSeasonForWeek(int week)
     {
-        if (week <= 8)
+        if (week <= 7)
             return Season.Spring;
-        else if (week <= 16)
+        else if (week <= 14)
             return Season.Summer;
-        else if (week <= 24)
+        else if (week <= 21)
             return Season.Autumn;
         else
             return Season.Winter; // Should never reach here during gameplay
@@ -307,9 +307,9 @@ public class SeasonManager : MonoBehaviour
         // Calculate the first week of next season
         int targetWeek = nextSeason switch
         {
-            Season.Summer => 9,
-            Season.Autumn => 17,
-            Season.Winter => 25,
+            Season.Summer => 8,
+            Season.Autumn => 15,
+            Season.Winter => 22,
             _ => 1
         };
 

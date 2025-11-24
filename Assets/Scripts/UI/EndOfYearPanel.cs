@@ -265,8 +265,10 @@ public class EndOfYearPanel : MonoBehaviour
 
         if (totalResourcesText != null)
         {
-            int totalResources = GetTotalResourceCount(summary.totalResourcesCollected);
-            totalResourcesText.text = $"Resources Collected: {totalResources}";
+            float totalResources = GetTotalResourceCount(summary.totalResourcesCollected);
+            // Display with no decimals if whole number, 1 decimal otherwise
+            string resourceStr = totalResources % 1 == 0 ? totalResources.ToString("F0") : totalResources.ToString("F1");
+            totalResourcesText.text = $"Resources Collected: {resourceStr}";
         }
 
         // Economic stats
@@ -420,9 +422,9 @@ public class EndOfYearPanel : MonoBehaviour
     /// <summary>
     /// Calculate total resources from dictionary.
     /// </summary>
-    private int GetTotalResourceCount(Dictionary<FlowerPatchData, int> resources)
+    private float GetTotalResourceCount(Dictionary<FlowerPatchData, float> resources)
     {
-        int total = 0;
+        float total = 0f;
         foreach (var kvp in resources)
         {
             total += kvp.Value;

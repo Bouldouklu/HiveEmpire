@@ -152,10 +152,11 @@ private void UpdateDisplay()
                 if (slot.pollenType == null)
                     continue;
 
-                int count = slot.quantity;
+                float count = slot.quantity;
 
-                // Display count only (no capacity limit)
-                resourceText += $"{slot.pollenType.pollenDisplayName}: {count}\n";
+                // Display count with 1 decimal if not a whole number
+                string countStr = count % 1 == 0 ? count.ToString("F0") : count.ToString("F1");
+                resourceText += $"{slot.pollenType.pollenDisplayName}: {countStr}\n";
             }
         }
 

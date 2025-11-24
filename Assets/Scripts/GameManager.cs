@@ -197,7 +197,7 @@ public class GameManager : MonoBehaviour
         }
         Debug.Log($"[GameManager] Destroyed {allBees.Length} bees");
 
-        // Destroy all flower patch GameObjects
+        // Destroy all biome region GameObjects (FlowerPatchController acts as bridge to find them)
         FlowerPatchController[] allFlowerPatches = FindObjectsByType<FlowerPatchController>(FindObjectsSortMode.None);
         foreach (var flowerPatch in allFlowerPatches)
         {

@@ -14,9 +14,9 @@ public class HoneyRecipe : ScriptableObject
         [Tooltip("The flower patch data that defines the pollen type required")]
         public FlowerPatchData pollenType;
 
-        [Min(1)]
-        [Tooltip("Quantity of this pollen type required")]
-        public int quantity = 1;
+        [Min(0.1f)]
+        [Tooltip("Quantity of this pollen type required (supports decimals for early game)")]
+        public float quantity = 1f;
     }
 
     [Header("Recipe Identity")]
@@ -64,7 +64,7 @@ public class HoneyRecipe : ScriptableObject
     public float[] productionTimeReductionPercent = new float[] { 0f, 15f, 25f, 35f, 50f, 60f };
 
     [Tooltip("Honey value increase percentage per tier (Tier 0, 1, 2, 3, 4, 5)")]
-    [Range(0f, 300f)]
+    [Min(0f)]
     public float[] valueIncreasePercent = new float[] { 0f, 20f, 40f, 60f, 100f, 150f };
 
     [Header("Visual (Optional)")]
@@ -76,9 +76,9 @@ public class HoneyRecipe : ScriptableObject
 
     /// <summary>
     /// Check if the hive has enough pollen in inventory to start this recipe.
-    /// Works with Dictionary<FlowerPatchData, int> inventory.
+    /// Works with Dictionary<FlowerPatchData, float> inventory.
     /// </summary>
-    public bool CanProduce(Dictionary<FlowerPatchData, int> inventory)
+    public bool CanProduce(Dictionary<FlowerPatchData, float> inventory)
     {
         foreach (var ingredient in ingredients)
         {
@@ -122,11 +122,11 @@ public class HoneyRecipe : ScriptableObject
 
     /// <summary>
     /// Get total ingredient cost for display purposes.
-    /// Returns Dictionary<FlowerPatchData, int>.
+    /// Returns Dictionary<FlowerPatchData, float>.
     /// </summary>
-    public Dictionary<FlowerPatchData, int> GetTotalIngredients()
+    public Dictionary<FlowerPatchData, float> GetTotalIngredients()
     {
-        Dictionary<FlowerPatchData, int> totals = new Dictionary<FlowerPatchData, int>();
+        Dictionary<FlowerPatchData, float> totals = new Dictionary<FlowerPatchData, float>();
         foreach (var ingredient in ingredients)
         {
             if (ingredient.pollenType == null)
@@ -182,7 +182,7 @@ public class HoneyRecipe : ScriptableObject
             Ingredient adjusted = new Ingredient
             {
                 pollenType = ingredient.pollenType,
-                quantity = Mathf.Max(1, Mathf.RoundToInt(ingredient.quantity * multiplier))
+                quantity = Mathf.Max(0.1f, ingredient.quantity * multiplier) // Min 0.1 to support decimal values
             };
             adjustedIngredients.Add(adjusted);
         }
@@ -221,9 +221,9 @@ public class HoneyRecipe : ScriptableObject
 
     /// <summary>
     /// Check if the hive has enough pollen in inventory to start this recipe at given tier.
-    /// Works with Dictionary<FlowerPatchData, int> inventory.
+    /// Works with Dictionary<FlowerPatchData, float> inventory.
     /// </summary>
-    public bool CanProduce(Dictionary<FlowerPatchData, int> inventory, int tier)
+    public bool CanProduce(Dictionary<FlowerPatchData, float> inventory, int tier)
     {
         List<Ingredient> adjustedIngredients = GetIngredients(tier);
         foreach (var ingredient in adjustedIngredients)

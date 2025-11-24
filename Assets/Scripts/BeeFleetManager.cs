@@ -29,12 +29,12 @@ public class BeeFleetManager : MonoBehaviour
     [Tooltip("Bee fleet upgrade data defining purchase costs and bee amounts")]
     private BeeFleetUpgradeData beeFleetUpgradeData;
 
-    // Track bee allocation per flower patch (FlowerPatch -> allocated bee count)
-    private Dictionary<FlowerPatchController, int> beeAllocations = new Dictionary<FlowerPatchController, int>();
+    // Track bee allocation per biome region (BiomeRegion -> allocated bee count)
+    private Dictionary<BiomeRegion, int> beeAllocations = new Dictionary<BiomeRegion, int>();
 
     [Header("Events")]
-    [Tooltip("Fired when bee allocation changes. Passes (flowerPatch, newBeeCount).")]
-    public UnityEvent<FlowerPatchController, int> OnBeeAllocationChanged;
+    [Tooltip("Fired when bee allocation changes. Passes (biomeRegion, newBeeCount).")]
+    public UnityEvent<BiomeRegion, int> OnBeeAllocationChanged;
 
     [Tooltip("Fired when total bees owned changes. Passes new total.")]
     public UnityEvent<int> OnTotalBeesChanged;
@@ -71,26 +71,26 @@ public class BeeFleetManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Gets the number of bees currently allocated to a specific flower patch.
+    /// Gets the number of bees currently allocated to a specific biome region.
     /// </summary>
-    /// <param name="flowerPatch">Flower patch to query</param>
-    /// <returns>Number of bees assigned to this flower patch's pollen route</returns>
-    public int GetAllocatedBees(FlowerPatchController flowerPatch)
+    /// <param name="biomeRegion">Biome region to query</param>
+    /// <returns>Number of bees assigned to this region's pollen route</returns>
+    public int GetAllocatedBees(BiomeRegion biomeRegion)
     {
-        if (flowerPatch == null)
+        if (biomeRegion == null)
         {
-            Debug.LogWarning("BeeFleetManager: Attempted to get allocation for null flower patch");
+            Debug.LogWarning("BeeFleetManager: Attempted to get allocation for null biome region");
             return 0;
         }
 
-        return beeAllocations.TryGetValue(flowerPatch, out int count) ? count : 0;
+        return beeAllocations.TryGetValue(biomeRegion, out int count) ? count : 0;
     }
 
     /// <summary>
-    /// Gets the total number of registered flower patches (flower patches with bee allocations).
+    /// Gets the total number of registered biome regions (regions with bee allocations).
     /// </summary>
-    /// <returns>Count of flower patches currently registered with the fleet manager</returns>
-    public int GetRegisteredFlowerPatchCount()
+    /// <returns>Count of biome regions currently registered with the fleet manager</returns>
+    public int GetRegisteredRegionCount()
     {
         return beeAllocations.Count;
     }
@@ -227,24 +227,24 @@ public class BeeFleetManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Allocates one bee to a flower patch's pollen route.
+    /// Allocates one bee to a biome region's pollen route.
     /// Validates capacity constraints and bee availability.
     /// </summary>
-    /// <param name="flowerPatch">Flower patch to allocate bee to</param>
+    /// <param name="biomeRegion">Biome region to allocate bee to</param>
     /// <returns>True if allocation succeeded, false if constraints violated</returns>
-    public bool AllocateBee(FlowerPatchController flowerPatch)
+    public bool AllocateBee(BiomeRegion biomeRegion)
     {
-        if (flowerPatch == null)
+        if (biomeRegion == null)
         {
-            Debug.LogWarning("BeeFleetManager: Attempted to allocate bee to null flower patch");
+            Debug.LogWarning("BeeFleetManager: Attempted to allocate bee to null biome region");
             return false;
         }
 
-        // Check if flower patch is at capacity
-        int currentAllocation = GetAllocatedBees(flowerPatch);
-        if (currentAllocation >= flowerPatch.MaxBeeCapacity)
+        // Check if biome region is at capacity
+        int currentAllocation = GetAllocatedBees(biomeRegion);
+        if (currentAllocation >= biomeRegion.MaxBeeCapacity)
         {
-            Debug.LogWarning($"BeeFleetManager: Flower patch '{flowerPatch.name}' is at capacity ({flowerPatch.MaxBeeCapacity})");
+            Debug.LogWarning($"BeeFleetManager: Biome region '{biomeRegion.name}' is at capacity ({biomeRegion.MaxBeeCapacity})");
             return false;
         }
 
@@ -256,80 +256,80 @@ public class BeeFleetManager : MonoBehaviour
         }
 
         // Allocate bee
-        if (!beeAllocations.ContainsKey(flowerPatch))
+        if (!beeAllocations.ContainsKey(biomeRegion))
         {
-            beeAllocations[flowerPatch] = 0;
+            beeAllocations[biomeRegion] = 0;
         }
 
-        beeAllocations[flowerPatch]++;
-        OnBeeAllocationChanged?.Invoke(flowerPatch, beeAllocations[flowerPatch]);
+        beeAllocations[biomeRegion]++;
+        OnBeeAllocationChanged?.Invoke(biomeRegion, beeAllocations[biomeRegion]);
 
-        Debug.Log($"BeeFleetManager: Allocated bee to '{flowerPatch.name}'. Now has {beeAllocations[flowerPatch]}/{flowerPatch.MaxBeeCapacity}. Available: {GetAvailableBees()}");
+        Debug.Log($"BeeFleetManager: Allocated bee to '{biomeRegion.name}'. Now has {beeAllocations[biomeRegion]}/{biomeRegion.MaxBeeCapacity}. Available: {GetAvailableBees()}");
         return true;
     }
 
     /// <summary>
-    /// Deallocates one bee from a flower patch's pollen route, returning it to the global pool.
+    /// Deallocates one bee from a biome region's pollen route, returning it to the global pool.
     /// </summary>
-    /// <param name="flowerPatch">Flower patch to deallocate bee from</param>
+    /// <param name="biomeRegion">Biome region to deallocate bee from</param>
     /// <returns>True if deallocation succeeded, false if constraints violated</returns>
-    public bool DeallocateBee(FlowerPatchController flowerPatch)
+    public bool DeallocateBee(BiomeRegion biomeRegion)
     {
-        if (flowerPatch == null)
+        if (biomeRegion == null)
         {
-            Debug.LogWarning("BeeFleetManager: Attempted to deallocate bee from null flower patch");
+            Debug.LogWarning("BeeFleetManager: Attempted to deallocate bee from null biome region");
             return false;
         }
 
-        // Check if flower patch has any bees allocated
-        int currentAllocation = GetAllocatedBees(flowerPatch);
+        // Check if biome region has any bees allocated
+        int currentAllocation = GetAllocatedBees(biomeRegion);
         if (currentAllocation <= 0)
         {
-            Debug.LogWarning($"BeeFleetManager: Flower patch '{flowerPatch.name}' has no bees to deallocate");
+            Debug.LogWarning($"BeeFleetManager: Biome region '{biomeRegion.name}' has no bees to deallocate");
             return false;
         }
 
         // Deallocate bee
-        beeAllocations[flowerPatch]--;
+        beeAllocations[biomeRegion]--;
 
         // Clean up dictionary entry if allocation reaches 0
-        if (beeAllocations[flowerPatch] == 0)
+        if (beeAllocations[biomeRegion] == 0)
         {
-            beeAllocations.Remove(flowerPatch);
+            beeAllocations.Remove(biomeRegion);
         }
 
-        OnBeeAllocationChanged?.Invoke(flowerPatch, GetAllocatedBees(flowerPatch));
+        OnBeeAllocationChanged?.Invoke(biomeRegion, GetAllocatedBees(biomeRegion));
 
-        Debug.Log($"BeeFleetManager: Deallocated bee from '{flowerPatch.name}'. Now has {GetAllocatedBees(flowerPatch)}/{flowerPatch.MaxBeeCapacity}. Available: {GetAvailableBees()}");
+        Debug.Log($"BeeFleetManager: Deallocated bee from '{biomeRegion.name}'. Now has {GetAllocatedBees(biomeRegion)}/{biomeRegion.MaxBeeCapacity}. Available: {GetAvailableBees()}");
         return true;
     }
 
     /// <summary>
-    /// Unregisters a flower patch from the fleet system (called when flower patch is destroyed).
+    /// Unregisters a biome region from the fleet system (called when region is destroyed).
     /// Returns allocated bees to the global pool.
     /// </summary>
-    /// <param name="flowerPatch">Flower patch being destroyed</param>
-    public void UnregisterFlowerPatch(FlowerPatchController flowerPatch)
+    /// <param name="biomeRegion">Biome region being destroyed</param>
+    public void UnregisterBiomeRegion(BiomeRegion biomeRegion)
     {
-        if (flowerPatch == null) return;
+        if (biomeRegion == null) return;
 
-        if (beeAllocations.ContainsKey(flowerPatch))
+        if (beeAllocations.ContainsKey(biomeRegion))
         {
-            int freedBees = beeAllocations[flowerPatch];
-            beeAllocations.Remove(flowerPatch);
+            int freedBees = beeAllocations[biomeRegion];
+            beeAllocations.Remove(biomeRegion);
 
-            Debug.Log($"BeeFleetManager: Unregistered flower patch '{flowerPatch.name}'. Freed {freedBees} bees. Available: {GetAvailableBees()}");
+            Debug.Log($"BeeFleetManager: Unregistered biome region '{biomeRegion.name}'. Freed {freedBees} bees. Available: {GetAvailableBees()}");
         }
     }
 
     /// <summary>
-    /// Gets all flower patches that currently have bee allocations.
+    /// Gets all biome regions that currently have bee allocations.
     /// Useful for UI display and iteration.
     /// </summary>
-    /// <returns>List of flower patches with allocated bees</returns>
-    public List<FlowerPatchController> GetAllAllocatedFlowerPatches()
+    /// <returns>List of biome regions with allocated bees</returns>
+    public List<BiomeRegion> GetAllAllocatedRegions()
     {
-        return new List<FlowerPatchController>(beeAllocations.Keys);
+        return new List<BiomeRegion>(beeAllocations.Keys);
     }
 
     /// <summary>

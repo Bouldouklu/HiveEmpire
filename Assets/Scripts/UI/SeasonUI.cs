@@ -19,7 +19,7 @@ public class SeasonUI : MonoBehaviour
     [SerializeField] private Image seasonBackgroundPanel;
 
     [Header("Week Progress")]
-    [Tooltip("Text displaying current week (e.g., 'Week 5 / 24')")]
+    [Tooltip("Text displaying current week (e.g., 'Week 5 / 21')")]
     [SerializeField] private TextMeshProUGUI weekCounterText;
 
     [Tooltip("Progress bar showing completion of current week")]

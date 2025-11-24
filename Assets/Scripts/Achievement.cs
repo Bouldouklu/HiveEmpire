@@ -48,9 +48,9 @@ public class Achievement : ScriptableObject
     /// <summary>
     /// Get total resources collected across all types.
     /// </summary>
-    private int GetTotalResourcesCount(YearSummary summary)
+    private float GetTotalResourcesCount(YearSummary summary)
     {
-        int total = 0;
+        float total = 0f;
         foreach (var kvp in summary.totalResourcesCollected)
         {
             total += kvp.Value;

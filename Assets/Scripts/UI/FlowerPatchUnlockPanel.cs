@@ -38,6 +38,9 @@ public class FlowerPatchUnlockPanel : MonoBehaviour
     // Current flower patch being unlocked
     private FlowerPatchController currentFlowerPatch;
 
+    // Current biome region being unlocked (new region-based system)
+    private BiomeRegion currentBiomeRegion;
+
     private void Awake()
     {
         // Setup button listeners
@@ -133,6 +136,7 @@ public class FlowerPatchUnlockPanel : MonoBehaviour
         }
 
         currentFlowerPatch = flowerPatch;
+        currentBiomeRegion = null; // Clear region reference
 
         // Show blocker and panel
         if (panelBlocker != null)
@@ -146,6 +150,40 @@ public class FlowerPatchUnlockPanel : MonoBehaviour
 
         // Update UI with flower patch information
         UpdateUI();
+    }
+
+    /// <summary>
+    /// Shows the unlock panel for a specific locked biome region (new region-based system)
+    /// </summary>
+    public void ShowPanelForRegion(BiomeRegion biomeRegion)
+    {
+        if (biomeRegion == null)
+        {
+            Debug.LogError("FlowerPatchUnlockPanel: Cannot show panel for null biome region");
+            return;
+        }
+
+        if (!biomeRegion.IsLocked)
+        {
+            Debug.LogWarning($"FlowerPatchUnlockPanel: Biome region {biomeRegion.name} is already unlocked");
+            return;
+        }
+
+        currentBiomeRegion = biomeRegion;
+        currentFlowerPatch = null; // Clear flower patch reference
+
+        // Show blocker and panel
+        if (panelBlocker != null)
+        {
+            panelBlocker.SetActive(true);
+        }
+        if (panelRoot != null)
+        {
+            panelRoot.SetActive(true);
+        }
+
+        // Update UI with biome region information
+        UpdateUIForRegion();
     }
 
     /// <summary>
@@ -163,6 +201,7 @@ public class FlowerPatchUnlockPanel : MonoBehaviour
         }
 
         currentFlowerPatch = null;
+        currentBiomeRegion = null;
     }
 
     /// <summary>
@@ -198,6 +237,41 @@ public class FlowerPatchUnlockPanel : MonoBehaviour
 
         // Unlock cost and button
         UpdateUnlockButton();
+    }
+
+    /// <summary>
+    /// Updates all UI elements with current biome region information (new region-based system)
+    /// </summary>
+    private void UpdateUIForRegion()
+    {
+        if (currentBiomeRegion == null || currentBiomeRegion.RegionData == null)
+        {
+            return;
+        }
+
+        BiomeRegionData data = currentBiomeRegion.RegionData;
+
+        // Region name
+        if (flowerPatchNameText != null)
+        {
+            flowerPatchNameText.text = $"{data.displayName} Region";
+        }
+
+        // Description
+        if (descriptionText != null)
+        {
+            if (!string.IsNullOrEmpty(data.description))
+            {
+                descriptionText.text = data.description;
+            }
+            else
+            {
+                descriptionText.text = $"Unlock this {data.biomeType} region ({data.HexTileCount} hex tiles) to start collecting {data.pollenDisplayName}.";
+            }
+        }
+
+        // Unlock cost and button
+        UpdateUnlockButtonForRegion();
     }
 
     /// <summary>
@@ -239,6 +313,44 @@ public class FlowerPatchUnlockPanel : MonoBehaviour
     }
 
     /// <summary>
+    /// Updates unlock button state and cost display for regions (new region-based system)
+    /// </summary>
+    private void UpdateUnlockButtonForRegion()
+    {
+        if (currentBiomeRegion == null) return;
+
+        float unlockCost = currentBiomeRegion.GetUnlockCost();
+        bool canAfford = EconomyManager.Instance != null && EconomyManager.Instance.CanAfford(unlockCost);
+
+        // Get colors from material mapper (single source of truth)
+        Color affordableColor = Color.green; // Fallback
+        Color unaffordableColor = Color.red; // Fallback
+        if (FlowerPatchMaterialMapper.Instance != null)
+        {
+            affordableColor = FlowerPatchMaterialMapper.Instance.GetAffordableColor();
+            unaffordableColor = FlowerPatchMaterialMapper.Instance.GetUnaffordableColor();
+        }
+
+        // Update cost text
+        if (unlockCostText != null)
+        {
+            unlockCostText.text = $"Cost: ${unlockCost:F0}";
+            unlockCostText.color = canAfford ? affordableColor : unaffordableColor;
+        }
+
+        // Update button
+        if (unlockButton != null)
+        {
+            unlockButton.interactable = canAfford;
+        }
+
+        if (unlockButtonText != null)
+        {
+            unlockButtonText.text = canAfford ? "Unlock Region" : "Insufficient Funds";
+        }
+    }
+
+    /// <summary>
     /// Called when the close button is clicked
     /// </summary>
     private void OnCloseButtonClicked()
@@ -252,9 +364,16 @@ public class FlowerPatchUnlockPanel : MonoBehaviour
     private void OnMoneyChanged(float newAmount)
     {
         // Only update if panel is visible
-        if (panelRoot != null && panelRoot.activeSelf && currentFlowerPatch != null)
+        if (panelRoot != null && panelRoot.activeSelf)
         {
-            UpdateUnlockButton();
+            if (currentFlowerPatch != null)
+            {
+                UpdateUnlockButton();
+            }
+            else if (currentBiomeRegion != null)
+            {
+                UpdateUnlockButtonForRegion();
+            }
         }
     }
 
@@ -263,16 +382,38 @@ public class FlowerPatchUnlockPanel : MonoBehaviour
     /// </summary>
     private void OnUnlockButtonClicked()
     {
+        // Handle region-based system
+        if (currentBiomeRegion != null)
+        {
+            // Attempt to unlock region
+            bool success = currentBiomeRegion.UnlockRegion();
+
+            if (success)
+            {
+                Debug.Log($"Successfully unlocked {currentBiomeRegion.name}");
+
+                // Close panel after successful unlock
+                HidePanel();
+            }
+            else
+            {
+                Debug.LogWarning($"Failed to unlock {currentBiomeRegion.name}");
+                // Panel stays open so player can see why it failed
+            }
+            return;
+        }
+
+        // Handle legacy flower patch system
         if (currentFlowerPatch == null)
         {
-            Debug.LogError("FlowerPatchUnlockPanel: No flower patch selected for unlock");
+            Debug.LogError("FlowerPatchUnlockPanel: No flower patch or region selected for unlock");
             return;
         }
 
         // Attempt to unlock
-        bool success = currentFlowerPatch.UnlockPatch();
+        bool patchSuccess = currentFlowerPatch.UnlockPatch();
 
-        if (success)
+        if (patchSuccess)
         {
             Debug.Log($"Successfully unlocked {currentFlowerPatch.name}");
 

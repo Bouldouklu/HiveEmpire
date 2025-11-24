@@ -12,12 +12,12 @@ public class IngredientEntryUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI quantityText;
 
     public FlowerPatchData PollenType { get; private set; }
-    public int RequiredQuantity { get; private set; }
+    public float RequiredQuantity { get; private set; }
 
     /// <summary>
     /// Initializes the ingredient entry with pollen type and required quantity.
     /// </summary>
-    public void Initialize(FlowerPatchData pollenType, int required)
+    public void Initialize(FlowerPatchData pollenType, float required)
     {
         PollenType = pollenType;
         RequiredQuantity = required;
@@ -45,11 +45,14 @@ public class IngredientEntryUI : MonoBehaviour
     /// <summary>
     /// Updates the display with current available quantity and color coding.
     /// </summary>
-    public void UpdateAvailability(int available, Color textColor)
+    public void UpdateAvailability(float available, Color textColor)
     {
         if (quantityText != null)
         {
-            quantityText.text = $"{available}/{RequiredQuantity}";
+            // Display with 1 decimal if it's not a whole number
+            string availableStr = available % 1 == 0 ? available.ToString("F0") : available.ToString("F1");
+            string requiredStr = RequiredQuantity % 1 == 0 ? RequiredQuantity.ToString("F0") : RequiredQuantity.ToString("F1");
+            quantityText.text = $"{availableStr}/{requiredStr}";
             quantityText.color = textColor;
         }
     }

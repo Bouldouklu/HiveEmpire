@@ -15,15 +15,15 @@ MonoBehaviour:
   recipeName: Pastoral Honey
   description: 
   isUnlockedByDefault: 0
-  unlockCost: 600
+  unlockCost: 150
   prerequisiteRecipes: []
   ingredients:
   - pollenType: {fileID: 11400000, guid: 9956b02be1e4aa64c8b03e6778487b8a, type: 2}
-    quantity: 4
+    quantity: 6
   - pollenType: {fileID: 11400000, guid: f1b11219a25a29845ad7ddc1bf17a402, type: 2}
-    quantity: 4
-  productionTimeSeconds: 45
-  honeyValue: 42
+    quantity: 6
+  productionTimeSeconds: 12
+  honeyValue: 85
   upgradeCosts:
   - 250
   - 800
@@ -50,6 +50,6 @@ MonoBehaviour:
   - 60
   - 120
   - 250
-  - 300
+  - 400
   icon: {fileID: 0}
   honeyColor: {r: 0.9, g: 0.5, b: 0.2, a: 1}
