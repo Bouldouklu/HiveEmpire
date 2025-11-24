@@ -17,7 +17,6 @@ MonoBehaviour:
   description: 
   pollenDisplayName: Wild Meadow Pollen
   pollenIcon: {fileID: 0}
-  pollenColor: {r: 1, g: 0.92, b: 0.016, a: 1}
   pollenMaterial: {fileID: 0}
   pollenDescription: Bright golden pollen from wild meadow flowers. Light and sweet.
   placementCost: 1
@@ -25,9 +24,9 @@ MonoBehaviour:
   capacityUpgradeCosts:
   - 50
   - 150
-  - 400
-  - 900
-  - 2000
+  - 450
+  - 1350
+  - 4000
   bonusCapacityPerUpgrade: 5
   maxCapacityTier: 5
   baseCapacity: 5

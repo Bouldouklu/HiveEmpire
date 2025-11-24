@@ -15,7 +15,7 @@ MonoBehaviour:
   recipeName: Primordial Honey
   description: 
   isUnlockedByDefault: 0
-  unlockCost: 1600
+  unlockCost: 2400
   prerequisiteRecipes: []
   ingredients:
   - pollenType: {fileID: 11400000, guid: 494ded3b3a9aee744b3de956decb18c2, type: 2}
@@ -23,13 +23,13 @@ MonoBehaviour:
   - pollenType: {fileID: 11400000, guid: 0c6d017653fbc0048b93b93c30902392, type: 2}
     quantity: 3
   productionTimeSeconds: 30
-  honeyValue: 45
+  honeyValue: 60
   upgradeCosts:
   - 100
   - 300
-  - 800
-  - 2000
-  - 5000
+  - 900
+  - 2700
+  - 8100
   ingredientReductionPercent:
   - 0
   - 10

@@ -17,7 +17,6 @@ MonoBehaviour:
   description: 
   pollenDisplayName: Cultivated Garden Pollen
   pollenIcon: {fileID: 0}
-  pollenColor: {r: 0.6, g: 0.4, b: 0.8, a: 1}
   pollenMaterial: {fileID: 0}
   pollenDescription: Rich purple pollen from cultivated garden flowers. Complex and
     aromatic.
@@ -26,9 +25,9 @@ MonoBehaviour:
   capacityUpgradeCosts:
   - 50
   - 150
-  - 400
-  - 900
-  - 2000
+  - 450
+  - 1350
+  - 4000
   bonusCapacityPerUpgrade: 5
   maxCapacityTier: 5
   baseCapacity: 5

@@ -15,7 +15,7 @@ MonoBehaviour:
   recipeName: Terroir Honey
   description: 
   isUnlockedByDefault: 0
-  unlockCost: 6400
+  unlockCost: 12800
   prerequisiteRecipes: []
   ingredients:
   - pollenType: {fileID: 11400000, guid: 9d98e910fbe782a4b98d50dc3ceb0718, type: 2}
@@ -25,13 +25,13 @@ MonoBehaviour:
   - pollenType: {fileID: 11400000, guid: 0c6d017653fbc0048b93b93c30902392, type: 2}
     quantity: 3
   productionTimeSeconds: 30
-  honeyValue: 45
+  honeyValue: 101
   upgradeCosts:
   - 100
   - 300
-  - 800
-  - 2000
-  - 5000
+  - 900
+  - 2700
+  - 8100
   ingredientReductionPercent:
   - 0
   - 10

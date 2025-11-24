@@ -15,7 +15,7 @@ MonoBehaviour:
   recipeName: Countryside Honey
   description: 
   isUnlockedByDefault: 0
-  unlockCost: 3200
+  unlockCost: 6400
   prerequisiteRecipes: []
   ingredients:
   - pollenType: {fileID: 11400000, guid: 9956b02be1e4aa64c8b03e6778487b8a, type: 2}
@@ -25,13 +25,13 @@ MonoBehaviour:
   - pollenType: {fileID: 11400000, guid: f1e51398b404a5648b873a8fd71b653b, type: 2}
     quantity: 3
   productionTimeSeconds: 30
-  honeyValue: 45
+  honeyValue: 53
   upgradeCosts:
   - 100
   - 300
-  - 800
-  - 2000
-  - 5000
+  - 900
+  - 2700
+  - 8100
   ingredientReductionPercent:
   - 0
   - 10

@@ -21,13 +21,13 @@ MonoBehaviour:
   - pollenType: {fileID: 11400000, guid: 494ded3b3a9aee744b3de956decb18c2, type: 2}
     quantity: 5
   productionTimeSeconds: 25
-  honeyValue: 25
+  honeyValue: 31.6
   upgradeCosts:
   - 100
   - 300
-  - 800
-  - 2000
-  - 5000
+  - 900
+  - 2700
+  - 8100
   ingredientReductionPercent:
   - 0
   - 10

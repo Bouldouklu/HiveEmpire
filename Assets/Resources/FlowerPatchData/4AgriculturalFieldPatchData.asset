@@ -17,7 +17,6 @@ MonoBehaviour:
   description: 
   pollenDisplayName: Agricultural Field Pollen
   pollenIcon: {fileID: 0}
-  pollenColor: {r: 0.95, g: 0.95, b: 0.85, a: 1}
   pollenMaterial: {fileID: 0}
   pollenDescription: Pale cream pollen from agricultural crops. Clean and mild.
   placementCost: 200
@@ -25,9 +24,9 @@ MonoBehaviour:
   capacityUpgradeCosts:
   - 50
   - 150
-  - 400
-  - 900
-  - 2000
+  - 450
+  - 1350
+  - 4000
   bonusCapacityPerUpgrade: 5
   maxCapacityTier: 5
   baseCapacity: 5

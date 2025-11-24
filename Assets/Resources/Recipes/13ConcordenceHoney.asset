@@ -15,7 +15,7 @@ MonoBehaviour:
   recipeName: Concordence Honey
   description: 
   isUnlockedByDefault: 0
-  unlockCost: 25600
+  unlockCost: 90000
   prerequisiteRecipes: []
   ingredients:
   - pollenType: {fileID: 11400000, guid: 9956b02be1e4aa64c8b03e6778487b8a, type: 2}
@@ -31,13 +31,13 @@ MonoBehaviour:
   - pollenType: {fileID: 11400000, guid: 0c6d017653fbc0048b93b93c30902392, type: 2}
     quantity: 2
   productionTimeSeconds: 45
-  honeyValue: 80
+  honeyValue: 208
   upgradeCosts:
   - 100
   - 300
-  - 800
-  - 2000
-  - 5000
+  - 900
+  - 2700
+  - 8100
   ingredientReductionPercent:
   - 0
   - 10
