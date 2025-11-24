@@ -14,6 +14,15 @@ public class PanelBlocker : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     public UnityEvent OnClickedOutside;
 
     private bool pointerDownOnBlocker = false;
+    private int enabledFrame = -1;
+
+    private void OnEnable()
+    {
+        // Record the frame when the blocker is enabled
+        // This prevents same-frame clicks from closing the panel immediately
+        enabledFrame = Time.frameCount;
+        pointerDownOnBlocker = false;
+    }
 
     /// <summary>
     /// Called when pointer is pressed down.
@@ -21,6 +30,14 @@ public class PanelBlocker : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     /// </summary>
     public void OnPointerDown(PointerEventData eventData)
     {
+        // Ignore clicks on the same frame the blocker was enabled
+        // This prevents the panel from closing immediately when opened by clicking an object at the screen edge
+        if (Time.frameCount == enabledFrame)
+        {
+            pointerDownOnBlocker = false;
+            return;
+        }
+
         // Check if the pointer is actually over this blocker (not a child element)
         if (eventData.pointerEnter == gameObject)
         {
@@ -38,6 +55,13 @@ public class PanelBlocker : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     /// </summary>
     public void OnPointerUp(PointerEventData eventData)
     {
+        // Ignore clicks on the same frame the blocker was enabled
+        if (Time.frameCount == enabledFrame)
+        {
+            pointerDownOnBlocker = false;
+            return;
+        }
+
         // Only close if pointer down started on blocker AND pointer up is also on blocker
         if (pointerDownOnBlocker && eventData.pointerEnter == gameObject)
         {

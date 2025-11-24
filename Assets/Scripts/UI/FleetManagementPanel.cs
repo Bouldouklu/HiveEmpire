@@ -299,6 +299,18 @@ public class FleetManagementPanel : MonoBehaviour
         // Find all flowerPatchs in the scene
         FlowerPatchController[] allFlowerPatchs = FindObjectsByType<FlowerPatchController>(FindObjectsSortMode.None);
 
+        // Sort by distance from hive (closest first)
+        if (HiveController.Instance != null)
+        {
+            Vector3 hivePosition = HiveController.Instance.transform.position;
+            System.Array.Sort(allFlowerPatchs, (a, b) =>
+            {
+                float distanceA = Vector3.Distance(a.transform.position, hivePosition);
+                float distanceB = Vector3.Distance(b.transform.position, hivePosition);
+                return distanceA.CompareTo(distanceB);
+            });
+        }
+
         // Remove entries for flowerPatchs that no longer exist
         List<FlowerPatchController> flowerPatchsToRemove = new List<FlowerPatchController>();
         foreach (var kvp in flowerPatchEntries)
