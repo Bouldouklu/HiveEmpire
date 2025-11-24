@@ -15,7 +15,11 @@
       "mcp__context7__resolve-library-id",
       "mcp__context7__get-library-docs",
       "mcp__UnityMCP__script_apply_edits",
-      "mcp__UnityMCP__apply_text_edits"
+      "mcp__UnityMCP__apply_text_edits",
+      "Bash(timeout /t 3)",
+      "Bash(nul)",
+      "Bash(ping:*)",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []

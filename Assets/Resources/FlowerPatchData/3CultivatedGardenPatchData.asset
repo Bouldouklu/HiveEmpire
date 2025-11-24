@@ -20,14 +20,14 @@ MonoBehaviour:
   pollenMaterial: {fileID: 0}
   pollenDescription: Rich purple pollen from cultivated garden flowers. Complex and
     aromatic.
-  placementCost: 145
+  placementCost: 180
   flowerPatchPrefab: {fileID: 6159468505849121783, guid: 6331e05cf757eb54da6bddd7b19ae416, type: 3}
   capacityUpgradeCosts:
-  - 50
-  - 150
-  - 450
-  - 1350
-  - 4000
+  - 100
+  - 300
+  - 800
+  - 2000
+  - 5000
   bonusCapacityPerUpgrade: 5
   maxCapacityTier: 5
   baseCapacity: 5

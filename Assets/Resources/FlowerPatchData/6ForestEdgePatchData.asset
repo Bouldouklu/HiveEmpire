@@ -20,14 +20,14 @@ MonoBehaviour:
   pollenMaterial: {fileID: 0}
   pollenDescription: Warm orange pollen from forest edge wildflowers. Earthy and
     robust.
-  placementCost: 840
+  placementCost: 1500
   flowerPatchPrefab: {fileID: 6159468505849121783, guid: c69a46ee174616b49921433a90db4fd9, type: 3}
   capacityUpgradeCosts:
-  - 50
-  - 150
-  - 450
-  - 1350
+  - 600
+  - 1500
   - 4000
+  - 9000
+  - 22000
   bonusCapacityPerUpgrade: 5
   maxCapacityTier: 5
   baseCapacity: 5

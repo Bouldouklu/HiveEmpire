@@ -25,11 +25,11 @@ MonoBehaviour:
   productionTimeSeconds: 45
   honeyValue: 42
   upgradeCosts:
-  - 100
-  - 300
-  - 900
-  - 2700
-  - 8100
+  - 250
+  - 800
+  - 2200
+  - 6000
+  - 14000
   ingredientReductionPercent:
   - 0
   - 10
@@ -46,10 +46,10 @@ MonoBehaviour:
   - 60
   valueIncreasePercent:
   - 0
-  - 20
-  - 40
+  - 30
   - 60
-  - 100
-  - 150
+  - 120
+  - 250
+  - 300
   icon: {fileID: 0}
   honeyColor: {r: 0.9, g: 0.5, b: 0.2, a: 1}

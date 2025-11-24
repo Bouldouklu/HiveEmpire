@@ -1596,7 +1596,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DroneFleetManager
   totalBeesOwned: 0
   currentPurchaseTier: 0
-  startingBees: 200
+  startingBees: 3
   beeFleetUpgradeData: {fileID: 11400000, guid: c522072906c1eb44dad3798742a9b350, type: 2}
   OnBeeAllocationChanged:
     m_PersistentCalls:
@@ -4911,7 +4911,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EconomyManager
   currentMoney: 10
-  startingMoney: 10000000
+  startingMoney: 75
   OnMoneyChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -12970,7 +12970,6 @@ MonoBehaviour:
   flowerPatchUnlockedClip: {fileID: 8300000, guid: e081c03f43d6729438ebcaeac87356d8, type: 3}
   flowerPatchUpgradedClip: {fileID: 8300000, guid: 61c34ac878e5247468adfd3572668c87, type: 3}
   capacityUpgradedClip: {fileID: 8300000, guid: 61c34ac878e5247468adfd3572668c87, type: 3}
-  pollenDiscardedClip: {fileID: 8300000, guid: 9a7fe971cc741e549af42d4b341e3254, type: 3}
   musicVolume: 0.7
   ambientVolume: 0.5
   sfxVolume: 0.8
@@ -15274,7 +15273,7 @@ MonoBehaviour:
   springData: {fileID: 11400000, guid: 0db7f1a46c683944791db20a67b99d1f, type: 2}
   summerData: {fileID: 11400000, guid: a5dd917bd04c44e4eabe959ae62b2cde, type: 2}
   autumnData: {fileID: 11400000, guid: 1727e88803ef56145b7c51420459deee, type: 2}
-  realSecondsPerGameWeek: 60
+  realSecondsPerGameWeek: 50
   startTimerOnAwake: 1
   currentSeason: 0
   currentWeek: 1
@@ -20568,12 +20567,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CityController
   landingOffset: {x: 0, y: 0.5, z: 0}
   pollenInventory: []
-  baseStorageCapacity: 100
-  defaultStorageCapacity: 100
   OnResourcesChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  OnPollenDiscarded:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &1451455631

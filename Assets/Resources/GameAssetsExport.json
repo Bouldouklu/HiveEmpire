@@ -1,0 +1,890 @@
+{
+    "flowerPatches": [
+        {
+            "name": "1WildMeadowPatchData",
+            "biomeType": "WildMeadow",
+            "displayName": "Wild Meadow Patch",
+            "description": "",
+            "pollenDisplayName": "Wild Meadow Pollen",
+            "pollenDescription": "Bright golden pollen from wild meadow flowers. Light and sweet.",
+            "placementCost": 1.0,
+            "capacityUpgradeCosts": [
+                50.0,
+                150.0,
+                450.0,
+                1350.0,
+                4000.0
+            ],
+            "bonusCapacityPerUpgrade": 5,
+            "maxCapacityTier": 5,
+            "baseCapacity": 5,
+            "gatheringDuration": 2.5
+        },
+        {
+            "name": "2OrchardPatchData",
+            "biomeType": "Orchard",
+            "displayName": "Orchard Patch",
+            "description": "",
+            "pollenDisplayName": "Orchard Pollen",
+            "pollenDescription": "Delicate pink pollen from fruit tree blossoms. Fragrant and fine.",
+            "placementCost": 50.0,
+            "capacityUpgradeCosts": [
+                50.0,
+                150.0,
+                450.0,
+                1350.0,
+                4000.0
+            ],
+            "bonusCapacityPerUpgrade": 5,
+            "maxCapacityTier": 5,
+            "baseCapacity": 5,
+            "gatheringDuration": 2.5
+        },
+        {
+            "name": "3CultivatedGardenPatchData",
+            "biomeType": "CultivatedGarden",
+            "displayName": "Cultivated Garden Patch",
+            "description": "",
+            "pollenDisplayName": "Cultivated Garden Pollen",
+            "pollenDescription": "Rich purple pollen from cultivated garden flowers. Complex and aromatic.",
+            "placementCost": 145.0,
+            "capacityUpgradeCosts": [
+                50.0,
+                150.0,
+                450.0,
+                1350.0,
+                4000.0
+            ],
+            "bonusCapacityPerUpgrade": 5,
+            "maxCapacityTier": 5,
+            "baseCapacity": 5,
+            "gatheringDuration": 2.0
+        },
+        {
+            "name": "4AgriculturalFieldPatchData",
+            "biomeType": "AgriculturalField",
+            "displayName": "Agricultural Field Patch",
+            "description": "",
+            "pollenDisplayName": "Agricultural Field Pollen",
+            "pollenDescription": "Pale cream pollen from agricultural crops. Clean and mild.",
+            "placementCost": 260.0,
+            "capacityUpgradeCosts": [
+                50.0,
+                150.0,
+                450.0,
+                1350.0,
+                4000.0
+            ],
+            "bonusCapacityPerUpgrade": 5,
+            "maxCapacityTier": 5,
+            "baseCapacity": 5,
+            "gatheringDuration": 1.7999999523162842
+        },
+        {
+            "name": "5MarshPatchData",
+            "biomeType": "Marsh",
+            "displayName": "Marsh Patch",
+            "description": "",
+            "pollenDisplayName": "Marsh Pollen",
+            "pollenDescription": "Cool teal pollen from wetland plants. Fresh and aquatic.",
+            "placementCost": 475.0,
+            "capacityUpgradeCosts": [
+                50.0,
+                150.0,
+                450.0,
+                1350.0,
+                4000.0
+            ],
+            "bonusCapacityPerUpgrade": 5,
+            "maxCapacityTier": 5,
+            "baseCapacity": 5,
+            "gatheringDuration": 3.0
+        },
+        {
+            "name": "6ForestEdgePatchData",
+            "biomeType": "ForestEdge",
+            "displayName": "Forest Edge Patch",
+            "description": "",
+            "pollenDisplayName": "Forest Edge Pollen",
+            "pollenDescription": "Warm orange pollen from forest edge wildflowers. Earthy and robust.",
+            "placementCost": 840.0,
+            "capacityUpgradeCosts": [
+                50.0,
+                150.0,
+                450.0,
+                1350.0,
+                4000.0
+            ],
+            "bonusCapacityPerUpgrade": 5,
+            "maxCapacityTier": 5,
+            "baseCapacity": 5,
+            "gatheringDuration": 2.799999952316284
+        }
+    ],
+    "recipes": [
+        {
+            "name": "10CountrysideHoney",
+            "recipeName": "Countryside Honey",
+            "description": "",
+            "isUnlockedByDefault": false,
+            "unlockCost": 6400.0,
+            "ingredients": [
+                {
+                    "pollenTypeName": "Wild Meadow Patch",
+                    "quantity": 3
+                },
+                {
+                    "pollenTypeName": "Orchard Patch",
+                    "quantity": 3
+                },
+                {
+                    "pollenTypeName": "Cultivated Garden Patch",
+                    "quantity": 3
+                }
+            ],
+            "productionTimeSeconds": 30.0,
+            "honeyValue": 53.0,
+            "upgradeCosts": [
+                100.0,
+                300.0,
+                900.0,
+                2700.0,
+                8100.0
+            ],
+            "ingredientReductionPercent": [
+                0.0,
+                10.0,
+                20.0,
+                30.0,
+                40.0,
+                50.0
+            ],
+            "productionTimeReductionPercent": [
+                0.0,
+                15.0,
+                25.0,
+                35.0,
+                50.0,
+                60.0
+            ],
+            "valueIncreasePercent": [
+                0.0,
+                20.0,
+                40.0,
+                60.0,
+                100.0,
+                150.0
+            ],
+            "honeyColor": {
+                "r": 1.0,
+                "g": 0.949999988079071,
+                "b": 0.4000000059604645,
+                "a": 1.0
+            }
+        },
+        {
+            "name": "11TerroirHoney",
+            "recipeName": "Terroir Honey",
+            "description": "",
+            "isUnlockedByDefault": false,
+            "unlockCost": 12800.0,
+            "ingredients": [
+                {
+                    "pollenTypeName": "Agricultural Field Patch",
+                    "quantity": 3
+                },
+                {
+                    "pollenTypeName": "Marsh Patch",
+                    "quantity": 3
+                },
+                {
+                    "pollenTypeName": "Forest Edge Patch",
+                    "quantity": 3
+                }
+            ],
+            "productionTimeSeconds": 30.0,
+            "honeyValue": 101.0,
+            "upgradeCosts": [
+                100.0,
+                300.0,
+                900.0,
+                2700.0,
+                8100.0
+            ],
+            "ingredientReductionPercent": [
+                0.0,
+                10.0,
+                20.0,
+                30.0,
+                40.0,
+                50.0
+            ],
+            "productionTimeReductionPercent": [
+                0.0,
+                15.0,
+                25.0,
+                35.0,
+                50.0,
+                60.0
+            ],
+            "valueIncreasePercent": [
+                0.0,
+                20.0,
+                40.0,
+                60.0,
+                100.0,
+                150.0
+            ],
+            "honeyColor": {
+                "r": 1.0,
+                "g": 0.949999988079071,
+                "b": 0.4000000059604645,
+                "a": 1.0
+            }
+        },
+        {
+            "name": "12ConvergenceHoney",
+            "recipeName": "Convergence Honey",
+            "description": "",
+            "isUnlockedByDefault": false,
+            "unlockCost": 32000.0,
+            "ingredients": [
+                {
+                    "pollenTypeName": "Wild Meadow Patch",
+                    "quantity": 2
+                },
+                {
+                    "pollenTypeName": "Orchard Patch",
+                    "quantity": 2
+                },
+                {
+                    "pollenTypeName": "Agricultural Field Patch",
+                    "quantity": 2
+                },
+                {
+                    "pollenTypeName": "Forest Edge Patch",
+                    "quantity": 2
+                }
+            ],
+            "productionTimeSeconds": 50.0,
+            "honeyValue": 108.0,
+            "upgradeCosts": [
+                100.0,
+                300.0,
+                900.0,
+                2700.0,
+                8100.0
+            ],
+            "ingredientReductionPercent": [
+                0.0,
+                10.0,
+                20.0,
+                30.0,
+                40.0,
+                50.0
+            ],
+            "productionTimeReductionPercent": [
+                0.0,
+                15.0,
+                25.0,
+                35.0,
+                50.0,
+                60.0
+            ],
+            "valueIncreasePercent": [
+                0.0,
+                20.0,
+                40.0,
+                60.0,
+                100.0,
+                150.0
+            ],
+            "honeyColor": {
+                "r": 1.0,
+                "g": 0.6000000238418579,
+                "b": 0.30000001192092898,
+                "a": 1.0
+            }
+        },
+        {
+            "name": "13ConcordenceHoney",
+            "recipeName": "Concordence Honey",
+            "description": "",
+            "isUnlockedByDefault": false,
+            "unlockCost": 90000.0,
+            "ingredients": [
+                {
+                    "pollenTypeName": "Wild Meadow Patch",
+                    "quantity": 2
+                },
+                {
+                    "pollenTypeName": "Orchard Patch",
+                    "quantity": 2
+                },
+                {
+                    "pollenTypeName": "Cultivated Garden Patch",
+                    "quantity": 2
+                },
+                {
+                    "pollenTypeName": "Agricultural Field Patch",
+                    "quantity": 2
+                },
+                {
+                    "pollenTypeName": "Marsh Patch",
+                    "quantity": 2
+                },
+                {
+                    "pollenTypeName": "Forest Edge Patch",
+                    "quantity": 2
+                }
+            ],
+            "productionTimeSeconds": 45.0,
+            "honeyValue": 208.0,
+            "upgradeCosts": [
+                100.0,
+                300.0,
+                900.0,
+                2700.0,
+                8100.0
+            ],
+            "ingredientReductionPercent": [
+                0.0,
+                10.0,
+                20.0,
+                30.0,
+                40.0,
+                50.0
+            ],
+            "productionTimeReductionPercent": [
+                0.0,
+                15.0,
+                25.0,
+                35.0,
+                50.0,
+                60.0
+            ],
+            "valueIncreasePercent": [
+                0.0,
+                20.0,
+                40.0,
+                60.0,
+                100.0,
+                150.0
+            ],
+            "honeyColor": {
+                "r": 1.0,
+                "g": 0.75,
+                "b": 0.20000000298023225,
+                "a": 1.0
+            }
+        },
+        {
+            "name": "1WildMeadowHoney",
+            "recipeName": "Wild Meadow Honey",
+            "description": "",
+            "isUnlockedByDefault": true,
+            "unlockCost": 0.0,
+            "ingredients": [
+                {
+                    "pollenTypeName": "Wild Meadow Patch",
+                    "quantity": 3
+                }
+            ],
+            "productionTimeSeconds": 2.0,
+            "honeyValue": 3.4000000953674318,
+            "upgradeCosts": [
+                30.0,
+                300.0,
+                900.0,
+                2700.0,
+                8100.0
+            ],
+            "ingredientReductionPercent": [
+                0.0,
+                10.0,
+                20.0,
+                30.0,
+                40.0,
+                50.0
+            ],
+            "productionTimeReductionPercent": [
+                0.0,
+                15.0,
+                25.0,
+                35.0,
+                50.0,
+                60.0
+            ],
+            "valueIncreasePercent": [
+                0.0,
+                20.0,
+                40.0,
+                60.0,
+                100.0,
+                150.0
+            ],
+            "honeyColor": {
+                "r": 1.0,
+                "g": 0.75,
+                "b": 0.20000000298023225,
+                "a": 1.0
+            }
+        },
+        {
+            "name": "2OrchardHoney",
+            "recipeName": "Orchard Honey",
+            "description": "",
+            "isUnlockedByDefault": true,
+            "unlockCost": 0.0,
+            "ingredients": [
+                {
+                    "pollenTypeName": "Orchard Patch",
+                    "quantity": 4
+                }
+            ],
+            "productionTimeSeconds": 15.0,
+            "honeyValue": 10.399999618530274,
+            "upgradeCosts": [
+                100.0,
+                300.0,
+                900.0,
+                2700.0,
+                8100.0
+            ],
+            "ingredientReductionPercent": [
+                0.0,
+                10.0,
+                20.0,
+                30.0,
+                40.0,
+                50.0
+            ],
+            "productionTimeReductionPercent": [
+                0.0,
+                15.0,
+                25.0,
+                35.0,
+                50.0,
+                60.0
+            ],
+            "valueIncreasePercent": [
+                0.0,
+                20.0,
+                40.0,
+                60.0,
+                100.0,
+                150.0
+            ],
+            "honeyColor": {
+                "r": 1.0,
+                "g": 0.75,
+                "b": 0.20000000298023225,
+                "a": 1.0
+            }
+        },
+        {
+            "name": "3GardenHoney",
+            "recipeName": "Garden Honey",
+            "description": "",
+            "isUnlockedByDefault": true,
+            "unlockCost": 0.0,
+            "ingredients": [
+                {
+                    "pollenTypeName": "Cultivated Garden Patch",
+                    "quantity": 2
+                }
+            ],
+            "productionTimeSeconds": 8.0,
+            "honeyValue": 5.400000095367432,
+            "upgradeCosts": [
+                100.0,
+                300.0,
+                900.0,
+                2700.0,
+                8100.0
+            ],
+            "ingredientReductionPercent": [
+                0.0,
+                10.0,
+                20.0,
+                30.0,
+                40.0,
+                50.0
+            ],
+            "productionTimeReductionPercent": [
+                0.0,
+                15.0,
+                25.0,
+                35.0,
+                50.0,
+                60.0
+            ],
+            "valueIncreasePercent": [
+                0.0,
+                20.0,
+                40.0,
+                60.0,
+                100.0,
+                150.0
+            ],
+            "honeyColor": {
+                "r": 1.0,
+                "g": 0.8500000238418579,
+                "b": 0.30000001192092898,
+                "a": 1.0
+            }
+        },
+        {
+            "name": "4HarvestHoney",
+            "recipeName": "Harvest Honey",
+            "description": "",
+            "isUnlockedByDefault": false,
+            "unlockCost": 50.0,
+            "ingredients": [
+                {
+                    "pollenTypeName": "Agricultural Field Patch",
+                    "quantity": 3
+                }
+            ],
+            "productionTimeSeconds": 10.0,
+            "honeyValue": 10.399999618530274,
+            "upgradeCosts": [
+                100.0,
+                300.0,
+                900.0,
+                2700.0,
+                8100.0
+            ],
+            "ingredientReductionPercent": [
+                0.0,
+                10.0,
+                20.0,
+                30.0,
+                40.0,
+                50.0
+            ],
+            "productionTimeReductionPercent": [
+                0.0,
+                15.0,
+                25.0,
+                35.0,
+                50.0,
+                60.0
+            ],
+            "valueIncreasePercent": [
+                0.0,
+                20.0,
+                40.0,
+                60.0,
+                100.0,
+                150.0
+            ],
+            "honeyColor": {
+                "r": 1.0,
+                "g": 0.75,
+                "b": 0.20000000298023225,
+                "a": 1.0
+            }
+        },
+        {
+            "name": "5MarshlandHoney",
+            "recipeName": "Marshland Honey",
+            "description": "",
+            "isUnlockedByDefault": false,
+            "unlockCost": 100.0,
+            "ingredients": [
+                {
+                    "pollenTypeName": "Marsh Patch",
+                    "quantity": 5
+                }
+            ],
+            "productionTimeSeconds": 25.0,
+            "honeyValue": 31.600000381469728,
+            "upgradeCosts": [
+                100.0,
+                300.0,
+                900.0,
+                2700.0,
+                8100.0
+            ],
+            "ingredientReductionPercent": [
+                0.0,
+                10.0,
+                20.0,
+                30.0,
+                40.0,
+                50.0
+            ],
+            "productionTimeReductionPercent": [
+                0.0,
+                15.0,
+                25.0,
+                35.0,
+                50.0,
+                60.0
+            ],
+            "valueIncreasePercent": [
+                0.0,
+                20.0,
+                40.0,
+                60.0,
+                100.0,
+                150.0
+            ],
+            "honeyColor": {
+                "r": 1.0,
+                "g": 0.75,
+                "b": 0.20000000298023225,
+                "a": 1.0
+            }
+        },
+        {
+            "name": "6ForestHoney",
+            "recipeName": "Forest Honey",
+            "description": "",
+            "isUnlockedByDefault": false,
+            "unlockCost": 200.0,
+            "ingredients": [
+                {
+                    "pollenTypeName": "Forest Edge Patch",
+                    "quantity": 6
+                }
+            ],
+            "productionTimeSeconds": 35.0,
+            "honeyValue": 54.79999923706055,
+            "upgradeCosts": [
+                100.0,
+                300.0,
+                900.0,
+                2700.0,
+                8100.0
+            ],
+            "ingredientReductionPercent": [
+                0.0,
+                10.0,
+                20.0,
+                30.0,
+                40.0,
+                50.0
+            ],
+            "productionTimeReductionPercent": [
+                0.0,
+                15.0,
+                25.0,
+                35.0,
+                50.0,
+                60.0
+            ],
+            "valueIncreasePercent": [
+                0.0,
+                20.0,
+                40.0,
+                60.0,
+                100.0,
+                150.0
+            ],
+            "honeyColor": {
+                "r": 1.0,
+                "g": 0.699999988079071,
+                "b": 0.10000000149011612,
+                "a": 1.0
+            }
+        },
+        {
+            "name": "7PastoralHoney",
+            "recipeName": "Pastoral Honey",
+            "description": "",
+            "isUnlockedByDefault": false,
+            "unlockCost": 600.0,
+            "ingredients": [
+                {
+                    "pollenTypeName": "Wild Meadow Patch",
+                    "quantity": 4
+                },
+                {
+                    "pollenTypeName": "Orchard Patch",
+                    "quantity": 4
+                }
+            ],
+            "productionTimeSeconds": 45.0,
+            "honeyValue": 42.0,
+            "upgradeCosts": [
+                100.0,
+                300.0,
+                900.0,
+                2700.0,
+                8100.0
+            ],
+            "ingredientReductionPercent": [
+                0.0,
+                10.0,
+                20.0,
+                30.0,
+                40.0,
+                50.0
+            ],
+            "productionTimeReductionPercent": [
+                0.0,
+                15.0,
+                25.0,
+                35.0,
+                50.0,
+                60.0
+            ],
+            "valueIncreasePercent": [
+                0.0,
+                20.0,
+                40.0,
+                60.0,
+                100.0,
+                150.0
+            ],
+            "honeyColor": {
+                "r": 0.8999999761581421,
+                "g": 0.5,
+                "b": 0.20000000298023225,
+                "a": 1.0
+            }
+        },
+        {
+            "name": "8AbundantHoney",
+            "recipeName": "Abundant Honey",
+            "description": "",
+            "isUnlockedByDefault": false,
+            "unlockCost": 1200.0,
+            "ingredients": [
+                {
+                    "pollenTypeName": "Cultivated Garden Patch",
+                    "quantity": 2
+                },
+                {
+                    "pollenTypeName": "Agricultural Field Patch",
+                    "quantity": 2
+                }
+            ],
+            "productionTimeSeconds": 20.0,
+            "honeyValue": 22.0,
+            "upgradeCosts": [
+                100.0,
+                300.0,
+                900.0,
+                2700.0,
+                8100.0
+            ],
+            "ingredientReductionPercent": [
+                0.0,
+                10.0,
+                20.0,
+                30.0,
+                40.0,
+                50.0
+            ],
+            "productionTimeReductionPercent": [
+                0.0,
+                15.0,
+                25.0,
+                35.0,
+                50.0,
+                60.0
+            ],
+            "valueIncreasePercent": [
+                0.0,
+                20.0,
+                40.0,
+                60.0,
+                100.0,
+                150.0
+            ],
+            "honeyColor": {
+                "r": 0.8999999761581421,
+                "g": 1.0,
+                "b": 0.699999988079071,
+                "a": 1.0
+            }
+        },
+        {
+            "name": "9PrimordialHoney",
+            "recipeName": "Primordial Honey",
+            "description": "",
+            "isUnlockedByDefault": false,
+            "unlockCost": 2400.0,
+            "ingredients": [
+                {
+                    "pollenTypeName": "Marsh Patch",
+                    "quantity": 3
+                },
+                {
+                    "pollenTypeName": "Forest Edge Patch",
+                    "quantity": 3
+                }
+            ],
+            "productionTimeSeconds": 30.0,
+            "honeyValue": 60.0,
+            "upgradeCosts": [
+                100.0,
+                300.0,
+                900.0,
+                2700.0,
+                8100.0
+            ],
+            "ingredientReductionPercent": [
+                0.0,
+                10.0,
+                20.0,
+                30.0,
+                40.0,
+                50.0
+            ],
+            "productionTimeReductionPercent": [
+                0.0,
+                15.0,
+                25.0,
+                35.0,
+                50.0,
+                60.0
+            ],
+            "valueIncreasePercent": [
+                0.0,
+                20.0,
+                40.0,
+                60.0,
+                100.0,
+                150.0
+            ],
+            "honeyColor": {
+                "r": 1.0,
+                "g": 0.949999988079071,
+                "b": 0.4000000059604645,
+                "a": 1.0
+            }
+        }
+    ],
+    "beeFleetUpgrade": {
+        "name": "BeeFleetUpgradeData",
+        "beePurchaseCosts": [
+            20.0,
+            65.0,
+            240.0,
+            780.0,
+            2500.0,
+            6000.0,
+            14500.0,
+            35000.0,
+            84000.0,
+            200000.0
+        ],
+        "beesPerPurchase": [
+            2,
+            3,
+            5,
+            8,
+            12,
+            18,
+            25,
+            35,
+            50,
+            70
+        ],
+        "maxPurchaseTier": 10
+    }
+}

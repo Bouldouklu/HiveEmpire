@@ -20,14 +20,14 @@ MonoBehaviour:
   pollenMaterial: {fileID: 0}
   pollenDescription: Delicate pink pollen from fruit tree blossoms. Fragrant and
     fine.
-  placementCost: 75
+  placementCost: 60
   flowerPatchPrefab: {fileID: 6159468505849121783, guid: e0339b1ccc8c37e49b61fb5b10155338, type: 3}
   capacityUpgradeCosts:
-  - 50
-  - 150
-  - 450
-  - 1350
-  - 4000
+  - 40
+  - 120
+  - 350
+  - 900
+  - 2200
   bonusCapacityPerUpgrade: 5
   maxCapacityTier: 5
   baseCapacity: 5
