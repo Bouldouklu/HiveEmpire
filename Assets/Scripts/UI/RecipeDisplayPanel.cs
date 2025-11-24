@@ -24,6 +24,7 @@ public class RecipeDisplayPanel : MonoBehaviour
     private List<RecipeEntryUI> activeRecipeEntries = new List<RecipeEntryUI>();
     private float timeSinceLastUpdate = 0f;
     private bool isPanelOpen = false;
+    private bool isDirty = false; // Tracks if panel needs refresh when reopened
 
     private void Awake()
     {
@@ -175,7 +176,10 @@ public class RecipeDisplayPanel : MonoBehaviour
         }
 
         isPanelOpen = true;
+
+        // Always refresh when opening - this catches any changes that happened while closed
         RefreshRecipeList();
+        isDirty = false;
 
         // Audio feedback could be added here if panel open sound is available
     }
@@ -293,17 +297,16 @@ public class RecipeDisplayPanel : MonoBehaviour
     /// </summary>
     private void OnResourcesChanged()
     {
-        if (!isPanelOpen)
+        // Update ingredient displays for all entries if we have any entries
+        // This ensures real-time updates regardless of panel visibility
+        if (activeRecipeEntries.Count > 0)
         {
-            return;
-        }
-
-        // Update ingredient displays for all entries
-        foreach (RecipeEntryUI entry in activeRecipeEntries)
-        {
-            if (entry != null)
+            foreach (RecipeEntryUI entry in activeRecipeEntries)
             {
-                entry.UpdateIngredients();
+                if (entry != null)
+                {
+                    entry.UpdateIngredients();
+                }
             }
         }
     }
@@ -336,32 +339,67 @@ public class RecipeDisplayPanel : MonoBehaviour
 
     /// <summary>
     /// Event handler: Called when a recipe is unlocked.
-    /// Refreshes the panel to show the newly unlocked recipe.
+    /// Updates the specific recipe entry to show unlocked state.
     /// </summary>
     private void OnRecipeUnlocked(HoneyRecipe unlockedRecipe)
     {
-        if (!isPanelOpen)
-        {
-            return;
-        }
+        Debug.Log($"RecipeDisplayPanel: Recipe unlocked - {unlockedRecipe.recipeName}.");
 
-        Debug.Log($"RecipeDisplayPanel: Recipe unlocked - {unlockedRecipe.recipeName}. Refreshing panel.");
-        RefreshRecipeList();
+        if (isPanelOpen)
+        {
+            // Delay update by one frame to allow button animation to complete
+            StartCoroutine(UpdateRecipeEntryNextFrame(unlockedRecipe));
+        }
+        else
+        {
+            // Panel is closed - mark as dirty for next open
+            isDirty = true;
+        }
+    }
+
+    /// <summary>
+    /// Coroutine: Delays recipe entry update by one frame to prevent visual artifacts.
+    /// </summary>
+    private System.Collections.IEnumerator UpdateRecipeEntryNextFrame(HoneyRecipe recipe)
+    {
+        yield return null; // Wait one frame
+
+        // Find the specific entry for this recipe
+        RecipeEntryUI targetEntry = activeRecipeEntries.Find(e => e != null && e.Recipe == recipe);
+
+        if (targetEntry != null)
+        {
+            // Re-initialize this specific entry to show unlocked state
+            int index = activeRecipeEntries.IndexOf(targetEntry);
+            targetEntry.Initialize(recipe, index);
+            Debug.Log($"RecipeDisplayPanel: Updated entry for {recipe.recipeName} to show unlocked state.");
+        }
+        else
+        {
+            // Fallback: full refresh if entry not found (shouldn't happen normally)
+            Debug.LogWarning($"RecipeDisplayPanel: Could not find entry for {recipe.recipeName}, performing full refresh.");
+            RefreshRecipeList();
+        }
     }
 
     /// <summary>
     /// Event handler: Called when a recipe is upgraded.
-    /// Refreshes the panel to show updated tier and stats.
+    /// Updates the specific recipe entry to show new tier and stats.
     /// </summary>
     private void OnRecipeUpgraded(HoneyRecipe upgradedRecipe, int newTier)
     {
-        if (!isPanelOpen)
-        {
-            return;
-        }
+        Debug.Log($"RecipeDisplayPanel: Recipe upgraded - {upgradedRecipe.recipeName} to Tier {newTier}.");
 
-        Debug.Log($"RecipeDisplayPanel: Recipe upgraded - {upgradedRecipe.recipeName} to Tier {newTier}. Refreshing panel.");
-        RefreshRecipeList();
+        if (isPanelOpen)
+        {
+            // Delay update by one frame to allow button animation to complete
+            StartCoroutine(UpdateRecipeEntryNextFrame(upgradedRecipe));
+        }
+        else
+        {
+            // Panel is closed - mark as dirty for next open
+            isDirty = true;
+        }
     }
 
 }
