@@ -22,7 +22,6 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip flowerPatchUnlockedClip;
     [SerializeField] private AudioClip flowerPatchUpgradedClip;
     [SerializeField] private AudioClip capacityUpgradedClip;
-    [SerializeField] private AudioClip pollenDiscardedClip;
 
     [Header("Volume Settings")]
     [SerializeField] [Range(0f, 1f)] private float musicVolume = 0.7f;
@@ -130,11 +129,6 @@ public class AudioManager : MonoBehaviour
         {
             RecipeProductionManager.Instance.OnRecipeCompleted.AddListener(OnRecipeCompleted);
         }
-
-        if (HiveController.Instance != null)
-        {
-            HiveController.Instance.OnPollenDiscarded.AddListener(OnPollenDiscarded);
-        }
     }
 
     /// <summary>
@@ -157,11 +151,6 @@ public class AudioManager : MonoBehaviour
         if (RecipeProductionManager.Instance != null)
         {
             RecipeProductionManager.Instance.OnRecipeCompleted.RemoveListener(OnRecipeCompleted);
-        }
-
-        if (HiveController.Instance != null)
-        {
-            HiveController.Instance.OnPollenDiscarded.RemoveListener(OnPollenDiscarded);
         }
 
         // Unsubscribe from all flower patches
@@ -190,14 +179,6 @@ public class AudioManager : MonoBehaviour
         if (capacityUpgradedClip != null)
         {
             PlaySFX(capacityUpgradedClip);
-        }
-    }
-
-    private void OnPollenDiscarded(FlowerPatchData pollenType, int amount)
-    {
-        if (pollenDiscardedClip != null)
-        {
-            PlaySFX(pollenDiscardedClip, 0.6f); // Quieter warning sound
         }
     }
 

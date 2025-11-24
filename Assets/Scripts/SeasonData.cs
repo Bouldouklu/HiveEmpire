@@ -38,10 +38,6 @@ public class SeasonData : ScriptableObject
     [Min(0.1f)]
     public float productionTimeModifier = 1.0f;
 
-    [Tooltip("Multiplier for hive storage capacity (e.g., 1.2 = +20% storage in Spring)")]
-    [Min(0.1f)]
-    public float storageCapacityModifier = 1.0f;
-
     [Header("Weather Event Weights (Phase 2)")]
     [Tooltip("Spawn weight for mild weather events (0-1, higher = more frequent)")]
     [Range(0f, 1f)]
@@ -95,12 +91,6 @@ public class SeasonData : ScriptableObject
             summary += $"• Production Time: {percentChange:+0;-0}%\n";
         }
 
-        if (!Mathf.Approximately(storageCapacityModifier, 1.0f))
-        {
-            float percentChange = (storageCapacityModifier - 1.0f) * 100f;
-            summary += $"• Storage: {percentChange:+0;-0}%\n";
-        }
-
         return summary.TrimEnd('\n');
     }
 
@@ -118,7 +108,6 @@ public class SeasonData : ScriptableObject
         incomeModifier = Mathf.Clamp(incomeModifier, 0.1f, 5.0f);
         beeSpeedModifier = Mathf.Clamp(beeSpeedModifier, 0.1f, 3.0f);
         productionTimeModifier = Mathf.Clamp(productionTimeModifier, 0.1f, 3.0f);
-        storageCapacityModifier = Mathf.Clamp(storageCapacityModifier, 0.1f, 3.0f);
 
         // Validate weeks in season
         if (weeksInSeason < 1)

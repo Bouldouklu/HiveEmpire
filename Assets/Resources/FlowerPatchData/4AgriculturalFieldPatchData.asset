@@ -19,7 +19,7 @@ MonoBehaviour:
   pollenIcon: {fileID: 0}
   pollenMaterial: {fileID: 0}
   pollenDescription: Pale cream pollen from agricultural crops. Clean and mild.
-  placementCost: 200
+  placementCost: 260
   flowerPatchPrefab: {fileID: 6159468505849121783, guid: 42280dd1e794d754ea574214f837dcef, type: 3}
   capacityUpgradeCosts:
   - 50

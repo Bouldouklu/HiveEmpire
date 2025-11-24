@@ -204,8 +204,7 @@ public class SeasonManager : MonoBehaviour
         Debug.Log($"[SeasonManager] Applying modifiers for {currentData.seasonName}: " +
                   $"Income x{currentData.incomeModifier}, " +
                   $"Bee Speed x{currentData.beeSpeedModifier}, " +
-                  $"Production Time x{currentData.productionTimeModifier}, " +
-                  $"Storage x{currentData.storageCapacityModifier}");
+                  $"Production Time x{currentData.productionTimeModifier}");
 
         // Note: Actual modifier application to game systems will be handled by
         // those systems subscribing to OnSeasonChanged event and querying GetCurrentSeasonData()

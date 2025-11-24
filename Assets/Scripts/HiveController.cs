@@ -40,24 +40,10 @@ public class HiveController : MonoBehaviour
     [Tooltip("Current pollen inventory slots (serializable)")]
     [SerializeField] private List<PollenInventorySlot> pollenInventory = new List<PollenInventorySlot>();
 
-    [Header("Storage Settings")]
-    [Tooltip("Base storage capacity per pollen type (before seasonal modifiers)")]
-    [SerializeField] private int baseStorageCapacity = 100;
-
-    [Tooltip("Current default storage capacity (base * seasonal modifier)")]
-    [SerializeField] private int defaultStorageCapacity = 100;
-
-    private List<PollenInventorySlot> storageCapacities = new List<PollenInventorySlot>();
-
     /// <summary>
     /// Event fired when resources are delivered to the hive
     /// </summary>
     public UnityEvent OnResourcesChanged = new UnityEvent();
-
-    /// <summary>
-    /// Event fired when pollen is discarded due to full storage (passes flower patch data and amount discarded)
-    /// </summary>
-    public UnityEvent<FlowerPatchData, int> OnPollenDiscarded = new UnityEvent<FlowerPatchData, int>();
 
     /// <summary>
     /// The position where bees should aim to arrive
@@ -66,7 +52,7 @@ public class HiveController : MonoBehaviour
 
     /// <summary>
     /// Receives pollen delivered by a bee.
-    /// Adds to inventory up to storage capacity. Overflow is discarded.
+    /// Adds to inventory with unlimited capacity.
     /// </summary>
     public void ReceiveResources(List<FlowerPatchData> resources)
     {
@@ -76,9 +62,8 @@ public class HiveController : MonoBehaviour
         }
 
         int totalReceived = 0;
-        int totalDiscarded = 0;
 
-        // Add each resource to inventory, respecting storage caps
+        // Add each resource to inventory
         foreach (FlowerPatchData patchData in resources)
         {
             if (patchData == null)
@@ -95,22 +80,9 @@ public class HiveController : MonoBehaviour
                 pollenInventory.Add(slot);
             }
 
-            int currentAmount = slot.quantity;
-            int capacity = GetStorageCapacity(patchData);
-
-            // Check if we can add this pollen
-            if (currentAmount < capacity)
-            {
-                slot.quantity++;
-                totalReceived++;
-            }
-            else
-            {
-                // Storage full - discard overflow
-                totalDiscarded++;
-                OnPollenDiscarded?.Invoke(patchData, 1);
-                Debug.LogWarning($"Storage full for {patchData.pollenDisplayName}! Discarded 1 pollen. Current: {currentAmount}/{capacity}");
-            }
+            // Add pollen without capacity check
+            slot.quantity++;
+            totalReceived++;
         }
 
         if (totalReceived > 0)
@@ -196,57 +168,6 @@ public class HiveController : MonoBehaviour
         return pollenInventory.ToDictionary(slot => slot.pollenType, slot => slot.quantity);
     }
 
-    /// <summary>
-    /// Get the storage capacity for a specific pollen type (FlowerPatchData).
-    /// Can be upgraded in the future.
-    /// </summary>
-    public int GetStorageCapacity(FlowerPatchData pollenType)
-    {
-        if (pollenType == null)
-            return defaultStorageCapacity;
-
-        // Check if this pollen type has a custom capacity
-        PollenInventorySlot capacitySlot = storageCapacities.FirstOrDefault(s => s.pollenType == pollenType);
-        if (capacitySlot != null)
-        {
-            return capacitySlot.quantity;
-        }
-
-        // Return default capacity
-        return defaultStorageCapacity;
-    }
-
-    /// <summary>
-    /// Set the storage capacity for a specific pollen type.
-    /// Used for upgrades.
-    /// </summary>
-    public void SetStorageCapacity(FlowerPatchData pollenType, int capacity)
-    {
-        if (pollenType == null)
-        {
-            Debug.LogWarning("Cannot set storage capacity for null pollenType");
-            return;
-        }
-
-        PollenInventorySlot capacitySlot = storageCapacities.FirstOrDefault(s => s.pollenType == pollenType);
-        if (capacitySlot == null)
-        {
-            capacitySlot = new PollenInventorySlot(pollenType, 0);
-            storageCapacities.Add(capacitySlot);
-        }
-
-        capacitySlot.quantity = Mathf.Max(1, capacity);
-        Debug.Log($"Updated storage capacity for {pollenType.pollenDisplayName}: {capacity}");
-    }
-
-    /// <summary>
-    /// Upgrade storage capacity for a pollen type by a specific amount.
-    /// </summary>
-    public void UpgradeStorageCapacity(FlowerPatchData pollenType, int additionalCapacity)
-    {
-        int currentCapacity = GetStorageCapacity(pollenType);
-        SetStorageCapacity(pollenType, currentCapacity + additionalCapacity);
-    }
 
     /// <summary>
     /// Gets the count of a specific pollen type in inventory.
@@ -287,46 +208,6 @@ public class HiveController : MonoBehaviour
         }
 
         Instance = this;
-
-        // Subscribe to season changes for storage capacity modifiers
-        if (SeasonManager.Instance != null)
-        {
-            SeasonManager.Instance.OnSeasonChanged.AddListener(OnSeasonChanged);
-            // Apply initial seasonal modifier
-            ApplySeasonalStorageModifier();
-        }
-    }
-
-    /// <summary>
-    /// Called when the season changes to update storage capacity
-    /// </summary>
-    private void OnSeasonChanged(Season newSeason)
-    {
-        ApplySeasonalStorageModifier();
-    }
-
-    /// <summary>
-    /// Applies the current seasonal storage capacity modifier
-    /// </summary>
-    private void ApplySeasonalStorageModifier()
-    {
-        if (SeasonManager.Instance == null)
-        {
-            defaultStorageCapacity = baseStorageCapacity;
-            return;
-        }
-
-        SeasonData currentSeason = SeasonManager.Instance.GetCurrentSeasonData();
-        if (currentSeason == null)
-        {
-            defaultStorageCapacity = baseStorageCapacity;
-            return;
-        }
-
-        // Apply seasonal storage capacity modifier
-        defaultStorageCapacity = Mathf.RoundToInt(baseStorageCapacity * currentSeason.storageCapacityModifier);
-
-        Debug.Log($"[HiveController] Applied seasonal storage modifier: {baseStorageCapacity} * {currentSeason.storageCapacityModifier} = {defaultStorageCapacity}");
     }
 
     private void OnDestroy()
@@ -336,26 +217,15 @@ public class HiveController : MonoBehaviour
         {
             Instance = null;
         }
-
-        // Unsubscribe from season changes
-        if (SeasonManager.Instance != null)
-        {
-            SeasonManager.Instance.OnSeasonChanged.RemoveListener(OnSeasonChanged);
-        }
     }
 
     /// <summary>
     /// Reset inventory to initial state for new year playthrough.
-    /// Clears all resources and resets storage capacities.
+    /// Clears all resources.
     /// </summary>
     public void ResetInventory()
     {
         pollenInventory.Clear();
-        storageCapacities.Clear();
-        defaultStorageCapacity = baseStorageCapacity;
-
-        // Reapply seasonal modifiers if needed
-        ApplySeasonalStorageModifier();
 
         OnResourcesChanged?.Invoke();
 

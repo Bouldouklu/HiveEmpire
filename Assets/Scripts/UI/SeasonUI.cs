@@ -272,13 +272,6 @@ public class SeasonUI : MonoBehaviour
             modifierText += $"Production Time: {percentChange:+0;-0}%\n";
         }
 
-        // Storage capacity modifier
-        if (!Mathf.Approximately(seasonData.storageCapacityModifier, 1.0f))
-        {
-            float percentChange = (seasonData.storageCapacityModifier - 1.0f) * 100f;
-            modifierText += $"Storage: {percentChange:+0;-0}%\n";
-        }
-
         // If no modifiers, show "No active modifiers"
         if (string.IsNullOrEmpty(modifierText))
         {

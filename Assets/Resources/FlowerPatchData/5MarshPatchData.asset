@@ -19,7 +19,7 @@ MonoBehaviour:
   pollenIcon: {fileID: 0}
   pollenMaterial: {fileID: 0}
   pollenDescription: Cool teal pollen from wetland plants. Fresh and aquatic.
-  placementCost: 500
+  placementCost: 475
   flowerPatchPrefab: {fileID: 6159468505849121783, guid: 61e4f81cb5c6b4940988f68953110730, type: 3}
   capacityUpgradeCosts:
   - 50

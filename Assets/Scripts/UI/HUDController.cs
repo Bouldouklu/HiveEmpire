@@ -153,20 +153,9 @@ private void UpdateDisplay()
                     continue;
 
                 int count = slot.quantity;
-                int capacity = HiveController.Instance.GetStorageCapacity(slot.pollenType);
 
-                // Color code based on fullness
-                string color = "#FFFFFF"; // White default
-                if (count >= capacity)
-                {
-                    color = "#FF6666"; // Red when full
-                }
-                else if (count >= capacity * 0.8f)
-                {
-                    color = "#FFCC66"; // Yellow when 80%+ full
-                }
-
-                resourceText += $"<color={color}>{slot.pollenType.pollenDisplayName}: {count}/{capacity}</color>\n";
+                // Display count only (no capacity limit)
+                resourceText += $"{slot.pollenType.pollenDisplayName}: {count}\n";
             }
         }
 
