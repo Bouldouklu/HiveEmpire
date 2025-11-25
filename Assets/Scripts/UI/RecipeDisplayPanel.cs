@@ -85,9 +85,10 @@ public class RecipeDisplayPanel : MonoBehaviour
         HidePanel();
     }
 
-    private void OnEnable()
+    private void Start()
     {
         // Subscribe to events for instant feedback
+        // Using Start() instead of OnEnable() to ensure all manager singletons are initialized
         if (HiveController.Instance != null)
         {
             HiveController.Instance.OnResourcesChanged.AddListener(OnResourcesChanged);
@@ -298,15 +299,16 @@ public class RecipeDisplayPanel : MonoBehaviour
     private void OnResourcesChanged()
     {
         // Update ingredient displays for all entries if we have any entries
-        // This ensures real-time updates regardless of panel visibility
-        if (activeRecipeEntries.Count > 0)
+        if (activeRecipeEntries.Count == 0)
         {
-            foreach (RecipeEntryUI entry in activeRecipeEntries)
+            return;
+        }
+
+        foreach (RecipeEntryUI entry in activeRecipeEntries)
+        {
+            if (entry != null)
             {
-                if (entry != null)
-                {
-                    entry.UpdateIngredients();
-                }
+                entry.UpdateIngredients();
             }
         }
     }
@@ -339,67 +341,36 @@ public class RecipeDisplayPanel : MonoBehaviour
 
     /// <summary>
     /// Event handler: Called when a recipe is unlocked.
-    /// Updates the specific recipe entry to show unlocked state.
+    /// Refreshes the entire panel to show updated state.
     /// </summary>
     private void OnRecipeUnlocked(HoneyRecipe unlockedRecipe)
     {
-        Debug.Log($"RecipeDisplayPanel: Recipe unlocked - {unlockedRecipe.recipeName}.");
-
-        if (isPanelOpen)
-        {
-            // Delay update by one frame to allow button animation to complete
-            StartCoroutine(UpdateRecipeEntryNextFrame(unlockedRecipe));
-        }
-        else
+        if (!isPanelOpen)
         {
             // Panel is closed - mark as dirty for next open
             isDirty = true;
+            return;
         }
-    }
 
-    /// <summary>
-    /// Coroutine: Delays recipe entry update by one frame to prevent visual artifacts.
-    /// </summary>
-    private System.Collections.IEnumerator UpdateRecipeEntryNextFrame(HoneyRecipe recipe)
-    {
-        yield return null; // Wait one frame
-
-        // Find the specific entry for this recipe
-        RecipeEntryUI targetEntry = activeRecipeEntries.Find(e => e != null && e.Recipe == recipe);
-
-        if (targetEntry != null)
-        {
-            // Re-initialize this specific entry to show unlocked state
-            int index = activeRecipeEntries.IndexOf(targetEntry);
-            targetEntry.Initialize(recipe, index);
-            Debug.Log($"RecipeDisplayPanel: Updated entry for {recipe.recipeName} to show unlocked state.");
-        }
-        else
-        {
-            // Fallback: full refresh if entry not found (shouldn't happen normally)
-            Debug.LogWarning($"RecipeDisplayPanel: Could not find entry for {recipe.recipeName}, performing full refresh.");
-            RefreshRecipeList();
-        }
+        // Full refresh ensures all state is correct
+        RefreshRecipeList();
     }
 
     /// <summary>
     /// Event handler: Called when a recipe is upgraded.
-    /// Updates the specific recipe entry to show new tier and stats.
+    /// Refreshes the entire panel to show updated tier.
     /// </summary>
     private void OnRecipeUpgraded(HoneyRecipe upgradedRecipe, int newTier)
     {
-        Debug.Log($"RecipeDisplayPanel: Recipe upgraded - {upgradedRecipe.recipeName} to Tier {newTier}.");
-
-        if (isPanelOpen)
-        {
-            // Delay update by one frame to allow button animation to complete
-            StartCoroutine(UpdateRecipeEntryNextFrame(upgradedRecipe));
-        }
-        else
+        if (!isPanelOpen)
         {
             // Panel is closed - mark as dirty for next open
             isDirty = true;
+            return;
         }
+
+        // Full refresh ensures all state is correct
+        RefreshRecipeList();
     }
 
 }
