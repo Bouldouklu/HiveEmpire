@@ -20,6 +20,9 @@ public class SeasonManager : MonoBehaviour
     [SerializeField] private SeasonData autumnData;
 
     [Header("Time Settings")]
+    [Tooltip("Enable or disable the entire season system")]
+    [SerializeField] private bool enableSeasonSystem = true;
+
     [Tooltip("How many real seconds equal one game week (default: 60 = 1 minute per week)")]
     [SerializeField] private float realSecondsPerGameWeek = 60f;
 
@@ -82,6 +85,12 @@ public class SeasonManager : MonoBehaviour
 
     private void Start()
     {
+        if (!enableSeasonSystem)
+        {
+            Debug.Log("[SeasonManager] Season system is DISABLED. Enable 'enableSeasonSystem' to activate.");
+            return;
+        }
+
         if (startTimerOnAwake)
         {
             StartNewYear();
@@ -90,7 +99,7 @@ public class SeasonManager : MonoBehaviour
 
     private void Update()
     {
-        if (!isTimerRunning)
+        if (!enableSeasonSystem || !isTimerRunning)
             return;
 
         // Accumulate time (respects Time.timeScale for game speed control)
