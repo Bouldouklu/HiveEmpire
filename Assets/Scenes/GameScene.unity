@@ -9788,7 +9788,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2109341466}
   - {fileID: 805946678}
   - {fileID: 757672548}
   - {fileID: 349254529}
@@ -31994,73 +31993,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2100939727}
   m_CullTransparentMesh: 1
---- !u!1 &2109341465
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2109341466}
-  - component: {fileID: 2109341467}
-  m_Layer: 0
-  m_Name: ProgressionTracker
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2109341466
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2109341465}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 567845744}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2109341467
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2109341465}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6061c829cd881054d9abe4a77b7862d7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ProgressionTracker
-  decisionsThisWeek: 0
-  totalDecisionsMade: 0
-  decisionsPerWeek: 
-  patchesUnlocked: 0
-  recipesUnlocked: 0
-  beePurchaseTier: 0
-  totalCapacityUpgrades: 0
-  totalRecipeUpgrades: 0
-  moneySpentOnPatches: 0
-  moneySpentOnRecipes: 0
-  moneySpentOnBees: 0
-  moneySpentOnCapacity: 0
-  moneySpentOnRecipeUpgrades: 0
-  targetCompletionMin: 60
-  targetCompletionMax: 80
-  OnDecisionMade:
-    m_PersistentCalls:
-      m_Calls: []
-    m_CallsDirty: 1
-  OnCompletionPercentageChanged:
-    m_PersistentCalls:
-      m_Calls: []
-    m_CallsDirty: 1
 --- !u!1 &2117909333
 GameObject:
   m_ObjectHideFlags: 0

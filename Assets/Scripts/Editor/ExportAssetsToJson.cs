@@ -6,7 +6,7 @@ using System.Linq;
 
 public class ExportAssetsToJson : EditorWindow
 {
-    [MenuItem("Tools/Export Assets to JSON")]
+    [MenuItem("HiveEmpire/Export Assets to JSON")]
     public static void ExportToJson()
     {
         var exportData = new ExportData();
