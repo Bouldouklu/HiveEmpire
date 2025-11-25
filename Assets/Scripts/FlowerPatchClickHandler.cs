@@ -133,6 +133,12 @@ public class FlowerPatchClickHandler : MonoBehaviour
 
     private void OnMouseDown()
     {
+        // Prevent interaction when clicking on UI
+        if (UIBlocker.IsPointerOverUI())
+        {
+            return;
+        }
+
         if (flowerPatchController == null)
         {
             Debug.LogWarning($"Cannot open panel for {gameObject.name}: No FlowerPatchController");

@@ -54,6 +54,12 @@ public class HiveClickHandler : MonoBehaviour
 
     private void OnMouseDown()
     {
+        // Prevent interaction when clicking on UI
+        if (UIBlocker.IsPointerOverUI())
+        {
+            return;
+        }
+
         if (recipePanel != null)
         {
             recipePanel.TogglePanel();

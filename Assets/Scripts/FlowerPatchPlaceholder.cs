@@ -106,6 +106,12 @@ public class FlowerPatchPlaceholder : MonoBehaviour
     /// </summary>
     private void OnMouseDown()
     {
+        // Prevent interaction when clicking on UI
+        if (UIBlocker.IsPointerOverUI())
+        {
+            return;
+        }
+
         TryBuildFlowerPatch();
     }
 

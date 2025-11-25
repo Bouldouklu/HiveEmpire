@@ -73,6 +73,12 @@ public class BiomeRegionInteractionHandler : MonoBehaviour
 
     private void OnMouseDown()
     {
+        // Prevent interaction when clicking on UI
+        if (UIBlocker.IsPointerOverUI())
+        {
+            return;
+        }
+
         if (biomeRegion == null)
         {
             Debug.LogWarning("Cannot interact with BiomeRegion - no reference!");
