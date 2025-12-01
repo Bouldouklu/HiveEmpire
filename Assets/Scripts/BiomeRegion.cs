@@ -100,6 +100,20 @@ public class BiomeRegion : MonoBehaviour
 
         // Apply initial visual state
         UpdateVisualState();
+
+        // Force immediate material application to prevent default color flash
+        // This ensures materials are applied even if HexTile Awake() hasn't run yet
+        Material targetMaterial = isLocked ? lockedMaterial : originalMaterial;
+        if (targetMaterial != null)
+        {
+            foreach (var tile in hexTiles)
+            {
+                if (tile != null && tile.TileRenderer != null)
+                {
+                    tile.TileRenderer.material = targetMaterial;
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -126,6 +140,19 @@ public class BiomeRegion : MonoBehaviour
         }
 
         UpdateVisualState();
+
+        // Force immediate material application to prevent default color flash
+        Material targetMaterial = isLocked ? lockedMaterial : originalMaterial;
+        if (targetMaterial != null)
+        {
+            foreach (var tile in hexTiles)
+            {
+                if (tile != null && tile.TileRenderer != null)
+                {
+                    tile.TileRenderer.material = targetMaterial;
+                }
+            }
+        }
 
         Debug.Log($"BiomeRegion '{name}' initialized: Biome={data.biomeType}, HexTiles={hexTiles.Count}, Capacity={MaxBeeCapacity}");
     }

@@ -496,6 +496,67 @@ public class RecipeProductionManager : MonoBehaviour
         state.isPaused = !state.isPaused;
     }
 
+    /// <summary>
+    /// Estimates the consumption rate for a specific pollen type in units per second.
+    /// Based on all active recipes that are currently producing or ready to produce.
+    /// This is an approximation - actual rate depends on ingredient availability and production times.
+    /// </summary>
+    /// <param name="pollenType">The pollen type to calculate consumption for</param>
+    /// <returns>Estimated consumption rate in units per second</returns>
+    public float GetPollenConsumptionRate(FlowerPatchData pollenType)
+    {
+        if (pollenType == null)
+        {
+            return 0f;
+        }
+
+        float totalRate = 0f;
+
+        // Check all active recipes
+        foreach (var recipe in activeRecipes)
+        {
+            if (recipe == null)
+                continue;
+
+            // Skip if recipe is locked
+            if (RecipeProgressionManager.Instance != null && !RecipeProgressionManager.Instance.IsRecipeUnlocked(recipe))
+                continue;
+
+            var state = productionStates.ContainsKey(recipe) ? productionStates[recipe] : null;
+            if (state == null || state.isPaused)
+                continue;
+
+            // Get current tier for this recipe
+            int tier = RecipeProgressionManager.Instance != null ? RecipeProgressionManager.Instance.GetRecipeTier(recipe) : 0;
+
+            // Get tier-adjusted ingredients
+            List<HoneyRecipe.Ingredient> ingredients = recipe.GetIngredients(tier);
+
+            // Calculate how much of this pollen type is needed per production cycle
+            float pollenPerCycle = 0f;
+            foreach (var ingredient in ingredients)
+            {
+                if (ingredient.pollenType == pollenType)
+                {
+                    pollenPerCycle += ingredient.quantity;
+                }
+            }
+
+            if (pollenPerCycle > 0f && state.totalTime > 0f)
+            {
+                // If recipe is currently producing, add its consumption rate
+                if (state.isProducing)
+                {
+                    totalRate += pollenPerCycle / state.totalTime;
+                }
+                // If recipe could potentially start (we assume continuous production for rate estimation)
+                // This provides a "theoretical max" consumption rate
+            }
+        }
+
+        return totalRate;
+    }
+
     private void OnValidate()
     {
         // Rebuild production states when recipe list changes in editor

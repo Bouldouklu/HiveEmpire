@@ -359,6 +359,52 @@ public class BeeFleetManager : MonoBehaviour
         Debug.Log($"[BeeFleetManager] Reset to initial state - Total bees: {startingBees}, Purchase tier: 0, Allocations cleared");
     }
 
+    /// <summary>
+    /// Estimates the production rate for a specific pollen type in units per second.
+    /// Based on number of bees allocated to regions producing that pollen type.
+    /// This is an approximation - actual rate depends on bee speed and travel distance.
+    /// </summary>
+    /// <param name="pollenType">The pollen type to calculate production for</param>
+    /// <returns>Estimated production rate in units per second</returns>
+    public float GetPollenProductionRate(FlowerPatchData pollenType)
+    {
+        if (pollenType == null)
+        {
+            return 0f;
+        }
+
+        float totalRate = 0f;
+
+        // Iterate through all regions with bee allocations
+        foreach (var kvp in beeAllocations)
+        {
+            BiomeRegion region = kvp.Key;
+            int beeCount = kvp.Value;
+
+            // Check if this region produces the requested pollen type
+            if (region != null && region.RegionData != null && region.RegionData == pollenType)
+            {
+                // Estimate: Each bee delivers ~1 pollen every 8 seconds (rough average including travel time)
+                // This assumes typical map layout with moderate distances
+                float deliveriesPerSecondPerBee = 1f / 8f;
+
+                // Apply seasonal modifier if available
+                if (SeasonManager.Instance != null)
+                {
+                    SeasonData currentSeasonData = SeasonManager.Instance.GetCurrentSeasonData();
+                    if (currentSeasonData != null)
+                    {
+                        deliveriesPerSecondPerBee *= currentSeasonData.beeSpeedModifier;
+                    }
+                }
+
+                totalRate += beeCount * deliveriesPerSecondPerBee;
+            }
+        }
+
+        return totalRate;
+    }
+
     private void OnDestroy()
     {
         if (Instance == this)

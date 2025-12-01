@@ -17,10 +17,9 @@ MonoBehaviour:
   seasonColor: {r: 1, g: 0.8, b: 0.2, a: 1}
   seasonIcon: {fileID: 0}
   weeksInSeason: 8
-  incomeModifier: 1.5
+  incomeModifier: 1.2
   beeSpeedModifier: 0.9
   productionTimeModifier: 1.1
-  storageCapacityModifier: 1
   mildEventWeight: 0.4
   moderateEventWeight: 0.4
   severeEventWeight: 0.2

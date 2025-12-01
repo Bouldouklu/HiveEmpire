@@ -19,7 +19,9 @@
       "Bash(timeout /t 3)",
       "Bash(nul)",
       "Bash(ping:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(powershell -Command \"(Get-Content ''D:\\Unity\\Games\\HiveEmpire\\Assets\\Scripts\\RecipeProductionManager.cs'' | Measure-Object -Line).Lines\")",
+      "Bash(del nul)"
     ],
     "deny": [],
     "ask": []

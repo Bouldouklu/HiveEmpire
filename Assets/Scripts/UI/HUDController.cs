@@ -26,16 +26,21 @@ public class HUDController : MonoBehaviour
     [Tooltip("Button to open the Settings panel")]
     [SerializeField] private Button settingsButton;
 
+    [Tooltip("Button to open the How to Play panel")]
+    [SerializeField] private Button howToPlayButton;
+
     [Header("Panel References")]
     [Tooltip("Reference to the Fleet Management Panel")]
     [SerializeField] private FleetManagementPanel fleetManagementPanel;
 
     [Tooltip("Reference to the Settings Controller")]
-    
+    [SerializeField] private SettingsController settingsController;
+
+    [Tooltip("Reference to the How to Play Panel")]
+    [SerializeField] private HowToPlayPanel howToPlayPanel;
 
     // Cached values to avoid unnecessary updates
     private int cachedBeeCount = 0;
-[SerializeField] private SettingsController settingsController;
 
     private void Start()
     {
@@ -59,6 +64,16 @@ public class HUDController : MonoBehaviour
             Debug.LogWarning("HUDController: Settings button not assigned!");
         }
 
+        // Subscribe to how to play button click
+        if (howToPlayButton != null)
+        {
+            howToPlayButton.onClick.AddListener(OnHowToPlayButtonClicked);
+        }
+        else
+        {
+            Debug.LogWarning("HUDController: How to Play button not assigned!");
+        }
+
         // Validate Fleet Management Panel reference
         if (fleetManagementPanel == null)
         {
@@ -68,7 +83,14 @@ public class HUDController : MonoBehaviour
         // Validate Settings Controller reference
         if (settingsController == null)
         {
-            
+            Debug.LogWarning("HUDController: Settings Controller not assigned in Inspector!");
+        }
+
+        // Validate How to Play Panel reference
+        if (howToPlayPanel == null)
+        {
+            Debug.LogWarning("HUDController: How to Play Panel not assigned in Inspector!");
+        }
 
         // Subscribe to bee count changes
         if (GameManager.Instance != null)
@@ -80,8 +102,6 @@ public class HUDController : MonoBehaviour
         else
         {
             Debug.LogWarning("HUDController: GameManager not found in scene!");
-        }
-Debug.LogWarning("HUDController: Settings Controller not assigned in Inspector!");
         }
 
         // Subscribe to hive resource changes
@@ -156,7 +176,40 @@ private void UpdateDisplay()
 
                 // Display count with 1 decimal if not a whole number
                 string countStr = count % 1 == 0 ? count.ToString("F0") : count.ToString("F1");
-                resourceText += $"{slot.pollenType.pollenDisplayName}: {countStr}\n";
+
+                // Calculate net production rate (production - consumption)
+                float productionRate = 0f;
+                float consumptionRate = 0f;
+
+                if (BeeFleetManager.Instance != null)
+                {
+                    productionRate = BeeFleetManager.Instance.GetPollenProductionRate(slot.pollenType);
+                }
+
+                if (RecipeProductionManager.Instance != null)
+                {
+                    consumptionRate = RecipeProductionManager.Instance.GetPollenConsumptionRate(slot.pollenType);
+                }
+
+                float netRate = productionRate - consumptionRate;
+
+                // Format rate indicator with color
+                string rateIndicator = "";
+                if (netRate > 0.01f)
+                {
+                    rateIndicator = $" <color=#00FF00>(+{netRate:F1}/s)</color>";
+                }
+                else if (netRate < -0.01f)
+                {
+                    rateIndicator = $" <color=#FF4444>({netRate:F1}/s)</color>";
+                }
+                else if (Mathf.Abs(netRate) > 0.001f)
+                {
+                    // Near zero but not exactly zero
+                    rateIndicator = $" <color=#FFFF00>({netRate:F2}/s)</color>";
+                }
+
+                resourceText += $"{slot.pollenType.pollenDisplayName}: {countStr}{rateIndicator}\n";
             }
         }
 
@@ -243,6 +296,22 @@ private void UpdateDisplay()
         }
     }
 
+    /// <summary>
+    /// Called when the How to Play button is clicked.
+    /// Toggles the How to Play panel visibility.
+    /// </summary>
+    private void OnHowToPlayButtonClicked()
+    {
+        if (howToPlayPanel != null)
+        {
+            howToPlayPanel.TogglePanel();
+        }
+        else
+        {
+            Debug.LogWarning("HUDController: Cannot open How to Play panel - panel not found!");
+        }
+    }
+
     private void OnDestroy()
     {
         // Unsubscribe from events to prevent memory leaks
@@ -254,6 +323,11 @@ private void UpdateDisplay()
         if (settingsButton != null)
         {
             settingsButton.onClick.RemoveListener(OnSettingsButtonClicked);
+        }
+
+        if (howToPlayButton != null)
+        {
+            howToPlayButton.onClick.RemoveListener(OnHowToPlayButtonClicked);
         }
 
         if (HiveController.Instance != null)
