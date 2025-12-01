@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine;
 
 public class ScreenshotCapture : MonoBehaviour
@@ -12,3 +13,4 @@ public class ScreenshotCapture : MonoBehaviour
         }
     }
 }
+#endif

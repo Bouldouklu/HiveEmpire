@@ -73,16 +73,6 @@ public class EndOfYearPanel : MonoBehaviour
     [Tooltip("Autumn season recipes completed")]
     [SerializeField] private TextMeshProUGUI autumnRecipesText;
 
-    [Header("Achievements Section")]
-    [Tooltip("Container for achievement entries")]
-    [SerializeField] private Transform achievementsContainer;
-
-    [Tooltip("Text showing achievement count (e.g., '5/12 Achievements')")]
-    [SerializeField] private TextMeshProUGUI achievementCountText;
-
-    [Tooltip("Prefab for individual achievement display")]
-    [SerializeField] private GameObject achievementEntryPrefab;
-
     [Header("High Score Section")]
     [Tooltip("Text showing high score comparison summary")]
     [SerializeField] private TextMeshProUGUI highScoreSummaryText;
@@ -221,15 +211,8 @@ public class EndOfYearPanel : MonoBehaviour
             highScores = HighScoreManager.Instance.SaveIfHighScore(summary);
         }
 
-        // Get achievements
-        List<Achievement> achievements = new List<Achievement>();
-        if (AchievementManager.Instance != null)
-        {
-            achievements = AchievementManager.Instance.GetUnlockedAchievements(summary);
-        }
-
         // Display all data
-        DisplaySummary(summary, highScores, achievements);
+        DisplaySummary(summary, highScores);
 
         // Show panel and pause game
         ShowPanel();
@@ -239,7 +222,7 @@ public class EndOfYearPanel : MonoBehaviour
     /// <summary>
     /// Display all summary data in the UI.
     /// </summary>
-    private void DisplaySummary(YearSummary summary, HighScoreComparison highScores, List<Achievement> achievements)
+    private void DisplaySummary(YearSummary summary, HighScoreComparison highScores)
     {
         // Header
         if (titleText != null)
@@ -302,9 +285,6 @@ public class EndOfYearPanel : MonoBehaviour
         // Season breakdown
         DisplaySeasonStats(summary);
 
-        // Achievements
-        DisplayAchievements(achievements);
-
         // High scores
         DisplayHighScores(highScores);
     }
@@ -342,51 +322,6 @@ public class EndOfYearPanel : MonoBehaviour
         if (autumnRecipesText != null)
         {
             autumnRecipesText.text = $"Recipes: {summary.autumnStats.recipesCompleted}";
-        }
-    }
-
-    /// <summary>
-    /// Display unlocked achievements.
-    /// </summary>
-    private void DisplayAchievements(List<Achievement> achievements)
-    {
-        // Clear existing achievement entries
-        if (achievementsContainer != null)
-        {
-            foreach (Transform child in achievementsContainer)
-            {
-                Destroy(child.gameObject);
-            }
-        }
-
-        // Update achievement count
-        if (achievementCountText != null && AchievementManager.Instance != null)
-        {
-            int total = AchievementManager.Instance.GetAllAchievements().Count;
-            achievementCountText.text = $"{achievements.Count}/{total} Achievements";
-        }
-
-        // Create achievement entries (if prefab is assigned)
-        if (achievementEntryPrefab != null && achievementsContainer != null)
-        {
-            foreach (var achievement in achievements)
-            {
-                GameObject entry = Instantiate(achievementEntryPrefab, achievementsContainer);
-
-                // Find text component and set achievement info
-                TextMeshProUGUI nameText = entry.transform.Find("AchievementName")?.GetComponent<TextMeshProUGUI>();
-                TextMeshProUGUI descText = entry.transform.Find("AchievementDescription")?.GetComponent<TextMeshProUGUI>();
-
-                if (nameText != null)
-                {
-                    nameText.text = achievement.achievementName;
-                }
-
-                if (descText != null)
-                {
-                    descText.text = achievement.description;
-                }
-            }
         }
     }
 

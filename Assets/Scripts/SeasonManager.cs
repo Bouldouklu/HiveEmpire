@@ -112,8 +112,10 @@ public class SeasonManager : MonoBehaviour
             AdvanceWeek();
         }
 
+#if UNITY_EDITOR
         // Debug shortcuts for testing
         HandleDebugInputs();
+#endif
     }
 
     /// <summary>
@@ -276,6 +278,7 @@ public class SeasonManager : MonoBehaviour
         return realSecondsPerGameWeek;
     }
 
+#if UNITY_EDITOR
     /// <summary>
     /// Handles debug keyboard shortcuts for testing
     /// </summary>
@@ -299,6 +302,7 @@ public class SeasonManager : MonoBehaviour
             StartNewYear();
         }
     }
+#endif
 
     /// <summary>
     /// Debug function to skip to the next season immediately

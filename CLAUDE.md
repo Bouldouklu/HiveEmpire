@@ -19,11 +19,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 1. Open Assets/Scenes/GameScene.unity (main) or GameSceneTest.unity (testing)
 2. Press Play button in Unity Editor
 3. Test gameplay mechanics in Game view
-4. Use keyboard shortcuts for time control:
-   - 1: Normal speed (1x)
-   - 2: Double speed (2x)
-   - 3: Fast testing (5x)
 ```
+
+### Debug Controls (Editor Only)
+
+The following keyboard shortcuts are available **only in Unity Editor** for testing:
+
+**Game Speed:**
+- 1 or Numpad 1: Normal speed (1x)
+- 2 or Numpad 2: Fast testing (3x)
+- 3 or Numpad 3: Very fast testing (10x)
+
+**Time Manipulation:**
+- W: Skip to next week
+- S: Skip to next season
+- R: Restart year
+
+**Utilities:**
+- F12: Capture screenshot
+
+**Note:** These controls are automatically stripped from production builds using `#if UNITY_EDITOR` compilation directives. Players will never have access to these shortcuts in deployed builds.
 
 ### Building for WebGL
 ```
@@ -84,8 +99,7 @@ The game uses a **manager-driven architecture** with singleton managers orchestr
 - Tracks per-season breakdowns
 - Provides data for end-of-year summary panel
 
-**AchievementManager** / **HighScoreManager**
-- Achievement unlocking system
+**HighScoreManager**
 - High score persistence across playthroughs
 
 **HiveController** (`HiveController.cs`)
@@ -150,7 +164,7 @@ The game uses a **manager-driven architecture** with singleton managers orchestr
 - Shows active recipes, ingredients, production progress
 
 **EndOfYearPanel** (`Assets/Scripts/UI/EndOfYearPanel.cs`)
-- End-of-campaign summary (hero stats, seasonal breakdown, achievements)
+- End-of-campaign summary (hero stats, seasonal breakdown)
 - High score comparison
 - "Play Again" restart flow
 
@@ -196,7 +210,6 @@ The game uses a **manager-driven architecture** with singleton managers orchestr
 - **Flower Patches:** `Assets/Resources/FlowerPatchData/*.asset` (6 biomes: Forest, Plains, Mountain, Desert, Coastal, Tundra)
 - **Recipes:** `Assets/Resources/Recipes/*.asset` (ForestHoney, WildflowerHoney, MountainHoney, DesertBlossom, PremiumBlend)
 - **Seasons:** `Assets/Resources/Seasons/*.asset` (Spring, Summer, Autumn modifiers)
-- **Achievements:** `Assets/Resources/Achievements/*.asset`
 
 ### Design Documentation
 - **Game Concept:** `Assets/Readme.md` (complete game design, mechanics, progression)
@@ -330,7 +343,7 @@ The game uses a **manager-driven architecture** with singleton managers orchestr
 
 ### Replayability
 - 20-30 minute campaign length encourages multiple runs
-- High score tracking and achievements
+- High score tracking
 - Seasonal variety changes optimal strategies
 - No single "correct" build path
 

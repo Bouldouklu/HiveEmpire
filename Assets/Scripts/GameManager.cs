@@ -83,6 +83,7 @@ public class GameManager : MonoBehaviour
         // Track elapsed game time
         elapsedTime += Time.deltaTime;
 
+#if UNITY_EDITOR
         // Keyboard shortcuts for game speed control (testing purposes)
         if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1))
         {
@@ -96,6 +97,7 @@ public class GameManager : MonoBehaviour
         {
             SetGameSpeed(10f);
         }
+#endif
     }
 
     /// <summary>

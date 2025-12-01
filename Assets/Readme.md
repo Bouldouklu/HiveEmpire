@@ -412,13 +412,6 @@ Per-season display showing:
 - Autumn: Money earned, Recipes completed, Resources collected
 ```
 
-**Achievements System:**
-```
-- Display unlocked achievements (e.g., "First Million", "Speed Demon", "Hoarder")
-- Show achievement count (e.g., "5/12 Achievements Unlocked")
-- Visual badges for completed achievements
-```
-
 **High Score Tracking:**
 ```
 - Compare current run to previous best runs
@@ -461,7 +454,6 @@ SeasonManager.OnSeasonChanged → Switch seasonal tracking buckets
 **Current Implementation:**
 ```
 - High scores persist across playthroughs
-- Achievements unlock permanently
 - Each playthrough is independent (no prestige system yet)
 ```
 
@@ -480,7 +472,7 @@ SeasonManager.OnSeasonChanged → Switch seasonal tracking buckets
 1. **Pacing:** Breaks 24-minute campaign into distinct phases
 2. **Variety:** Modifiers force strategy adaptation, prevents monotony
 3. **Tension:** Timer creates urgency ("Must optimize before Autumn!")
-4. **Satisfaction:** End-of-year summary provides closure and achievement validation
+4. **Satisfaction:** End-of-year summary provides closure and performance feedback
 
 **Why Fixed Campaign Length?**
 1. **Focused Experience:** Prototype validates core loop in 20-30 minutes

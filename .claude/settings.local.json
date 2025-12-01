@@ -21,7 +21,13 @@
       "Bash(ping:*)",
       "Bash(dir:*)",
       "Bash(powershell -Command \"(Get-Content ''D:\\Unity\\Games\\HiveEmpire\\Assets\\Scripts\\RecipeProductionManager.cs'' | Measure-Object -Line).Lines\")",
-      "Bash(del nul)"
+      "Bash(del nul)",
+      "Bash(del \"Assets\\Scripts\\Achievement.cs\" \"Assets\\Scripts\\Achievement.cs.meta\" \"Assets\\Scripts\\AchievementManager.cs\" \"Assets\\Scripts\\AchievementManager.cs.meta\")",
+      "Bash(cmd /c \"del /F /Q Assets\\Scripts\\Achievement.cs Assets\\Scripts\\Achievement.cs.meta Assets\\Scripts\\AchievementManager.cs Assets\\Scripts\\AchievementManager.cs.meta\")",
+      "Bash(cmd /c \"rmdir /S /Q Assets\\Resources\\Achievements\")",
+      "Bash(cmd /c \"del /F /Q Assets\\Prefabs\\UI\\AchievementEntry.prefab Assets\\Prefabs\\UI\\AchievementEntry.prefab.meta\")",
+      "Bash(git reset:*)",
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "ask": []
